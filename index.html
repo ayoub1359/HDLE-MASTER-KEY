@@ -1,7 +1,37 @@
-<div id="hdle-v5-system" style="background:#050505;border-radius:20px;border:2px solid #00ff96;box-shadow:0 0 25px rgba(0,255,150,0.2);color:#00ff96;font-family:'Courier New',monospace;margin:auto;max-width:420px;padding:25px;text-align:center;position:relative;border-top:5px solid #00ff96">
-    <div id="adblock-overlay" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);z-index:10000;flex-direction:column;justify-content:center;align-items:center;border-radius:20px">
+// كود Cloudflare Worker المصلح
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+
+async function handleRequest(request) {
+  const html = `
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDLE MASTER SYSTEM</title>
+    <style>
+        body { background-color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        #hdle-v5-system {
+            background: #050505; border-radius: 20px; border: 2px solid #00ff96;
+            box-shadow: 0 0 25px rgba(0, 255, 150, 0.2); color: #00ff96;
+            font-family: 'Courier New', monospace; margin: auto; max-width: 420px;
+            padding: 25px; text-align: center; position: relative; border-top: 5px solid #00ff96;
+        }
+        #adblock-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98); z-index: 10000; flex-direction: column;
+            justify-content: center; align-items: center; border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="hdle-v5-system">
+    <div id="adblock-overlay">
         <span style="font-size:60px;color:#ff3c3c">⚠️</span>
-        <h2 style="color:#ff3c3c;margin-top:15px">ADBLOCK DETECTED</h2>
+        <h2 style="color:#ff3c3c;margin-top:15px">تم اكتشاف مانع إعلانات</h2>
         <p style="color:#bbb;padding:0 30px;font-size:13px">يرجى تعطيل مانع الإعلانات وتحديث الصفحة للحصول على المفتاح.</p>
         <button onclick="location.reload()" style="background:#ff3c3c;color:white;border:none;padding:12px 25px;border-radius:8px;cursor:pointer;font-weight:bold;margin-top:20px">إعادة المحاولة</button>
     </div>
@@ -9,7 +39,7 @@
     <h2 style="letter-spacing:3px;text-shadow:0 0 10px #00ff96">HDLE MASTER V5.1</h2>
     
     <div style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:10px;padding:12px;margin-bottom:20px;border-left:4px solid #ff3c3c">
-        <div style="font-size:10px;color:#555">EXPIRES IN (UTC):</div>
+        <div style="font-size:10px;color:#555">ينتهي المفتاح خلال (UTC):</div>
         <div id="utc-realtime-clock" style="font-size:24px;font-weight:bold;color:#ff3c3c">00:00:00</div>
     </div>
 
@@ -20,7 +50,7 @@
     </div>
 
     <div style="background:#000;border:1px solid #1a1a1a;border-radius:10px;padding:15px;margin-bottom:20px">
-        <div id="ad-status" style="font-size:10px;color:#555;margin-bottom:10px">🛡️ SCANNING SYSTEM...</div>
+        <div id="ad-status" style="font-size:10px;color:#555;margin-bottom:10px">🛡️ جاري فحص النظام...</div>
         <div id="advertisement-area" style="min-height:250px">
             <div class="adsbygoogle" id="ad-detector-trap" style="height:1px;width:1px"></div>
             <script type="text/javascript">atOptions={'key':'a19f2d8a96b37ab241ac2984897edc7a','format':'iframe','height':250,'width':300,'params':{}};</script>
@@ -30,7 +60,7 @@
         <div style="margin-top:15px;color:#ff3c3c;font-weight:bold">⏳ متبقي للمشاهدة: <span id="view-timer">30</span> ثانية</div>
     </div>
 
-    <button disabled id="generate-btn" onclick="window.generateKey();" style="background:#111;border:1px solid #222;color:#333;font-size:16px;font-weight:bold;padding:20px;width:100%;cursor:not-allowed;border-radius:8px">LOCKED</button>
+    <button disabled id="generate-btn" onclick="window.generateKey();" style="background:#111;border:1px solid #222;color:#333;font-size:16px;font-weight:bold;padding:20px;width:100%;cursor:not-allowed;border-radius:8px">مغلق</button>
 
     <div id="key-output-zone" style="display:none;margin-top:20px">
         <div id="final-master-key" style="background:#0a0a0a;border:1px dashed #00ff96;color:white;padding:15px;word-break:break-all;font-family:monospace"></div>
@@ -41,28 +71,18 @@
 <script>
 (function(){
     var _0x5a = 0, _0x2f = false, _0x8d = 30, _0x9c = false;
-    var _0xS = "\x48\x44\x4c\x45\x5f\x50\x52\x4f\x5f\x39\x39\x5f\x53\x54\x52\x49\x4b\x45";
-    var _0xC = "\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x30\x31\x32\x33\x34\x35\x36\x37\x38\x39\x21\x40\x23\x24\x25\x5e\x26\x2a";
+    var _0xS = "\\x48\\x44\\x4c\\x45\\x5f\\x50\\x52\\x4f\\x5f\\x39\\x39\\x5f\\x53\\x54\\x52\\x49\\x4b\\x45";
+    var _0xC = "\\x41\\x42\\x43\\x44\\x45\\x46\\x47\\x48\\x49\\x4a\\x4b\\x4c\\x4d\\x4e\\x4f\\x50\\x51\\x52\\x53\\x54\\x55\\x56\\x57\\x58\\x59\\x5a\\x61\\x62\\x63\\x64\\x65\\x66\\x67\\x68\\x69\\x6a\\x6b\\x6c\\x6d\\x6e\\x6f\\x70\\x71\\x72\\x73\\x74\\x75\\x76\\x77\\x78\\x79\\x7a\\x30\\x31\\x32\\x33\\x34\\x35\\x36\\x37\\x38\\x39\\x21\\x40\\x23\\x24\\x25\\x5e\\x26\\x2a";
 
-    window.registerAdClick = function() {
-        _0x5a++;
-        document.getElementById('click-status').innerText = _0x5a;
-        _0xup();
-    };
-
+    window.registerAdClick = function() { _0x5a++; document.getElementById('click-status').innerText = _0x5a; _0xup(); };
     function _0xup() {
         var b = document.getElementById('generate-btn');
         if (_0x5a >= 4 && _0x2f) {
-            b.disabled = false;
-            b.style.background = "#00ff96";
-            b.style.color = "#000";
-            b.style.cursor = "pointer";
-            b.innerText = "توليد المفتاح الرئيسي";
+            b.disabled = false; b.style.background = "#00ff96"; b.style.color = "#000"; b.style.cursor = "pointer"; b.innerText = "توليد المفتاح الرئيسي";
         } else {
             b.innerText = "باقي: " + (4-_0x5a > 0 ? (4-_0x5a)+" ضغطات" : "انتظر...");
         }
     }
-
     function _0xic() {
         setInterval(function() {
             var n = new Date();
@@ -70,7 +90,6 @@
             document.getElementById('utc-realtime-clock').innerText = (h<10?"0"+h:h)+":"+(m<10?"0"+m:m)+":"+(s<10?"0"+s:s);
         }, 1000);
     }
-
     function _0xab() {
         setTimeout(function() {
             var t = document.getElementById('ad-detector-trap'), c = document.getElementById('advertisement-area');
@@ -78,27 +97,20 @@
                 _0x9c = true;
                 document.getElementById('adblock-overlay').style.display = 'flex';
             } else {
-                document.getElementById('ad-status').innerText = "SECURE: ACTIVE";
+                document.getElementById('ad-status').innerText = "النظام آمن: تم التحقق";
                 document.getElementById('ad-status').style.color = "#00ff96";
             }
         }, 8000);
     }
-
     function _0xtm() {
         var t = setInterval(function() {
             if (!_0x9c) {
                 _0x8d--;
                 document.getElementById('view-timer').innerText = _0x8d;
-                if (_0x8d <= 0) {
-                    clearInterval(t);
-                    _0x2f = true;
-                    document.getElementById('view-timer').parentElement.innerHTML = "✅";
-                    _0xup();
-                }
+                if (_0x8d <= 0) { clearInterval(t); _0x2f = true; document.getElementById('view-timer').parentElement.innerHTML = "✅"; _0xup(); }
             }
         }, 1000);
     }
-
     window.generateKey = function() {
         if (_0x5a < 4 || !_0x2f) return;
         var d = new Date(), dy = d.getUTCDate(), mo = d.getUTCMonth()+1, yr = d.getUTCFullYear();
@@ -114,12 +126,19 @@
         document.getElementById('final-master-key').innerText = k;
         document.getElementById('key-output-zone').style.display = 'block';
     };
-
     window.copyToClipboard = function() {
         navigator.clipboard.writeText(document.getElementById('final-master-key').innerText);
-        alert("تم النسخ!");
+        alert("تم نسخ المفتاح!");
     };
-
     window.onload = function() { _0xic(); _0xab(); _0xtm(); };
 })();
 </script>
+</body>
+</html>
+  `
+  return new Response(html, {
+    headers: {
+      "content-type": "text/html;charset=UTF-8", // هذا السطر يحل مشكلة الرموز
+    },
+  })
+}

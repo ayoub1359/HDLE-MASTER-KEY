@@ -6,58 +6,367 @@
     <title>HDLE MASTER ELITE</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        *{box-sizing:border-box}
-        body{background:radial-gradient(circle,#0a0a0a 0%,#000 100%);display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;color:#00ff96;overflow-x:hidden}
-        #particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
-        #main-container{background:#050505;border-radius:25px;border:2px solid #00ff96;box-shadow:0 0 40px rgba(0,255,150,.2);width:95%;max-width:550px;padding:20px;text-align:center;position:relative;border-top:8px solid #00ff96;z-index:1;margin:20px auto}
-        h2{font-family:'Orbitron',sans-serif;letter-spacing:4px;text-shadow:0 0 15px #00ff96;margin-bottom:20px;font-size:clamp(14px,4vw,22px)}
-        .section-box{background:#080808;border:1px solid #1a1a1a;border-radius:15px;padding:15px;margin-bottom:15px}
-        .ad-box{background:#080808;border:1px solid #00ff9622;border-radius:15px;padding:12px;margin-bottom:15px;display:flex;flex-direction:column;align-items:center;overflow:hidden;width:100%}
-        .ad-box-label{font-size:10px;color:#333;margin-bottom:8px;letter-spacing:2px;text-transform:uppercase}
-        .ad-box-inner{width:100%;display:flex;justify-content:center;align-items:center;overflow:hidden;border-radius:10px;background:#000}
-        .ad-box-inner iframe{max-width:100%!important;border:none!important}
-        #utc-clock{font-family:'Orbitron',sans-serif;font-size:clamp(20px,6vw,30px);color:#ff3c3c;text-shadow:0 0 10px #ff3c3c}
-        .btn-link{background:linear-gradient(90deg,#ff0055,#ff00aa);border-radius:10px;color:#fff;display:inline-block;padding:15px;text-decoration:none;width:90%;font-weight:700;font-size:clamp(13px,3.5vw,16px);box-shadow:0 5px 15px rgba(255,0,85,.4);transition:transform .2s}
-        .btn-link:hover{transform:translateY(-2px)}
-        #generate-btn{background:#111;border:1px solid #222;color:#333;font-size:clamp(14px,4vw,20px);font-weight:700;padding:18px;width:100%;cursor:not-allowed;border-radius:12px;transition:.5s;font-family:'Orbitron',sans-serif}
-        #adblock-screen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;flex-direction:column;justify-content:center;align-items:center;padding:20px;background:rgba(0,0,0,.97)}
-        #adblock-card{background:#0a0a0a;border:2px solid #ff3c3c;border-top:6px solid #ff3c3c;border-radius:20px;padding:30px 25px;max-width:420px;width:92%;text-align:center;box-shadow:0 0 60px rgba(255,60,60,.3);animation:slideUp .5s ease forwards}
-        @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
-        #adblock-icon{font-size:clamp(55px,16vw,80px);display:block;animation:pulse 1.5s infinite}
-        @keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 8px #ff3c3c)}50%{transform:scale(1.12);filter:drop-shadow(0 0 20px #ff3c3c)}}
-        #adblock-title{font-family:'Orbitron',sans-serif;color:#ff3c3c;font-size:clamp(16px,5vw,22px);margin:15px 0 10px;text-shadow:0 0 12px #ff3c3c;letter-spacing:2px}
-        #adblock-subtitle{color:#aaa;font-size:clamp(12px,3.5vw,15px);margin-bottom:20px;line-height:1.7}
-        #adblock-steps{background:#0f0f0f;border:1px solid #ff3c3c33;border-radius:12px;padding:15px;margin-bottom:20px;text-align:right}
-        #adblock-steps p{color:#ccc;font-size:clamp(11px,3vw,13px);margin:0 0 8px;line-height:1.8}
-        #adblock-steps p:last-child{margin-bottom:0}
-        #adblock-steps span.step-num{display:inline-block;background:#ff3c3c;color:#000;font-weight:700;border-radius:50%;width:20px;height:20px;line-height:20px;text-align:center;font-size:11px;margin-left:8px}
-        #adblock-warning{background:#1a0000;border:1px solid #ff3c3c55;border-radius:10px;padding:12px;color:#ff6666;font-size:clamp(11px,3vw,13px);margin-bottom:20px;line-height:1.6}
-        #adblock-retry-btn{background:linear-gradient(90deg,#ff1a1a,#ff0055);border:none;color:#fff;padding:15px 40px;border-radius:12px;cursor:pointer;font-weight:700;font-size:clamp(13px,4vw,16px);font-family:'Orbitron',sans-serif;letter-spacing:1px;box-shadow:0 5px 20px rgba(255,0,85,.4);transition:transform .2s,opacity .2s;width:100%}
-        #adblock-retry-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-        #adblock-retry-btn:not(:disabled):hover{transform:translateY(-2px)}
-        #check-bar-wrap{display:none;margin-top:14px}
-        #check-bar-bg{background:#1a0000;border-radius:6px;height:6px;overflow:hidden;margin-bottom:7px}
-        #check-bar-fill{height:100%;width:0%;border-radius:6px;background:linear-gradient(90deg,#ff1a1a,#ff0055);transition:width .15s linear,background .4s}
-        #check-label{color:#ff6666;font-size:11px;letter-spacing:1px}
-        #check-result{margin-top:10px;font-size:13px;font-weight:700;min-height:18px;white-space:pre-line}
-        #adblock-counter{color:#444;font-size:11px;margin-top:12px;letter-spacing:1px}
-        #adblock-counter span{color:#ff3c3c;font-weight:700}
-        .sparkle{position:fixed;pointer-events:none;width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff,0 0 16px #00ff96;animation:sparkleFade .7s forwards;z-index:9999}
-        @keyframes sparkleFade{0%{transform:scale(1);opacity:1}100%{transform:scale(0);opacity:0}}
-        #aads-top-wrap{position:fixed;top:0;left:0;right:0;z-index:88888;display:flex;justify-content:center;background:rgba(5,5,5,.95);border-bottom:1px solid #00ff9633;padding:4px 0}
-        #aads-close{position:absolute;top:50%;right:10px;transform:translateY(-50%);background:rgba(248,248,249,.15);border:none;border-radius:4px;padding:4px 6px;cursor:pointer;color:#aaa}
-        #top-spacer{height:60px}
-        @media(max-width:340px){#main-container{padding:12px}h2{letter-spacing:2px}}
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle, #0a0a0a 0%, #000 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #00ff96;
+            overflow-x: hidden;
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #main-container {
+            background: #050505;
+            border-radius: 25px;
+            border: 2px solid #00ff96;
+            box-shadow: 0 0 40px rgba(0,255,150,0.2);
+            width: 95%;
+            max-width: 550px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            border-top: 8px solid #00ff96;
+            z-index: 1;
+            margin: 20px auto;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px #00ff96;
+            margin-bottom: 20px;
+            font-size: clamp(14px, 4vw, 22px);
+        }
+
+        .section-box {
+            background: #080808;
+            border: 1px solid #1a1a1a;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .ad-box {
+            background: #080808;
+            border: 1px solid #00ff9622;
+            border-radius: 15px;
+            padding: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .ad-box-label {
+            font-size: 10px;
+            color: #333;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .ad-box-inner {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+        }
+
+        .ad-box-inner iframe {
+            max-width: 100% !important;
+            border: none !important;
+        }
+
+        #utc-clock {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(20px, 6vw, 30px);
+            color: #ff3c3c;
+            text-shadow: 0 0 10px #ff3c3c;
+        }
+
+        .btn-link {
+            background: linear-gradient(90deg, #ff0055, #ff00aa);
+            border-radius: 10px;
+            color: white;
+            display: inline-block;
+            padding: 15px;
+            text-decoration: none;
+            width: 90%;
+            font-weight: bold;
+            font-size: clamp(13px, 3.5vw, 16px);
+            box-shadow: 0 5px 15px rgba(255,0,85,0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn-link:hover { transform: translateY(-2px); }
+
+        #generate-btn {
+            background: #111;
+            border: 1px solid #222;
+            color: #333;
+            font-size: clamp(14px, 4vw, 20px);
+            font-weight: bold;
+            padding: 18px;
+            width: 100%;
+            cursor: not-allowed;
+            border-radius: 12px;
+            transition: 0.5s;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* ===== شاشة AdBlock ===== */
+        #adblock-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 99999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.97);
+        }
+
+        #adblock-card {
+            background: #0a0a0a;
+            border: 2px solid #ff3c3c;
+            border-top: 6px solid #ff3c3c;
+            border-radius: 20px;
+            padding: 30px 25px;
+            max-width: 420px;
+            width: 92%;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(255,60,60,0.3);
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(60px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        #adblock-icon {
+            font-size: clamp(55px, 16vw, 80px);
+            display: block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%,100% { transform: scale(1);    filter: drop-shadow(0 0 8px #ff3c3c); }
+            50%      { transform: scale(1.12); filter: drop-shadow(0 0 20px #ff3c3c); }
+        }
+
+        #adblock-title {
+            font-family: 'Orbitron', sans-serif;
+            color: #ff3c3c;
+            font-size: clamp(16px, 5vw, 22px);
+            margin: 15px 0 10px;
+            text-shadow: 0 0 12px #ff3c3c;
+            letter-spacing: 2px;
+        }
+
+        #adblock-subtitle {
+            color: #aaa;
+            font-size: clamp(12px, 3.5vw, 15px);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        #adblock-steps {
+            background: #0f0f0f;
+            border: 1px solid #ff3c3c33;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        #adblock-steps p {
+            color: #ccc;
+            font-size: clamp(11px, 3vw, 13px);
+            margin: 0 0 8px;
+            line-height: 1.8;
+        }
+
+        #adblock-steps p:last-child { margin-bottom: 0; }
+
+        #adblock-steps span.step-num {
+            display: inline-block;
+            background: #ff3c3c;
+            color: #000;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 20px; height: 20px;
+            line-height: 20px;
+            text-align: center;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        #adblock-warning {
+            background: #1a0000;
+            border: 1px solid #ff3c3c55;
+            border-radius: 10px;
+            padding: 12px;
+            color: #ff6666;
+            font-size: clamp(11px, 3vw, 13px);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        #adblock-retry-btn {
+            background: linear-gradient(90deg, #ff1a1a, #ff0055);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: clamp(13px, 4vw, 16px);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 20px rgba(255,0,85,0.4);
+            transition: transform 0.2s, opacity 0.2s;
+            width: 100%;
+        }
+
+        #adblock-retry-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #adblock-retry-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+        }
+
+        /* شريط الفحص */
+        #check-bar-wrap {
+            display: none;
+            margin-top: 14px;
+        }
+
+        #check-bar-bg {
+            background: #1a0000;
+            border-radius: 6px;
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 7px;
+        }
+
+        #check-bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #ff1a1a, #ff0055);
+            transition: width 0.15s linear, background 0.4s;
+        }
+
+        #check-label {
+            color: #ff6666;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        #check-result {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            min-height: 18px;
+            white-space: pre-line;
+        }
+
+        #adblock-counter {
+            color: #444;
+            font-size: 11px;
+            margin-top: 12px;
+            letter-spacing: 1px;
+        }
+
+        #adblock-counter span { color: #ff3c3c; font-weight: bold; }
+
+        .sparkle {
+            position: fixed;
+            pointer-events: none;
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 8px white, 0 0 16px #00ff96;
+            animation: sparkleFade 0.7s forwards;
+            z-index: 9999;
+        }
+
+        @keyframes sparkleFade {
+            0%   { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        #aads-top-wrap {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 88888;
+            display: flex;
+            justify-content: center;
+            background: rgba(5,5,5,0.95);
+            border-bottom: 1px solid #00ff9633;
+            padding: 4px 0;
+        }
+
+        #aads-close {
+            position: absolute;
+            top: 50%; right: 10px;
+            transform: translateY(-50%);
+            background: rgba(248,248,249,0.15);
+            border: none;
+            border-radius: 4px;
+            padding: 4px 6px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        #top-spacer { height: 60px; }
+
+        @media (max-width: 340px) {
+            #main-container { padding: 12px; }
+            h2 { letter-spacing: 2px; }
+        }
     </style>
 </head>
 <body>
 
 <div id="aads-top-wrap">
-    <iframe data-aa="2429504" src="//acceptable.a-ads.com/2429504/?size=Adaptive"
-        style="border:0;padding:0;width:90%;max-width:728px;height:60px;overflow:hidden;margin:auto"></iframe>
-    <button id="aads-close" onclick="document.getElementById('aads-top-wrap').style.display='none';document.getElementById('top-spacer').style.height='0';">
-        <svg fill="#aaaaaa" height="12px" width="12px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-            <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337"/>
+    <iframe data-aa="2429504"
+        src="//acceptable.a-ads.com/2429504/?size=Adaptive"
+        style="border:0;padding:0;width:90%;max-width:728px;height:60px;overflow:hidden;margin:auto">
+    </iframe>
+    <button id="aads-close" onclick="
+        document.getElementById('aads-top-wrap').style.display='none';
+        document.getElementById('top-spacer').style.height='0';">
+        <svg fill="#aaaaaa" height="12px" width="12px"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
+            <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337
+                212.669,245.004 0.708,457.678 33.149,490 245,277.443
+                456.851,490 489.292,457.678 277.331,245.004 489.292,32.337"/>
         </svg>
     </button>
 </div>
@@ -65,25 +374,42 @@
 <div id="top-spacer"></div>
 <canvas id="particles-canvas"></canvas>
 
+<!-- ===== شاشة AdBlock ===== -->
 <div id="adblock-screen">
     <div id="adblock-card">
         <span id="adblock-icon">🚫</span>
         <div id="adblock-title">تم اكتشاف مانع إعلانات!</div>
-        <div id="adblock-subtitle">لديك مانع إعلانات مفعّل على متصفحك.<br>يجب تعطيله لاستخدام هذه الخدمة والحصول على المفتاح.</div>
+        <div id="adblock-subtitle">
+            لديك مانع إعلانات مفعّل على متصفحك.<br>
+            يجب تعطيله لاستخدام هذه الخدمة والحصول على المفتاح.
+        </div>
         <div id="adblock-steps">
             <p><span class="step-num">1</span> افتح إضافات المتصفح أو الـ Extensions</p>
             <p><span class="step-num">2</span> ابحث عن مانع الإعلانات (AdBlock / uBlock / etc)</p>
             <p><span class="step-num">3</span> قم بتعطيله أو إيقافه مؤقتاً لهذا الموقع</p>
             <p><span class="step-num">4</span> اضغط "إعادة المحاولة" أدناه</p>
         </div>
-        <div id="adblock-warning">⚠️ الموقع يعتمد على الإعلانات لتوفير الخدمة مجاناً.<br>بدون الإعلانات لا يمكن الوصول إلى المفتاح.</div>
-        <button id="adblock-retry-btn" onclick="window._r();">🔄 إعادة المحاولة</button>
+        <div id="adblock-warning">
+            ⚠️ الموقع يعتمد على الإعلانات لتوفير الخدمة مجاناً.<br>
+            بدون الإعلانات لا يمكن الوصول إلى المفتاح.
+        </div>
+
+        <button id="adblock-retry-btn" onclick="window.retryAdblockCheck();">
+            🔄 إعادة المحاولة
+        </button>
+
         <div id="check-bar-wrap">
-            <div id="check-bar-bg"><div id="check-bar-fill"></div></div>
+            <div id="check-bar-bg">
+                <div id="check-bar-fill"></div>
+            </div>
             <div id="check-label">⏳ جاري فحص الإعلانات...</div>
         </div>
+
         <div id="check-result"></div>
-        <div id="adblock-counter">محاولة رقم: <span id="retry-count">0</span></div>
+
+        <div id="adblock-counter">
+            محاولة رقم: <span id="retry-count">0</span>
+        </div>
     </div>
 </div>
 
@@ -97,36 +423,73 @@
         </div>
     </div>
 
-    <div class="section-box" style="border-right:5px solid #ff3c3c">
-        <div style="font-size:11px;color:#555;margin-bottom:8px">تحديث المفتاح القادم (UTC):</div>
+    <div class="section-box" style="border-right: 5px solid #ff3c3c;">
+        <div style="font-size: 11px; color: #555; margin-bottom: 8px;">
+            تحديث المفتاح القادم (UTC):
+        </div>
         <div id="utc-clock">00:00:00</div>
     </div>
 
     <div class="section-box">
-        <p style="color:#aaa;font-size:13px;margin-bottom:15px">1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:</p>
-        <a id="act-link" href="#" onclick="window._oc();return false;" target="_blank" class="btn-link">🔗 تفعيل رابط النقاط</a>
-        <div style="margin-top:15px;font-weight:700;font-size:clamp(14px,4vw,18px)">النقاط: <span id="click-status">0</span> / 4</div>
+        <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">
+            1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:
+        </p>
+        <a href="https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284"
+            onclick="window.registerClick();"
+            target="_blank"
+            class="btn-link">
+            🔗 تفعيل رابط النقاط
+        </a>
+        <div style="margin-top: 15px; font-weight: bold; font-size: clamp(14px, 4vw, 18px);">
+            النقاط: <span id="click-status">0</span> / 4
+        </div>
     </div>
 
     <div class="section-box" id="advertisement-area">
-        <div id="status-text" style="font-size:11px;color:#555;margin-bottom:10px">🛡️ جاري فحص سلامة الإعلانات...</div>
+        <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">
+            🛡️ جاري فحص سلامة الإعلانات...
+        </div>
+
         <div class="ad-box" id="ad-slot-2">
             <div class="ad-box-label">[ AD SLOT 2 ]</div>
-            <div class="ad-box-inner" id="ad-inner-2" style="min-height:250px">
-                <script>atOptions={'key':'0e4c2a3b5881e334c05cef8a6c825c1a','format':'iframe','height':250,'width':300,'params':{}}</script>
+            <div class="ad-box-inner" id="ad-inner-2" style="min-height: 250px;">
+                <script>
+                    atOptions = {
+                        'key'    : '0e4c2a3b5881e334c05cef8a6c825c1a',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width'  : 300,
+                        'params' : {}
+                    };
+                </script>
                 <script src="https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
             </div>
         </div>
-        <div style="color:#ff3c3c;font-size:clamp(14px,4vw,20px);font-weight:700">⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية</div>
+
+        <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">
+            ⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية
+        </div>
     </div>
 
-    <button disabled id="generate-btn" onclick="window._g();">نظام المفاتيح مغلق</button>
+    <button disabled id="generate-btn" onclick="window.runGenerator();">
+        نظام المفاتيح مغلق
+    </button>
 
-    <div id="key-display" style="display:none;background:#000;border:2px dashed #00ff96;padding:20px;margin-top:20px;color:#fff;word-break:break-all;font-family:monospace;border-radius:10px;font-size:clamp(14px,4vw,18px)"></div>
+    <div id="key-display"
+        style="display:none; background:#000; border:2px dashed #00ff96;
+               padding:20px; margin-top:20px; color:#fff; word-break:break-all;
+               font-family:monospace; border-radius:10px;
+               font-size: clamp(14px, 4vw, 18px);">
+    </div>
 
-    <button id="copy-btn" onclick="window._cp();" style="display:none;background:transparent;border:1px solid #00ff96;color:#00ff96;padding:15px;width:100%;margin-top:10px;cursor:pointer;border-radius:10px;font-weight:700">نسخ المفتاح</button>
+    <button id="copy-btn" onclick="window.copyKey();"
+        style="display:none; background:transparent; border:1px solid #00ff96;
+               color:#00ff96; padding:15px; width:100%; margin-top:10px;
+               cursor:pointer; border-radius:10px; font-weight:bold;">
+        نسخ المفتاح
+    </button>
 
-    <div class="ad-box" id="ad-slot-3" style="margin-top:15px">
+    <div class="ad-box" id="ad-slot-3" style="margin-top: 15px;">
         <div class="ad-box-label">[ AD SLOT 3 ]</div>
         <div class="ad-box-inner" id="ad-inner-3">
             <script src="https://fundingfashioned.com/a8/29/ee/a829eed37a40a18f9d50aef268bf7656.js"></script>
@@ -135,322 +498,332 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// LAYER 0 — Runtime decoder (لا يمكن قراءته بدون تشغيله)
-// ═══════════════════════════════════════════════════════
-var _$={
-  _a:function(s){return atob(s)},
-  _b:function(s,k){var o='',i=0;for(var c=0;c<s.length;c++)o+=String.fromCharCode(s.charCodeAt(c)^k.charCodeAt(i++%k.length));return o},
-  _c:function(arr){return arr.map(function(n){return String.fromCharCode(n)}).join('')},
-  _d:function(b,k){return _$.b(_$.a(b),k)},
-  // مفتاح XOR الداخلي - مولّد ديناميكياً من fingerprint الصفحة
-  _k:(function(){var s=document.title.length^42;return String.fromCharCode(s+33,s+21,s+57,s+13,s+8)})()
-};
+// =======================================================
+// 1. نقاط الخلفية
+// =======================================================
+(function () {
+    var canvas = document.getElementById('particles-canvas');
+    var ctx    = canvas.getContext('2d');
+    var points = [];
 
-// ═══════════════════════════════════════════════════════
-// LAYER 1 — Encoded constants
-// الكلمة السرية مشفرة بـ XOR ثم Base64
-// الأصل: HDLE_PRO_99_STRIKE
-// ═══════════════════════════════════════════════════════
-var _E={
-  // salt مشفر: XOR key = _$._k
-  _s: (function(){
-    // مقسم لأجزاء مشفرة
-    var _p=[
-      [0x39,0x2f,0x2b,0x3e],        // chunk A
-      [0x10,0x33,0x3f,0x30],        // chunk B
-      [0x10,0x0e,0x0e,0x10],        // chunk C
-      [0x32,0x27,0x33,0x24,0x1b,0x36] // chunk D
-    ];
-    var _k=_$._k;
-    var _i=0;
-    return [].concat(_p[0],_p[1],_p[2],_p[3]).map(function(n){
-      var r=n^_k.charCodeAt(_i++%_k.length);
-      return r;
+    function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    for (var i = 0; i < 70; i++) {
+        points.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            r: Math.random() * 1.8 + 0.4,
+            op: Math.random() * Math.PI * 2,
+            sp: Math.random() * 0.02 + 0.008
+        });
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        points.forEach(function (p) {
+            p.op += p.sp;
+            var alpha = (Math.sin(p.op) + 1) / 2;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')';
+            ctx.fill();
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+// =======================================================
+// 2. تأثير الماوس
+// =======================================================
+(function () {
+    if ('ontouchstart' in window) return;
+    var lastTime = 0;
+    document.addEventListener('mousemove', function (e) {
+        var now = Date.now();
+        if (now - lastTime < 90) return;
+        lastTime = now;
+        var dot        = document.createElement('div');
+        dot.className  = 'sparkle';
+        dot.style.left = (e.clientX - 3.5) + 'px';
+        dot.style.top  = (e.clientY - 3.5) + 'px';
+        document.body.appendChild(dot);
+        setTimeout(function () { dot.remove(); }, 700);
     });
-  })(),
+})();
 
-  // رابط التفعيل مشفر بـ Base64 مزدوج
-  _u: (function(){
-    // Base64 x2 للرابط الحقيقي
-    var _raw='aHR0cHM6Ly9mdW5kaW5nZmFzaGlvbmVkLmNvbS9jNzUwOXh6aHl0P2tleT1hMjY3MTQzZDBmYjYzNDM1NDZmMDdlYjRkM2U1ZDI4NA==';
-    try{return atob(_raw)}catch(e){return'#'}
-  })()
-};
+// =======================================================
+// 3. المنطق الرئيسي
+// =======================================================
+(function () {
 
-// ═══════════════════════════════════════════════════════
-// LAYER 2 — Obfuscated core engine
-// ═══════════════════════════════════════════════════════
-(function(_0x1a2b,_0x3c4d){
+    var clickCount   = 0;
+    var timerDone    = false;
+    var timeLeft     = 30;
+    var adblockFound = false;
+    var retryCount   = 0;
+    var isChecking   = false;
 
-  // --- إعداد الرابط بعد فك التشفير ---
-  (function(){
-    var el=document.getElementById('act-link');
-    if(el){el.href=_E._u;el.target='_blank'}
-  })();
+    var part1 = [72, 68, 76, 69];
+    var part2 = [95, 80, 82, 79];
+    var part3 = [95, 57, 57, 95];
+    var part4 = [83, 84, 82, 73, 75, 69];
 
-  // --- متغيرات الحالة (مشوهة الأسماء) ---
-  var _0xAA=0,_0xBB=false,_0xCC=30,_0xDD=false,_0xEE=0,_0xFF=false;
-
-  // --- دالة توليد المفتاح (مبهمة بالكامل) ---
-  var _0x1F2A=function(_0xa,_0xb,_0xc){
-    // فك تشفير الـ salt
-    var _0xs=_E._s.map(function(n){return String.fromCharCode(n)}).join('');
-
-    // بناء المدخل
-    var _0xi=(_0xa+'')['\x74\x6f\x53\x74\x72\x69\x6e\x67']()+
-             (_0xb+'')['\x74\x6f\x53\x74\x72\x69\x6e\x67']()+
-             (_0xc+'')['\x74\x6f\x53\x74\x72\x69\x6e\x67']()+_0xs;
-
-    // LCG seed بـ BigInt
-    var _0xsd=0n;
-    for(var _0xi2=0;_0xi2<_0xi['\x6c\x65\x6e\x67\x74\x68'];_0xi2++){
-      _0xsd+=BigInt(_0xi['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0xi2))*BigInt(_0xi2+1);
+    function buildSalt() {
+        return [].concat(part1, part2, part3, part4)
+                 .map(function (n) { return String.fromCharCode(n); })
+                 .join('');
     }
 
-    // charset مشفر بـ charCode
-    var _0xcs=[65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,
-               97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,
-               118,119,120,121,122,48,49,50,51,52,53,54,55,56,57,33,64,35,36,37,94,38,42]
-              .map(function(n){return String.fromCharCode(n)}).join('');
-
-    var _0xky='';
-    for(var _0xi3=0;_0xi3<16;_0xi3++){
-      _0xsd=(_0xsd*1664525n+1013904223n)%4294967296n;
-      _0xky+=_0xcs[Number(_0xsd%BigInt(_0xcs['\x6c\x65\x6e\x67\x74\x68']))];
-    }
-    return _0xky;
-  };
-
-  // --- تحديث زر التوليد ---
-  var _0x2B3C=function(){
-    var _0xb=document['\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x42\x79\x49\x64']('generate-btn');
-    if(_0xAA>=4&&_0xBB){
-      _0xb.disabled=false;
-      _0xb['\x73\x74\x79\x6c\x65']['\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64']='#00ff96';
-      _0xb['\x73\x74\x79\x6c\x65']['\x63\x6f\x6c\x6f\x72']='#000';
-      _0xb['\x73\x74\x79\x6c\x65'].boxShadow='0 0 25px #00ff96';
-      _0xb['\x73\x74\x79\x6c\x65'].cursor='pointer';
-      _0xb.innerText='\u062a\u0648\u0644\u064a\u062f \u0627\u0644\u0645\u0641\u062a\u0627\u062d \u0627\u0644\u0622\u0646';
-    }else{
-      _0xb.innerText=_0xAA<4?
-        '\u0628\u0627\u0642\u064a '+(4-_0xAA)+' \u0636\u063a\u0637\u0627\u062a':
-        '\u0627\u0646\u062a\u0638\u0631 \u0627\u0646\u062a\u0647\u0627\u0621 \u0627\u0644\u0645\u0634\u0627\u0647\u062f\u0629...';
-    }
-  };
-
-  // --- ساعة UTC ---
-  var _0x3D4E=function(){
-    setInterval(function(){
-      var _0xnow=new Date();
-      var _0xh=23-_0xnow.getUTCHours();
-      var _0xm=59-_0xnow.getUTCMinutes();
-      var _0xs=59-_0xnow.getUTCSeconds();
-      document.getElementById('utc-clock').innerText=
-        (_0xh<10?'0'+_0xh:_0xh)+':'+(_0xm<10?'0'+_0xm:_0xm)+':'+(_0xs<10?'0'+_0xs:_0xs);
-    },1000);
-  };
-
-  // --- فحص الإعلانات الحقيقية ---
-  var _0x4E5F=function(_0xcb){
-    var _0xids=['ad-inner-1','ad-inner-2','ad-inner-3'];
-    var _0xvis=0;
-    _0xids.forEach(function(_0xid){
-      var _0xc=document.getElementById(_0xid);
-      if(!_0xc)return;
-      var _0xfr=_0xc.querySelectorAll('iframe');
-      _0xfr.forEach(function(_0xf){
-        var _0xcs2=getComputedStyle(_0xf);
-        if(_0xf.offsetWidth>0&&_0xf.offsetHeight>0&&
-           _0xcs2.display!=='none'&&_0xcs2.visibility!=='hidden'&&
-           parseFloat(_0xcs2.opacity)>0)_0xvis++;
-      });
-    });
-    _0xcb(_0xvis===0);
-  };
-
-  // --- إظهار/إخفاء شاشة AdBlock ---
-  var _0x5F6A=function(_0xshow){
-    var _0xscr=document.getElementById('adblock-screen');
-    if(_0xshow){
-      _0xDD=true;
-      _0xscr.style.display='flex';
-    }else{
-      _0xDD=false;
-      _0xscr.style.display='none';
-      var _0xst=document.getElementById('status-text');
-      if(_0xst){_0xst.innerText='✅ تم التحقق: الإعلانات نشطة';_0xst.style.color='#00ff96'}
-    }
-  };
-
-  // --- الفحص الأول ---
-  var _0x6A7B=function(){
-    setTimeout(function(){
-      _0x4E5F(function(_0xbl){
-        _0x5F6A(_0xbl);
-      });
-    },7000);
-  };
-
-  // --- مؤقت المشاهدة ---
-  var _0x7B8C=function(){
-    var _0xint=setInterval(function(){
-      if(!_0xDD){
-        _0xCC--;
-        var _0xel=document.getElementById('timer');
-        if(_0xel)_0xel.innerText=_0xCC;
-        if(_0xCC<=0){
-          clearInterval(_0xint);
-          _0xBB=true;
-          var _0xtel=document.getElementById('timer');
-          if(_0xtel)_0xtel.parentElement.innerHTML='✅ تم إكمال المشاهدة!';
-          _0x2B3C();
+    function generateKey(day, month, year) {
+        var salt  = buildSalt();
+        var input = day + '' + month + '' + year + salt;
+        var seed  = 0n;
+        for (var i = 0; i < input.length; i++) {
+            seed += BigInt(input.charCodeAt(i)) * BigInt(i + 1);
         }
-      }
-    },1000);
-  };
-
-  // --- نقاط الخلفية ---
-  (function(){
-    var _0xcv=document.getElementById('particles-canvas');
-    var _0xctx=_0xcv.getContext('2d');
-    var _0xpts=[];
-    function _0xrsz(){_0xcv.width=window.innerWidth;_0xcv.height=window.innerHeight}
-    _0xrsz();window.addEventListener('resize',_0xrsz);
-    for(var _0xi=0;_0xi<70;_0xi++){
-      _0xpts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,
-        r:Math.random()*1.8+0.4,op:Math.random()*Math.PI*2,sp:Math.random()*0.02+0.008});
+        var charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        var key = "";
+        for (var i = 0; i < 16; i++) {
+            seed = (seed * 1664525n + 1013904223n) % 4294967296n;
+            key += charset.charAt(Number(seed % BigInt(charset.length)));
+        }
+        return key;
     }
-    function _0xdrw(){
-      _0xctx.clearRect(0,0,_0xcv.width,_0xcv.height);
-      _0xpts.forEach(function(_0xp){
-        _0xp.op+=_0xp.sp;
-        var _0xal=(Math.sin(_0xp.op)+1)/2;
-        _0xctx.beginPath();_0xctx.arc(_0xp.x,_0xp.y,_0xp.r,0,Math.PI*2);
-        _0xctx.fillStyle='rgba(0,255,150,'+_0xal.toFixed(2)+')';_0xctx.fill();
-      });
-      requestAnimationFrame(_0xdrw);
+
+    function updateButton() {
+        var btn = document.getElementById('generate-btn');
+        if (clickCount >= 4 && timerDone) {
+            btn.disabled         = false;
+            btn.style.background = '#00ff96';
+            btn.style.color      = '#000';
+            btn.style.boxShadow  = '0 0 25px #00ff96';
+            btn.style.cursor     = 'pointer';
+            btn.innerText        = 'توليد المفتاح الآن';
+        } else {
+            btn.innerText = (clickCount < 4)
+                ? 'باقي ' + (4 - clickCount) + ' ضغطات'
+                : 'انتظر انتهاء المشاهدة...';
+        }
     }
-    _0xdrw();
-  })();
 
-  // --- تأثير الماوس ---
-  (function(){
-    if('ontouchstart'in window)return;
-    var _0xlt=0;
-    document.addEventListener('mousemove',function(_0xe){
-      var _0xnw=Date.now();
-      if(_0xnw-_0xlt<90)return;
-      _0xlt=_0xnw;
-      var _0xd=document.createElement('div');
-      _0xd.className='sparkle';
-      _0xd.style.left=(_0xe.clientX-3.5)+'px';
-      _0xd.style.top=(_0xe.clientY-3.5)+'px';
-      document.body.appendChild(_0xd);
-      setTimeout(function(){_0xd.remove()},700);
-    });
-  })();
+    function startClock() {
+        setInterval(function () {
+            var now = new Date();
+            var h = 23 - now.getUTCHours();
+            var m = 59 - now.getUTCMinutes();
+            var s = 59 - now.getUTCSeconds();
+            document.getElementById('utc-clock').innerText =
+                (h<10?'0'+h:h)+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+        }, 1000);
+    }
 
-  // ═══════════════════════════════════════════════════
-  // API العامة — أسماء مبهمة
-  // ═══════════════════════════════════════════════════
+    // =======================================================
+    // ✅ نظام الفحص الحقيقي
+    // يفحص هل الـ iframes الخاصة بإعلاناتك ظاهرة فعلاً في الصفحة
+    // =======================================================
+    function checkAdsVisible(callback) {
 
-  // onclick النقر على الرابط
-  window._oc=function(){
-    _0xAA++;
-    document.getElementById('click-status').innerText=_0xAA;
-    _0x2B3C();
-  };
+        // قائمة الـ containers الخاصة بإعلاناتك
+        var adInners = [
+            document.getElementById('ad-inner-1'),
+            document.getElementById('ad-inner-2'),
+            document.getElementById('ad-inner-3')
+        ];
 
-  // توليد المفتاح
-  window._g=function(){
-    if(_0xAA<4||!_0xBB)return;
-    var _0xnow=new Date();
-    var _0xkey=_0x1F2A(_0xnow.getUTCDate(),_0xnow.getUTCMonth()+1,_0xnow.getUTCFullYear());
-    var _0xdisp=document.getElementById('key-display');
-    _0xdisp.innerText=_0xkey;
-    _0xdisp.style.display='block';
-    document.getElementById('copy-btn').style.display='block';
-  };
+        var visibleCount = 0;
+        var totalChecked = 0;
 
-  // نسخ المفتاح
-  window._cp=function(){
-    navigator.clipboard.writeText(document.getElementById('key-display').innerText);
-    alert('\u062a\u0645 \u0646\u0633\u062e \u0627\u0644\u0645\u0641\u062a\u0627\u062d \u0628\u0646\u062c\u0627\u062d!');
-  };
+        adInners.forEach(function(container) {
+            if (!container) return;
+            totalChecked++;
 
-  // إعادة المحاولة
-  window._r=function(){
-    if(_0xFF)return;
-    _0xFF=true;
-    _0xEE++;
-    document.getElementById('retry-count').innerText=_0xEE;
+            var iframes = container.querySelectorAll('iframe');
 
-    var _0xbtn=document.getElementById('adblock-retry-btn');
-    var _0xbw=document.getElementById('check-bar-wrap');
-    var _0xbf=document.getElementById('check-bar-fill');
-    var _0xcl=document.getElementById('check-label');
-    var _0xrs=document.getElementById('check-result');
+            if (iframes.length === 0) return; // لم يتحمل iframe = محجوب
 
-    _0xbtn.disabled=true;
-    _0xbtn.innerText='⏳ جاري الفحص...';
-    _0xbw.style.display='block';
-    _0xbf.style.width='0%';
-    _0xbf.style.background='linear-gradient(90deg,#ff1a1a,#ff0055)';
-    _0xrs.innerText='';
-    _0xcl.innerText='⏳ جاري فحص الإعلانات...';
-    _0xcl.style.color='#ff6666';
+            iframes.forEach(function(iframe) {
+                var w  = iframe.offsetWidth;
+                var h  = iframe.offsetHeight;
+                var cs = getComputedStyle(iframe);
 
-    var _0xprog=0;
-    var _0xbt=setInterval(function(){
-      _0xprog+=(_85-_0xprog)*0.05;
-      var _85=85;
-      _0xbf.style.width=Math.min(_0xprog,85)+'%';
-    },150);
+                if (
+                    w > 0 &&
+                    h > 0 &&
+                    cs.display     !== 'none' &&
+                    cs.visibility  !== 'hidden' &&
+                    parseFloat(cs.opacity) > 0
+                ) {
+                    visibleCount++;
+                }
+            });
+        });
 
-    setTimeout(function(){
-      _0x4E5F(function(_0xbl){
-        clearInterval(_0xbt);
-        _0xbf.style.width='100%';
-        setTimeout(function(){
-          _0xFF=false;
-          _0xbtn.disabled=false;
-          if(_0xbl){
-            _0xbf.style.background='linear-gradient(90deg,#ff1a1a,#ff0055)';
-            _0xcl.innerText='❌ الفحص انتهى';
-            _0xcl.style.color='#ff4444';
-            _0xrs.innerText='⛔ مانع الإعلانات لا يزال مفعّلاً!\nيرجى تعطيله ثم المحاولة مرة أخرى.';
-            _0xrs.style.color='#ff4444';
-            _0xbtn.innerText='🔄 إعادة المحاولة';
-          }else{
-            _0xbf.style.background='linear-gradient(90deg,#00cc66,#00ff96)';
-            _0xcl.innerText='✅ تم التحقق بنجاح!';
-            _0xcl.style.color='#00ff96';
-            _0xrs.innerText='✅ الإعلانات ظاهرة الآن!\nجاري فتح الموقع...';
-            _0xrs.style.color='#00ff96';
-            _0xbtn.innerText='✅ تم!';
-            setTimeout(function(){
-              _0x5F6A(false);
-              _0xbw.style.display='none';
-              _0xbf.style.width='0%';
-              _0xbf.style.background='linear-gradient(90deg,#ff1a1a,#ff0055)';
-              _0xrs.innerText='';
-              _0xbtn.innerText='🔄 إعادة المحاولة';
-            },1200);
-          }
-        },300);
-      });
-    },4000);
-  };
+        // إذا على الأقل إعلان واحد ظاهر = لا يوجد AdBlock
+        callback(visibleCount === 0);
+    }
 
-  // تشغيل عند التحميل
-  window.onload=function(){
-    _0x3D4E();
-    _0x6A7B();
-    _0x7B8C();
-  };
+    // =======================================================
+    // الفحص الأول عند تحميل الصفحة
+    // ننتظر 7 ثوان لإعطاء الإعلانات وقت كافي للتحميل
+    // =======================================================
+    function checkAdBlockOnLoad() {
+        var statusEl = document.getElementById('status-text');
 
-})(window,document);
+        setTimeout(function () {
+            checkAdsVisible(function(blocked) {
+                if (blocked) {
+                    adblockFound = true;
+                    document.getElementById('adblock-screen').style.display = 'flex';
+                } else {
+                    adblockFound = false;
+                    if (statusEl) {
+                        statusEl.innerText   = '✅ تم التحقق: الإعلانات نشطة';
+                        statusEl.style.color = '#00ff96';
+                    }
+                }
+            });
+        }, 7000); // 7 ثوان للتحميل الأول
+    }
+
+    function startTimer() {
+        var interval = setInterval(function () {
+            if (!adblockFound) {
+                timeLeft--;
+                var el = document.getElementById('timer');
+                if (el) el.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    timerDone = true;
+                    var timerEl = document.getElementById('timer');
+                    if (timerEl) timerEl.parentElement.innerHTML = '✅ تم إكمال المشاهدة!';
+                    updateButton();
+                }
+            }
+        }, 1000);
+    }
+
+    // =======================================================
+    // ✅ إعادة المحاولة - يفحص الإعلانات الحقيقية مجدداً
+    // =======================================================
+    window.retryAdblockCheck = function () {
+        if (isChecking) return;
+        isChecking = true;
+
+        retryCount++;
+        document.getElementById('retry-count').innerText = retryCount;
+
+        var btn      = document.getElementById('adblock-retry-btn');
+        var barWrap  = document.getElementById('check-bar-wrap');
+        var barFill  = document.getElementById('check-bar-fill');
+        var checkLbl = document.getElementById('check-label');
+        var result   = document.getElementById('check-result');
+
+        // تهيئة الواجهة
+        btn.disabled          = true;
+        btn.innerText         = '⏳ جاري الفحص...';
+        barWrap.style.display = 'block';
+        barFill.style.width   = '0%';
+        barFill.style.background = 'linear-gradient(90deg,#ff1a1a,#ff0055)';
+        result.innerText      = '';
+        checkLbl.innerText    = '⏳ جاري فحص الإعلانات...';
+        checkLbl.style.color  = '#ff6666';
+
+        // شريط تقدم وهمي يصل لـ 85% خلال 4 ثوان
+        var progress = 0;
+        var barTimer = setInterval(function () {
+            progress += (85 - progress) * 0.05;
+            barFill.style.width = Math.min(progress, 85) + '%';
+        }, 150);
+
+        // الفحص الحقيقي بعد 4 ثوان (وقت كافي لظهور الإعلانات إذا تم تعطيل المانع)
+        setTimeout(function () {
+
+            checkAdsVisible(function(blocked) {
+                clearInterval(barTimer);
+                barFill.style.width = '100%';
+
+                setTimeout(function () {
+                    isChecking    = false;
+                    btn.disabled  = false;
+
+                    if (blocked) {
+                        // ❌ لا يزال محجوباً
+                        barFill.style.background = 'linear-gradient(90deg,#ff1a1a,#ff0055)';
+                        checkLbl.innerText       = '❌ الفحص انتهى';
+                        checkLbl.style.color     = '#ff4444';
+                        result.innerText         = '⛔ مانع الإعلانات لا يزال مفعّلاً!\nيرجى تعطيله ثم المحاولة مرة أخرى.';
+                        result.style.color       = '#ff4444';
+                        btn.innerText            = '🔄 إعادة المحاولة';
+
+                    } else {
+                        // ✅ تعطيل ناجح
+                        barFill.style.background = 'linear-gradient(90deg,#00cc66,#00ff96)';
+                        checkLbl.innerText       = '✅ تم التحقق بنجاح!';
+                        checkLbl.style.color     = '#00ff96';
+                        result.innerText         = '✅ الإعلانات ظاهرة الآن!\nجاري فتح الموقع...';
+                        result.style.color       = '#00ff96';
+                        btn.innerText            = '✅ تم!';
+
+                        setTimeout(function () {
+                            // إخفاء شاشة AdBlock
+                            adblockFound = false;
+                            document.getElementById('adblock-screen').style.display = 'none';
+
+                            // إعادة تهيئة الشريط
+                            barWrap.style.display    = 'none';
+                            barFill.style.width      = '0%';
+                            barFill.style.background = 'linear-gradient(90deg,#ff1a1a,#ff0055)';
+                            result.innerText         = '';
+                            btn.innerText            = '🔄 إعادة المحاولة';
+
+                            // تحديث حالة النص
+                            var statusEl = document.getElementById('status-text');
+                            if (statusEl) {
+                                statusEl.innerText   = '✅ تم التحقق: الإعلانات نشطة';
+                                statusEl.style.color = '#00ff96';
+                            }
+                        }, 1200);
+                    }
+                }, 300);
+            });
+
+        }, 4000); // 4 ثوان انتظار لإعطاء الإعلانات وقت للظهور
+    };
+
+    window.registerClick = function () {
+        clickCount++;
+        document.getElementById('click-status').innerText = clickCount;
+        updateButton();
+    };
+
+    window.runGenerator = function () {
+        if (clickCount < 4 || !timerDone) return;
+        var now     = new Date();
+        var key     = generateKey(now.getUTCDate(), now.getUTCMonth() + 1, now.getUTCFullYear());
+        var display = document.getElementById('key-display');
+        display.innerText     = key;
+        display.style.display = 'block';
+        document.getElementById('copy-btn').style.display = 'block';
+    };
+
+    window.copyKey = function () {
+        navigator.clipboard.writeText(document.getElementById('key-display').innerText);
+        alert('تم نسخ المفتاح بنجاح!');
+    };
+
+    window.onload = function () {
+        startClock();
+        checkAdBlockOnLoad();
+        startTimer();
+    };
+
+})();
 </script>
 </body>
 </html>

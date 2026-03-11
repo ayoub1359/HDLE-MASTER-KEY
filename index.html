@@ -1,4 +1,52 @@
-<!DOCTYPE html>
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+
+    // =================================================================
+    // 1. قسم الخادم السري: هذا الكود لا يمكن لأي مخلوق رؤيته إلا أنت
+    // =================================================================
+    if (url.pathname === '/api/generate') {
+      
+      // الحصول على تاريخ اليوم (UTC)
+      const now = new Date();
+      const day = now.getUTCDate();
+      const month = now.getUTCMonth() + 1;
+      const year = now.getUTCFullYear();
+
+      // كلمات السر المخفية في السيرفر
+      const part1 = [72, 68, 76, 69];          // HDLE
+      const part2 = [95, 80, 82, 79];          // _PRO
+      const part3 = [95, 57, 57, 95];          // _99_
+      const part4 = [83, 84, 82, 73, 75, 69];  // STRIKE
+
+      const salt = [].concat(part1, part2, part3, part4)
+        .map(n => String.fromCharCode(n)).join('');
+
+      // عملية التوليد
+      const input = day.toString() + month.toString() + year.toString() + salt;
+      let seed = 0n;
+      for (let i = 0; i < input.length; i++) {
+          seed += BigInt(input.charCodeAt(i)) * BigInt(i + 1);
+      }
+
+      const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+      let key = "";
+      for (let i = 0; i < 16; i++) {
+          seed = (seed * 1664525n + 1013904223n) % 4294967296n;
+          key += charset.charAt(Number(seed % BigInt(charset.length)));
+      }
+
+      // إرسال المفتاح فقط إلى المستخدم
+      return new Response(key, { 
+        status: 200, 
+        headers: { "Content-Type": "text/plain" } 
+      });
+    }
+
+    // =================================================================
+    // 2. قسم الواجهة: هذا ما يراه المستخدم (تم حذف كود التوليد منه)
+    // =================================================================
+    const htmlContent = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -6,824 +54,240 @@
     <title>HDLE MASTER ELITE</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-
         * { box-sizing: border-box; }
-
         body {
             background: radial-gradient(circle, #0a0a0a 0%, #000 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #00ff96;
-            overflow-x: hidden;
+            color: #00ff96; overflow-x: hidden;
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
         }
-
-        #particles-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
         #main-container {
-            background: #050505;
-            border-radius: 25px;
-            border: 2px solid #00ff96;
-            box-shadow: 0 0 40px rgba(0,255,150,0.2);
-            width: 95%;
-            max-width: 550px;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-            border-top: 8px solid #00ff96;
-            z-index: 1;
-            margin: 20px auto;
+            background: #050505; border-radius: 25px; border: 2px solid #00ff96;
+            box-shadow: 0 0 40px rgba(0, 255, 150, 0.2); width: 95%; max-width: 550px;
+            padding: 20px; text-align: center; position: relative; border-top: 8px solid #00ff96;
+            z-index: 1; margin: 20px auto;
         }
-
-        h2 {
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 4px;
-            text-shadow: 0 0 15px #00ff96;
-            margin-bottom: 20px;
-            font-size: clamp(14px, 4vw, 22px);
-        }
-
-        .section-box {
-            background: #080808;
-            border: 1px solid #1a1a1a;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .ad-box {
-            background: #080808;
-            border: 1px solid #00ff9622;
-            border-radius: 15px;
-            padding: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .ad-box-label {
-            font-size: 10px;
-            color: #333;
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .ad-box-inner {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            border-radius: 10px;
-            background: #000;
-        }
-
-        .ad-box-inner iframe {
-            max-width: 100% !important;
-            border: none !important;
-        }
-
-        #utc-clock {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(20px, 6vw, 30px);
-            color: #ff3c3c;
-            text-shadow: 0 0 10px #ff3c3c;
-        }
-
-        .btn-link {
-            background: linear-gradient(90deg, #ff0055, #ff00aa);
-            border-radius: 10px;
-            color: white;
-            display: inline-block;
-            padding: 15px;
-            text-decoration: none;
-            width: 90%;
-            font-weight: bold;
-            font-size: clamp(13px, 3.5vw, 16px);
-            box-shadow: 0 5px 15px rgba(255,0,85,0.4);
-            transition: transform 0.2s;
-        }
-
+        h2 { font-family: 'Orbitron', sans-serif; letter-spacing: 4px; text-shadow: 0 0 15px #00ff96; margin-bottom: 20px; font-size: clamp(14px, 4vw, 22px); }
+        .section-box { background: #080808; border: 1px solid #1a1a1a; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+        .ad-box { background: #080808; border: 1px solid #00ff9622; border-radius: 15px; padding: 12px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; overflow: hidden; width: 100%; }
+        .ad-box-label { font-size: 10px; color: #333; margin-bottom: 8px; letter-spacing: 2px; text-transform: uppercase; }
+        .ad-box-inner { width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 10px; background: #000; }
+        .ad-box-inner iframe { max-width: 100% !important; border: none !important; }
+        #utc-clock { font-family: 'Orbitron', sans-serif; font-size: clamp(20px, 6vw, 30px); color: #ff3c3c; text-shadow: 0 0 10px #ff3c3c; }
+        .btn-link { background: linear-gradient(90deg, #ff0055, #ff00aa); border-radius: 10px; color: white; display: inline-block; padding: 15px; text-decoration: none; width: 90%; font-weight: bold; font-size: clamp(13px, 3.5vw, 16px); box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4); transition: transform 0.2s; }
         .btn-link:hover { transform: translateY(-2px); }
-
-        #generate-btn {
-            background: #111;
-            border: 1px solid #222;
-            color: #333;
-            font-size: clamp(14px, 4vw, 20px);
-            font-weight: bold;
-            padding: 18px;
-            width: 100%;
-            cursor: not-allowed;
-            border-radius: 12px;
-            transition: 0.5s;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        /* ===== شاشة AdBlock ===== */
-        #adblock-screen {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 99999;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background: rgba(0,0,0,0.97);
-        }
-
-        #adblock-card {
-            background: #0a0a0a;
-            border: 2px solid #ff3c3c;
-            border-top: 6px solid #ff3c3c;
-            border-radius: 20px;
-            padding: 30px 25px;
-            max-width: 420px;
-            width: 92%;
-            text-align: center;
-            box-shadow: 0 0 60px rgba(255,60,60,0.3);
-            animation: slideUp 0.5s ease forwards;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(60px); opacity: 0; }
-            to   { transform: translateY(0);    opacity: 1; }
-        }
-
-        #adblock-icon {
-            font-size: clamp(55px, 16vw, 80px);
-            display: block;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%,100% { transform: scale(1);    filter: drop-shadow(0 0 8px #ff3c3c); }
-            50%      { transform: scale(1.12); filter: drop-shadow(0 0 20px #ff3c3c); }
-        }
-
-        #adblock-title {
-            font-family: 'Orbitron', sans-serif;
-            color: #ff3c3c;
-            font-size: clamp(16px, 5vw, 22px);
-            margin: 15px 0 10px;
-            text-shadow: 0 0 12px #ff3c3c;
-            letter-spacing: 2px;
-        }
-
-        #adblock-subtitle {
-            color: #aaa;
-            font-size: clamp(12px, 3.5vw, 15px);
-            margin-bottom: 20px;
-            line-height: 1.7;
-        }
-
-        #adblock-steps {
-            background: #0f0f0f;
-            border: 1px solid #ff3c3c33;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        #adblock-steps p {
-            color: #ccc;
-            font-size: clamp(11px, 3vw, 13px);
-            margin: 0 0 8px;
-            line-height: 1.8;
-        }
-
-        #adblock-steps p:last-child { margin-bottom: 0; }
-
-        #adblock-steps span.step-num {
-            display: inline-block;
-            background: #ff3c3c;
-            color: #000;
-            font-weight: bold;
-            border-radius: 50%;
-            width: 20px; height: 20px;
-            line-height: 20px;
-            text-align: center;
-            font-size: 11px;
-            margin-left: 8px;
-        }
-
-        #adblock-warning {
-            background: #1a0000;
-            border: 1px solid #ff3c3c55;
-            border-radius: 10px;
-            padding: 12px;
-            color: #ff6666;
-            font-size: clamp(11px, 3vw, 13px);
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        #adblock-retry-btn {
-            background: linear-gradient(90deg, #ff1a1a, #ff0055);
-            border: none;
-            color: white;
-            padding: 15px 40px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: clamp(13px, 4vw, 16px);
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 1px;
-            box-shadow: 0 5px 20px rgba(255,0,85,0.4);
-            transition: transform 0.2s, opacity 0.2s;
-            width: 100%;
-        }
-
-        #adblock-retry-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        #adblock-retry-btn:not(:disabled):hover {
-            transform: translateY(-2px);
-        }
-
-        /* شريط الفحص */
-        #check-bar-wrap {
-            display: none;
-            margin-top: 14px;
-        }
-
-        #check-bar-bg {
-            background: #1a0000;
-            border-radius: 6px;
-            height: 6px;
-            overflow: hidden;
-            margin-bottom: 7px;
-        }
-
-        #check-bar-fill {
-            height: 100%;
-            width: 0%;
-            border-radius: 6px;
-            background: linear-gradient(90deg, #ff1a1a, #ff0055);
-            transition: width 0.15s linear, background 0.4s;
-        }
-
-        #check-label {
-            color: #ff6666;
-            font-size: 11px;
-            letter-spacing: 1px;
-        }
-
-        #check-result {
-            margin-top: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            min-height: 18px;
-            white-space: pre-line;
-        }
-
-        #adblock-counter {
-            color: #444;
-            font-size: 11px;
-            margin-top: 12px;
-            letter-spacing: 1px;
-        }
-
-        #adblock-counter span { color: #ff3c3c; font-weight: bold; }
-
-        .sparkle {
-            position: fixed;
-            pointer-events: none;
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 0 8px white, 0 0 16px #00ff96;
-            animation: sparkleFade 0.7s forwards;
-            z-index: 9999;
-        }
-
-        @keyframes sparkleFade {
-            0%   { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0); opacity: 0; }
-        }
-
-        #aads-top-wrap {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 88888;
-            display: flex;
-            justify-content: center;
-            background: rgba(5,5,5,0.95);
-            border-bottom: 1px solid #00ff9633;
-            padding: 4px 0;
-        }
-
-        #aads-close {
-            position: absolute;
-            top: 50%; right: 10px;
-            transform: translateY(-50%);
-            background: rgba(248,248,249,0.15);
-            border: none;
-            border-radius: 4px;
-            padding: 4px 6px;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        #top-spacer { height: 60px; }
-
-        @media (max-width: 340px) {
-            #main-container { padding: 12px; }
-            h2 { letter-spacing: 2px; }
-        }
+        #generate-btn { background: #111; border: 1px solid #222; color: #333; font-size: clamp(14px, 4vw, 20px); font-weight: bold; padding: 18px; width: 100%; cursor: not-allowed; border-radius: 12px; transition: 0.5s; font-family: 'Orbitron', sans-serif; }
+        #adblock-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; border-radius: 20px; padding: 20px; }
+        .sparkle { position: fixed; pointer-events: none; width: 7px; height: 7px; border-radius: 50%; background: white; box-shadow: 0 0 8px white, 0 0 16px #00ff96; animation: sparkleFade 0.7s forwards; z-index: 9999; }
+        @keyframes sparkleFade { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
+        @media (max-width: 340px) { #main-container { padding: 12px; } h2 { letter-spacing: 2px; } }
     </style>
 </head>
-<body>
+<body ondragstart="return false;" ondrop="return false;">
 
-<div id="aads-top-wrap">
-    <iframe data-aa="2429504"
-        src="//acceptable.a-ads.com/2429504/?size=Adaptive"
-        style="border:0;padding:0;width:90%;max-width:728px;height:60px;overflow:hidden;margin:auto">
-    </iframe>
-    <button id="aads-close" onclick="
-        document.getElementById('aads-top-wrap').style.display='none';
-        document.getElementById('top-spacer').style.height='0';">
-        <svg fill="#aaaaaa" height="12px" width="12px"
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
-            <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337
-                212.669,245.004 0.708,457.678 33.149,490 245,277.443
-                456.851,490 489.292,457.678 277.331,245.004 489.292,32.337"/>
-        </svg>
-    </button>
-</div>
-
-<div id="top-spacer"></div>
 <canvas id="particles-canvas"></canvas>
 
-<!-- ===== شاشة AdBlock ===== -->
-<div id="adblock-screen">
-    <div id="adblock-card">
-        <span id="adblock-icon">🚫</span>
-        <div id="adblock-title">تم اكتشاف مانع إعلانات!</div>
-        <div id="adblock-subtitle">
-            لديك مانع إعلانات مفعّل على متصفحك.<br>
-            يجب تعطيله لاستخدام هذه الخدمة والحصول على المفتاح.
-        </div>
-        <div id="adblock-steps">
-            <p><span class="step-num">1</span> افتح إضافات المتصفح أو الـ Extensions</p>
-            <p><span class="step-num">2</span> ابحث عن مانع الإعلانات (AdBlock / uBlock / etc)</p>
-            <p><span class="step-num">3</span> قم بتعطيله أو إيقافه مؤقتاً لهذا الموقع</p>
-            <p><span class="step-num">4</span> اضغط "إعادة المحاولة" أدناه</p>
-        </div>
-        <div id="adblock-warning">
-            ⚠️ الموقع يعتمد على الإعلانات لتوفير الخدمة مجاناً.<br>
-            بدون الإعلانات لا يمكن الوصول إلى المفتاح.
-        </div>
-
-        <button id="adblock-retry-btn" onclick="window.retryAdblockCheck();">
-            🔄 إعادة المحاولة
-        </button>
-
-        <div id="check-bar-wrap">
-            <div id="check-bar-bg">
-                <div id="check-bar-fill"></div>
-            </div>
-            <div id="check-label">⏳ جاري فحص الإعلانات...</div>
-        </div>
-
-        <div id="check-result"></div>
-
-        <div id="adblock-counter">
-            محاولة رقم: <span id="retry-count">0</span>
-        </div>
-    </div>
-</div>
-
 <div id="main-container">
+    <div id="adblock-screen">
+        <span style="font-size: clamp(50px, 15vw, 80px); color: #ff3c3c;">⚠️</span>
+        <h2 style="color: #ff3c3c; margin-top: 20px;">مانع الإعلانات نشط</h2>
+        <p style="color: #bbb; padding: 0 20px;">يرجى تعطيله وتحديث الصفحة للحصول على المفتاح.</p>
+        <button onclick="location.reload()" style="background:#ff3c3c; color:white; border:none; padding:15px 35px; border-radius:10px; cursor:pointer; font-weight:bold; margin-top:25px;">إعادة المحاولة</button>
+    </div>
+
     <h2>MASTER SYSTEM ELITE</h2>
 
-    <div class="ad-box" id="ad-slot-1">
+    <div class="ad-box">
         <div class="ad-box-label">[ AD SLOT 1 ]</div>
-        <div class="ad-box-inner" id="ad-inner-1">
+        <div class="ad-box-inner">
             <script src="https://fundingfashioned.com/56/ca/42/56ca42de57c88b107ae373db6cd5ac72.js"></script>
         </div>
     </div>
 
     <div class="section-box" style="border-right: 5px solid #ff3c3c;">
-        <div style="font-size: 11px; color: #555; margin-bottom: 8px;">
-            تحديث المفتاح القادم (UTC):
-        </div>
+        <div style="font-size: 11px; color: #555; margin-bottom: 8px;">تحديث المفتاح القادم (UTC):</div>
         <div id="utc-clock">00:00:00</div>
     </div>
 
     <div class="section-box">
-        <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">
-            1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:
-        </p>
-        <a href="https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284"
-            onclick="window.registerClick();"
-            target="_blank"
-            class="btn-link">
-            🔗 تفعيل رابط النقاط
-        </a>
-        <div style="margin-top: 15px; font-weight: bold; font-size: clamp(14px, 4vw, 18px);">
-            النقاط: <span id="click-status">0</span> / 4
-        </div>
+        <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:</p>
+        <a href="https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284" onclick="window.registerClick();" target="_blank" class="btn-link">🔗 تفعيل رابط النقاط</a>
+        <div style="margin-top: 15px; font-weight: bold; font-size: clamp(14px, 4vw, 18px);">النقاط: <span id="click-status">0</span> / 4</div>
     </div>
 
     <div class="section-box" id="advertisement-area">
-        <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">
-            🛡️ جاري فحص سلامة الإعلانات...
-        </div>
-
-        <div class="ad-box" id="ad-slot-2">
+        <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">🛡️ جاري فحص سلامة الإعلانات...</div>
+        <div class="adsbygoogle" id="ad-detector-trap" style="height:1px; width:1px;"></div>
+        <div class="ad-box" style="margin-bottom: 12px;">
             <div class="ad-box-label">[ AD SLOT 2 ]</div>
-            <div class="ad-box-inner" id="ad-inner-2" style="min-height: 250px;">
+            <div class="ad-box-inner" style="min-height: 250px;">
                 <script>
-                    atOptions = {
-                        'key'    : '0e4c2a3b5881e334c05cef8a6c825c1a',
-                        'format' : 'iframe',
-                        'height' : 250,
-                        'width'  : 300,
-                        'params' : {}
-                    };
+                    atOptions = { 'key' : '0e4c2a3b5881e334c05cef8a6c825c1a', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
                 </script>
                 <script src="https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
             </div>
         </div>
-
-        <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">
-            ⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية
-        </div>
+        <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية</div>
     </div>
 
-    <button disabled id="generate-btn" onclick="window.runGenerator();">
-        نظام المفاتيح مغلق
-    </button>
+    <button disabled id="generate-btn" onclick="window.runGenerator();">نظام المفاتيح مغلق</button>
 
-    <div id="key-display"
-        style="display:none; background:#000; border:2px dashed #00ff96;
-               padding:20px; margin-top:20px; color:#fff; word-break:break-all;
-               font-family:monospace; border-radius:10px;
-               font-size: clamp(14px, 4vw, 18px);">
-    </div>
+    <div id="key-display" style="display:none; background:#000; border:2px dashed #00ff96; padding:20px; margin-top:20px; color:#fff; word-break:break-all; font-family:monospace; border-radius:10px; font-size: clamp(14px, 4vw, 18px);"></div>
+    <button id="copy-btn" onclick="window.copyKey();" style="display:none; background:transparent; border:1px solid #00ff96; color:#00ff96; padding:15px; width:100%; margin-top:10px; cursor:pointer; border-radius:10px; font-weight:bold;">نسخ المفتاح</button>
 
-    <button id="copy-btn" onclick="window.copyKey();"
-        style="display:none; background:transparent; border:1px solid #00ff96;
-               color:#00ff96; padding:15px; width:100%; margin-top:10px;
-               cursor:pointer; border-radius:10px; font-weight:bold;">
-        نسخ المفتاح
-    </button>
-
-    <div class="ad-box" id="ad-slot-3" style="margin-top: 15px;">
+    <div class="ad-box" style="margin-top: 15px;">
         <div class="ad-box-label">[ AD SLOT 3 ]</div>
-        <div class="ad-box-inner" id="ad-inner-3">
+        <div class="ad-box-inner">
             <script src="https://fundingfashioned.com/a8/29/ee/a829eed37a40a18f9d50aef268bf7656.js"></script>
         </div>
     </div>
 </div>
 
 <script>
-// =======================================================
-// 1. نقاط الخلفية
-// =======================================================
+console.log = console.warn = console.error = console.info = console.debug = function() {};
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('selectstart', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) { e.preventDefault(); return false; }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) { e.preventDefault(); return false; }
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73 || e.key === 'J' || e.key === 'j' || e.keyCode === 74 || e.key === 'C' || e.key === 'c' || e.keyCode === 67)) { e.preventDefault(); return false; }
+});
+setInterval(() => {
+    const start = new Date().getTime();
+    debugger;
+    if (new Date().getTime() - start > 100) {
+        document.body.innerHTML = "<div style='color:red; text-align:center; margin-top:40vh; font-size:24px; font-weight:bold;'>تم رصد محاولة تلاعب. الصفحة غير متاحة.</div>";
+        window.location.replace("about:blank");
+    }
+}, 1000);
+
 (function () {
-    var canvas = document.getElementById('particles-canvas');
-    var ctx    = canvas.getContext('2d');
-    var points = [];
-
-    function resize() {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let points = [];
+    let mouse = { x: -9999, y: -9999 };
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    for (let i = 0; i < 70; i++) {
+        points.push({ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, ox: 0, oy: 0, r: Math.random() * 1.8 + 0.4, op: Math.random() * Math.PI * 2, sp: Math.random() * 0.02 + 0.008, vx: 0, vy: 0 });
     }
-    resize();
-    window.addEventListener('resize', resize);
-
-    for (var i = 0; i < 70; i++) {
-        points.push({
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            r: Math.random() * 1.8 + 0.4,
-            op: Math.random() * Math.PI * 2,
-            sp: Math.random() * 0.02 + 0.008
-        });
-    }
-
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        points.forEach(function (p) {
+        points.forEach(p => {
             p.op += p.sp;
-            var alpha = (Math.sin(p.op) + 1) / 2;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')';
-            ctx.fill();
+            let alpha = (Math.sin(p.op) + 1) / 2;
+            let dx = p.x - mouse.x, dy = p.y - mouse.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 100 && dist > 0) {
+                let force = (100 - dist) / 100;
+                p.vx += (dx / dist) * force * 3; p.vy += (dy / dist) * force * 3;
+            }
+            p.x += p.vx; p.y += p.vy; p.vx *= 0.85; p.vy *= 0.85;
+            if (p.ox === 0 && p.oy === 0) { p.ox = p.x; p.oy = p.y; }
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')'; ctx.fill();
         });
         requestAnimationFrame(draw);
     }
     draw();
 })();
 
-// =======================================================
-// 2. تأثير الماوس
-// =======================================================
 (function () {
     if ('ontouchstart' in window) return;
-    var lastTime = 0;
-    document.addEventListener('mousemove', function (e) {
-        var now = Date.now();
-        if (now - lastTime < 90) return;
-        lastTime = now;
-        var dot        = document.createElement('div');
-        dot.className  = 'sparkle';
-        dot.style.left = (e.clientX - 3.5) + 'px';
-        dot.style.top  = (e.clientY - 3.5) + 'px';
-        document.body.appendChild(dot);
-        setTimeout(function () { dot.remove(); }, 700);
+    let lastTime = 0;
+    document.addEventListener('mousemove', e => {
+        let now = Date.now(); if (now - lastTime < 90) return; lastTime = now;
+        let dot = document.createElement('div'); dot.className = 'sparkle';
+        dot.style.left = (e.clientX - 3.5) + 'px'; dot.style.top = (e.clientY - 3.5) + 'px';
+        document.body.appendChild(dot); setTimeout(() => dot.remove(), 700);
     });
 })();
 
-// =======================================================
-// 3. المنطق الرئيسي
-// =======================================================
 (function () {
-
-    var clickCount   = 0;
-    var timerDone    = false;
-    var timeLeft     = 30;
-    var adblockFound = false;
-    var retryCount   = 0;
-    var isChecking   = false;
-
-    var part1 = [72, 68, 76, 69];
-    var part2 = [95, 80, 82, 79];
-    var part3 = [95, 57, 57, 95];
-    var part4 = [83, 84, 82, 73, 75, 69];
-
-    function buildSalt() {
-        return [].concat(part1, part2, part3, part4)
-                 .map(function (n) { return String.fromCharCode(n); })
-                 .join('');
-    }
-
-    function generateKey(day, month, year) {
-        var salt  = buildSalt();
-        var input = day + '' + month + '' + year + salt;
-        var seed  = 0n;
-        for (var i = 0; i < input.length; i++) {
-            seed += BigInt(input.charCodeAt(i)) * BigInt(i + 1);
-        }
-        var charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-        var key = "";
-        for (var i = 0; i < 16; i++) {
-            seed = (seed * 1664525n + 1013904223n) % 4294967296n;
-            key += charset.charAt(Number(seed % BigInt(charset.length)));
-        }
-        return key;
-    }
+    let clickCount = 0; let timerDone = false; let timeLeft = 30; let adblockFound = false;
 
     function updateButton() {
-        var btn = document.getElementById('generate-btn');
+        let btn = document.getElementById('generate-btn');
         if (clickCount >= 4 && timerDone) {
-            btn.disabled         = false;
-            btn.style.background = '#00ff96';
-            btn.style.color      = '#000';
-            btn.style.boxShadow  = '0 0 25px #00ff96';
-            btn.style.cursor     = 'pointer';
-            btn.innerText        = 'توليد المفتاح الآن';
+            btn.disabled = false; btn.style.background = '#00ff96'; btn.style.color = '#000';
+            btn.style.boxShadow = '0 0 25px #00ff96'; btn.style.cursor = 'pointer'; btn.innerText = 'توليد المفتاح الآن';
         } else {
-            btn.innerText = (clickCount < 4)
-                ? 'باقي ' + (4 - clickCount) + ' ضغطات'
-                : 'انتظر انتهاء المشاهدة...';
+            btn.innerText = (clickCount < 4) ? 'باقي ' + (4 - clickCount) + ' ضغطات' : 'انتظر انتهاء المشاهدة...';
         }
     }
 
     function startClock() {
-        setInterval(function () {
-            var now = new Date();
-            var h = 23 - now.getUTCHours();
-            var m = 59 - now.getUTCMinutes();
-            var s = 59 - now.getUTCSeconds();
-            document.getElementById('utc-clock').innerText =
-                (h<10?'0'+h:h)+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+        setInterval(() => {
+            let now = new Date(); let h = 23 - now.getUTCHours(), m = 59 - now.getUTCMinutes(), s = 59 - now.getUTCSeconds();
+            document.getElementById('utc-clock').innerText = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
         }, 1000);
     }
 
-    // =======================================================
-    // ✅ نظام الفحص الحقيقي
-    // يفحص هل الـ iframes الخاصة بإعلاناتك ظاهرة فعلاً في الصفحة
-    // =======================================================
-    function checkAdsVisible(callback) {
-
-        // قائمة الـ containers الخاصة بإعلاناتك
-        var adInners = [
-            document.getElementById('ad-inner-1'),
-            document.getElementById('ad-inner-2'),
-            document.getElementById('ad-inner-3')
-        ];
-
-        var visibleCount = 0;
-        var totalChecked = 0;
-
-        adInners.forEach(function(container) {
-            if (!container) return;
-            totalChecked++;
-
-            var iframes = container.querySelectorAll('iframe');
-
-            if (iframes.length === 0) return; // لم يتحمل iframe = محجوب
-
-            iframes.forEach(function(iframe) {
-                var w  = iframe.offsetWidth;
-                var h  = iframe.offsetHeight;
-                var cs = getComputedStyle(iframe);
-
-                if (
-                    w > 0 &&
-                    h > 0 &&
-                    cs.display     !== 'none' &&
-                    cs.visibility  !== 'hidden' &&
-                    parseFloat(cs.opacity) > 0
-                ) {
-                    visibleCount++;
-                }
-            });
-        });
-
-        // إذا على الأقل إعلان واحد ظاهر = لا يوجد AdBlock
-        callback(visibleCount === 0);
-    }
-
-    // =======================================================
-    // الفحص الأول عند تحميل الصفحة
-    // ننتظر 7 ثوان لإعطاء الإعلانات وقت كافي للتحميل
-    // =======================================================
-    function checkAdBlockOnLoad() {
-        var statusEl = document.getElementById('status-text');
-
-        setTimeout(function () {
-            checkAdsVisible(function(blocked) {
-                if (blocked) {
-                    adblockFound = true;
-                    document.getElementById('adblock-screen').style.display = 'flex';
-                } else {
-                    adblockFound = false;
-                    if (statusEl) {
-                        statusEl.innerText   = '✅ تم التحقق: الإعلانات نشطة';
-                        statusEl.style.color = '#00ff96';
-                    }
-                }
-            });
-        }, 7000); // 7 ثوان للتحميل الأول
+    function checkAdBlock() {
+        setTimeout(() => {
+            let trap = document.getElementById('ad-detector-trap'); let container = document.getElementById('advertisement-area');
+            if (!trap || trap.offsetHeight === 0 || !container.querySelector('iframe')) {
+                adblockFound = true; document.getElementById('adblock-screen').style.display = 'flex';
+            } else {
+                let statusEl = document.getElementById('status-text'); statusEl.innerText = '🛡️ تم التحقق من الإعلانات: نشط'; statusEl.style.color = '#00ff96';
+            }
+        }, 8000);
     }
 
     function startTimer() {
-        var interval = setInterval(function () {
+        let interval = setInterval(() => {
             if (!adblockFound) {
-                timeLeft--;
-                var el = document.getElementById('timer');
-                if (el) el.innerText = timeLeft;
+                timeLeft--; document.getElementById('timer').innerText = timeLeft;
                 if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    timerDone = true;
-                    var timerEl = document.getElementById('timer');
-                    if (timerEl) timerEl.parentElement.innerHTML = '✅ تم إكمال المشاهدة!';
-                    updateButton();
+                    clearInterval(interval); timerDone = true;
+                    document.getElementById('timer').parentElement.innerHTML = '✅ تم إكمال المشاهدة!'; updateButton();
                 }
             }
         }, 1000);
     }
 
-    // =======================================================
-    // ✅ إعادة المحاولة - يفحص الإعلانات الحقيقية مجدداً
-    // =======================================================
-    window.retryAdblockCheck = function () {
-        if (isChecking) return;
-        isChecking = true;
+    window.registerClick = function () { clickCount++; document.getElementById('click-status').innerText = clickCount; updateButton(); };
 
-        retryCount++;
-        document.getElementById('retry-count').innerText = retryCount;
-
-        var btn      = document.getElementById('adblock-retry-btn');
-        var barWrap  = document.getElementById('check-bar-wrap');
-        var barFill  = document.getElementById('check-bar-fill');
-        var checkLbl = document.getElementById('check-label');
-        var result   = document.getElementById('check-result');
-
-        // تهيئة الواجهة
-        btn.disabled          = true;
-        btn.innerText         = '⏳ جاري الفحص...';
-        barWrap.style.display = 'block';
-        barFill.style.width   = '0%';
-        barFill.style.background = 'linear-gradient(90deg,#ff1a1a,#ff0055)';
-        result.innerText      = '';
-        checkLbl.innerText    = '⏳ جاري فحص الإعلانات...';
-        checkLbl.style.color  = '#ff6666';
-
-        // شريط تقدم وهمي يصل لـ 85% خلال 4 ثوان
-        var progress = 0;
-        var barTimer = setInterval(function () {
-            progress += (85 - progress) * 0.05;
-            barFill.style.width = Math.min(progress, 85) + '%';
-        }, 150);
-
-        // الفحص الحقيقي بعد 4 ثوان (وقت كافي لظهور الإعلانات إذا تم تعطيل المانع)
-        setTimeout(function () {
-
-            checkAdsVisible(function(blocked) {
-                clearInterval(barTimer);
-                barFill.style.width = '100%';
-
-                setTimeout(function () {
-                    isChecking    = false;
-                    btn.disabled  = false;
-
-                    if (blocked) {
-                        // ❌ لا يزال محجوباً
-                        barFill.style.background = 'linear-gradient(90deg,#ff1a1a,#ff0055)';
-                        checkLbl.innerText       = '❌ الفحص انتهى';
-                        checkLbl.style.color     = '#ff4444';
-                        result.innerText         = '⛔ مانع الإعلانات لا يزال مفعّلاً!\nيرجى تعطيله ثم المحاولة مرة أخرى.';
-                        result.style.color       = '#ff4444';
-                        btn.innerText            = '🔄 إعادة المحاولة';
-
-                    } else {
-                        // ✅ تعطيل ناجح
-                        barFill.style.background = 'linear-gradient(90deg,#00cc66,#00ff96)';
-                        checkLbl.innerText       = '✅ تم التحقق بنجاح!';
-                        checkLbl.style.color     = '#00ff96';
-                        result.innerText         = '✅ الإعلانات ظاهرة الآن!\nجاري فتح الموقع...';
-                        result.style.color       = '#00ff96';
-                        btn.innerText            = '✅ تم!';
-
-                        setTimeout(function () {
-                            // إخفاء شاشة AdBlock
-                            adblockFound = false;
-                            document.getElementById('adblock-screen').style.display = 'none';
-
-                            // إعادة تهيئة الشريط
-                            barWrap.style.display    = 'none';
-                            barFill.style.width      = '0%';
-                            barFill.style.background = 'linear-gradient(90deg,#ff1a1a,#ff0055)';
-                            result.innerText         = '';
-                            btn.innerText            = '🔄 إعادة المحاولة';
-
-                            // تحديث حالة النص
-                            var statusEl = document.getElementById('status-text');
-                            if (statusEl) {
-                                statusEl.innerText   = '✅ تم التحقق: الإعلانات نشطة';
-                                statusEl.style.color = '#00ff96';
-                            }
-                        }, 1200);
-                    }
-                }, 300);
-            });
-
-        }, 4000); // 4 ثوان انتظار لإعطاء الإعلانات وقت للظهور
-    };
-
-    window.registerClick = function () {
-        clickCount++;
-        document.getElementById('click-status').innerText = clickCount;
-        updateButton();
-    };
-
-    window.runGenerator = function () {
+    // =====================================================================
+    // هنا التغيير السحري! جلب المفتاح من السيرفر بدلاً من صنعه في المتصفح
+    // =====================================================================
+    window.runGenerator = async function () {
         if (clickCount < 4 || !timerDone) return;
-        var now     = new Date();
-        var key     = generateKey(now.getUTCDate(), now.getUTCMonth() + 1, now.getUTCFullYear());
-        var display = document.getElementById('key-display');
-        display.innerText     = key;
-        display.style.display = 'block';
-        document.getElementById('copy-btn').style.display = 'block';
+        
+        let btn = document.getElementById('generate-btn');
+        btn.innerText = "جاري الاتصال بالسيرفر...";
+        
+        try {
+            // نرسل طلب سري للمسار /api/generate
+            let response = await fetch('/api/generate');
+            let key = await response.text();
+            
+            let display = document.getElementById('key-display');
+            display.innerText = key;
+            display.style.display = 'block';
+            document.getElementById('copy-btn').style.display = 'block';
+            btn.innerText = "تم التوليد بنجاح";
+        } catch (e) {
+            alert("حدث خطأ، يرجى تحديث الصفحة.");
+            btn.innerText = "توليد المفتاح الآن";
+        }
     };
 
-    window.copyKey = function () {
-        navigator.clipboard.writeText(document.getElementById('key-display').innerText);
-        alert('تم نسخ المفتاح بنجاح!');
-    };
+    window.copyKey = function () { navigator.clipboard.writeText(document.getElementById('key-display').innerText); alert('تم نسخ المفتاح بنجاح!'); };
 
-    window.onload = function () {
-        startClock();
-        checkAdBlockOnLoad();
-        startTimer();
-    };
-
+    window.onload = function () { startClock(); checkAdBlock(); startTimer(); };
 })();
 </script>
 </body>
-</html>
+</html>`;
+
+    // إرجاع واجهة الموقع للمستخدم
+    return new Response(htmlContent, {
+      headers: { "Content-Type": "text/html;charset=UTF-8" }
+    });
+  }
+};

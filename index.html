@@ -251,13 +251,11 @@
     <!-- ======================================================= -->
     <!--                        العنوان                          -->
     <!-- ======================================================= -->
-    <!-- 💡 لتغيير العنوان: عدّل النص بين الوسمين h2 -->
     <h2>MASTER SYSTEM ELITE</h2>
 
     <!-- ======================================================= -->
-    <!--              إعلان 1 - علوي (fundingfashioned)          -->
+    <!--              إعلان 1 - علوي                             -->
     <!-- ======================================================= -->
-    <!-- 💡 لتغيير الإعلان: استبدل رابط src في وسم script -->
     <div class="ad-box">
         <div class="ad-box-label">[ AD SLOT 1 ]</div>
         <div class="ad-box-inner">
@@ -268,7 +266,6 @@
     <!-- ======================================================= -->
     <!--                      ساعة UTC                           -->
     <!-- ======================================================= -->
-    <!-- 💡 الساعة تعرض الوقت المتبقي حتى منتصف الليل UTC -->
     <div class="section-box" style="border-right: 5px solid #ff3c3c;">
         <div style="font-size: 11px; color: #555; margin-bottom: 8px;">
             تحديث المفتاح القادم (UTC):
@@ -279,8 +276,6 @@
     <!-- ======================================================= -->
     <!--               الخطوة 1 - رابط النقرات                  -->
     <!-- ======================================================= -->
-    <!-- 💡 لتغيير الرابط: عدّل href في وسم a -->
-    <!-- 💡 لتغيير عدد النقرات المطلوبة: عدّل الرقم 4 في JS -->
     <div class="section-box">
         <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">
             1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:
@@ -300,19 +295,10 @@
     <!--           منطقة الإعلان الأوسط والمؤقت                 -->
     <!-- ======================================================= -->
     <div class="section-box" id="advertisement-area">
-
-        <!-- حالة فحص الإعلانات -->
         <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">
             🛡️ جاري فحص سلامة الإعلانات...
         </div>
-
-        <!-- فخ كشف AdBlock - لا تحذف هذا -->
         <div class="adsbygoogle" id="ad-detector-trap" style="height:1px; width:1px;"></div>
-
-        <!-- ======================================================= -->
-        <!--          إعلان 2 - أوسط (fundingfashioned)             -->
-        <!-- ======================================================= -->
-        <!-- 💡 لتغيير الإعلان: عدّل قيمة key و src في وسمي script -->
         <div class="ad-box" style="margin-bottom: 12px;">
             <div class="ad-box-label">[ AD SLOT 2 ]</div>
             <div class="ad-box-inner" style="min-height: 250px;">
@@ -328,21 +314,14 @@
                 <script src="https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
             </div>
         </div>
-
-        <!-- ======================================================= -->
-        <!--                مؤقت المشاهدة                            -->
-        <!-- ======================================================= -->
-        <!-- 💡 لتغيير مدة المؤقت: عدّل قيمة timeLeft في JS -->
         <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">
             ⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية
         </div>
-
     </div>
 
     <!-- ======================================================= -->
     <!--                   زر توليد المفتاح                      -->
     <!-- ======================================================= -->
-    <!-- 💡 نص الزر يتغير تلقائياً حسب حالة المستخدم -->
     <button disabled id="generate-btn" onclick="window.runGenerator();">
         نظام المفاتيح مغلق
     </button>
@@ -368,9 +347,8 @@
     </button>
 
     <!-- ======================================================= -->
-    <!--              إعلان 3 - سفلي (fundingfashioned)          -->
+    <!--              إعلان 3 - سفلي                             -->
     <!-- ======================================================= -->
-    <!-- 💡 لتغيير الإعلان: استبدل رابط src في وسم script -->
     <div class="ad-box" style="margin-top: 15px;">
         <div class="ad-box-label">[ AD SLOT 3 ]</div>
         <div class="ad-box-inner">
@@ -385,7 +363,7 @@
 <!-- ======================================================= -->
 <script>
 /* ======================================================= */
-/*               إضافة الحمايات البرمجية المطلوبة          */
+/*               إضافة الحمايات البرمجية للمتصفح           */
 /* ======================================================= */
 
 /* 1. إخفاء وتعطيل console.log بالكامل لحماية الأكواد */
@@ -397,7 +375,7 @@ document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 /* 3. منع تحديد النصوص بالسحب أو النسخ */
 document.addEventListener('selectstart', function(e) { e.preventDefault(); });
 
-/* 4. منع اختصارات لوحة المفاتيح الخطيرة (F12, Ctrl+U, Ctrl+S, أدوات المطورين) */
+/* 4. منع اختصارات لوحة المفاتيح الخطيرة */
 document.addEventListener('keydown', function(e) {
     if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
     if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) { e.preventDefault(); return false; }
@@ -409,19 +387,28 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-/* 5. تجميد الصفحة وتحويل المستخدم لصفحة بيضاء في حال نجح في فتح أدوات المطورين (DevTools) */
-setInterval(function() {
-    var start = new Date().getTime();
-    debugger;
-    var end = new Date().getTime();
-    if (end - start > 100) { 
-        document.body.innerHTML = "<div style='color:red; text-align:center; margin-top:40vh; font-size:24px; font-weight:bold;'>تم رصد محاولة تلاعب. الصفحة غير متاحة.</div>";
-        window.location.replace("about:blank"); 
-    }
-}, 1000);
+/* 5. كشف DevTools عبر تغيير حجم النافذة بدون debugger */
+(function() {
+    var devtools = false;
+    var threshold = 160;
+
+    setInterval(function() {
+        if (
+            window.outerWidth - window.innerWidth > threshold ||
+            window.outerHeight - window.innerHeight > threshold
+        ) {
+            if (!devtools) {
+                devtools = true;
+                document.body.innerHTML = "<div style='color:#ff3c3c; text-align:center; margin-top:40vh; font-size:24px; font-weight:bold; font-family:sans-serif;'>⚠️ تم رصد محاولة تلاعب</div>";
+            }
+        } else {
+            devtools = false;
+        }
+    }, 500);
+})();
 
 /* ======================================================= */
-/*            1. خلفية النقاط المتحركة مع هروب الفأرة      */
+/*            خلفية النقاط المتحركة مع هروب الفأرة         */
 /* ======================================================= */
 (function () {
     var canvas = document.getElementById('particles-canvas');
@@ -429,44 +416,24 @@ setInterval(function() {
     var points = [];
     var mouse  = { x: -9999, y: -9999 };
 
-    function resize() {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    document.addEventListener('mousemove', function (e) {
-        mouse.x = e.clientX;
-        mouse.y = e.clientY;
-    });
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
 
     for (var i = 0; i < 70; i++) {
         points.push({
-            x   : Math.random() * window.innerWidth,
-            y   : Math.random() * window.innerHeight,
-            ox  : 0,
-            oy  : 0,
-            r   : Math.random() * 1.8 + 0.4,
-            op  : Math.random() * Math.PI * 2,
-            sp  : Math.random() * 0.02 + 0.008,
-            vx  : 0,
-            vy  : 0
+            x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, ox: 0, oy: 0,
+            r: Math.random() * 1.8 + 0.4, op: Math.random() * Math.PI * 2, sp: Math.random() * 0.02 + 0.008, vx: 0, vy: 0
         });
     }
 
-    var FLEE_RADIUS = 100;
-    var FLEE_FORCE  = 3;
-
+    var FLEE_RADIUS = 100, FLEE_FORCE = 3;
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         points.forEach(function (p) {
             p.op += p.sp;
             var alpha = (Math.sin(p.op) + 1) / 2;
-
-            var dx   = p.x - mouse.x;
-            var dy   = p.y - mouse.y;
+            var dx = p.x - mouse.x, dy = p.y - mouse.y;
             var dist = Math.sqrt(dx * dx + dy * dy);
 
             if (dist < FLEE_RADIUS && dist > 0) {
@@ -474,22 +441,11 @@ setInterval(function() {
                 p.vx += (dx / dist) * force * FLEE_FORCE;
                 p.vy += (dy / dist) * force * FLEE_FORCE;
             }
+            p.x += p.vx; p.y += p.vy; p.vx *= 0.85; p.vy *= 0.85;
+            if (p.ox === 0 && p.oy === 0) { p.ox = p.x; p.oy = p.y; }
 
-            p.x += p.vx;
-            p.y += p.vy;
-
-            p.vx *= 0.85;
-            p.vy *= 0.85;
-
-            if (p.ox === 0 && p.oy === 0) {
-                p.ox = p.x;
-                p.oy = p.y;
-            }
-
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')';
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')'; ctx.fill();
         });
         requestAnimationFrame(draw);
     }
@@ -497,17 +453,15 @@ setInterval(function() {
 })();
 
 /* ======================================================= */
-/*           2. نقاط تلمع عند تحريك الماوس                 */
+/*           نقاط تلمع عند تحريك الماوس                    */
 /* ======================================================= */
 (function () {
     if ('ontouchstart' in window) return;
     var lastTime = 0;
-
     document.addEventListener('mousemove', function (e) {
         var now = Date.now();
         if (now - lastTime < 90) return;
         lastTime = now;
-
         var dot = document.createElement('div');
         dot.className  = 'sparkle';
         dot.style.left = (e.clientX - 3.5) + 'px';
@@ -518,7 +472,7 @@ setInterval(function() {
 })();
 
 /* ======================================================= */
-/*                  3. المنطق الرئيسي                      */
+/*                  المنطق الرئيسي                         */
 /* ======================================================= */
 (function () {
     var clickCount   = 0;

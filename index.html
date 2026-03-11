@@ -2,9 +2,9 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // =================================================================
-    // 1. قسم الخادم السري: هذا الكود لا يمكن لأي مخلوق رؤيته إلا أنت
-    // =================================================================
+    // =====================================================================
+    // 1. قسم الخادم السري: (هذا الكود مخفي تماماً ولن يراه أي زائر)
+    // =====================================================================
     if (url.pathname === '/api/generate') {
       
       // الحصول على تاريخ اليوم (UTC)
@@ -13,16 +13,16 @@ export default {
       const month = now.getUTCMonth() + 1;
       const year = now.getUTCFullYear();
 
-      // كلمات السر المخفية في السيرفر
+      // كلمات السر مخفية في سيرفرات Cloudflare فقط
       const part1 = [72, 68, 76, 69];          // HDLE
       const part2 = [95, 80, 82, 79];          // _PRO
       const part3 = [95, 57, 57, 95];          // _99_
       const part4 = [83, 84, 82, 73, 75, 69];  // STRIKE
 
       const salt = [].concat(part1, part2, part3, part4)
-        .map(n => String.fromCharCode(n)).join('');
+        .map(function(n) { return String.fromCharCode(n); }).join('');
 
-      // عملية التوليد
+      // عملية التوليد المعقدة
       const input = day.toString() + month.toString() + year.toString() + salt;
       let seed = 0n;
       for (let i = 0; i < input.length; i++) {
@@ -36,70 +36,274 @@ export default {
           key += charset.charAt(Number(seed % BigInt(charset.length)));
       }
 
-      // إرسال المفتاح فقط إلى المستخدم
+      // إرسال المفتاح النهائي كنص للمستخدم
       return new Response(key, { 
         status: 200, 
-        headers: { "Content-Type": "text/plain" } 
+        headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" } 
       });
     }
 
-    // =================================================================
-    // 2. قسم الواجهة: هذا ما يراه المستخدم (تم حذف كود التوليد منه)
-    // =================================================================
+    // =====================================================================
+    // 2. قسم الواجهة: (تصميم الموقع + الحمايات البرمجية للمتصفح)
+    // =====================================================================
     const htmlContent = `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HDLE MASTER ELITE</title>
+
+<!-- ======================================================= -->
+<!--                     الخطوط                              -->
+<!-- ======================================================= -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        * { box-sizing: border-box; }
+
+/* ======================================================= */
+/*                    إعدادات عامة                          */
+/* ======================================================= */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background: radial-gradient(circle, #0a0a0a 0%, #000 100%);
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #00ff96; overflow-x: hidden;
-            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+            color: #00ff96;
+            overflow-x: hidden;
+            
+            /* منع تحديد النصوص (حماية CSS) */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
-        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+
+/* ======================================================= */
+/*                  خلفية النقاط المتحركة                   */
+/* ======================================================= */
+        #particles-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+/* ======================================================= */
+/*                   الحاوية الرئيسية                       */
+/* ======================================================= */
         #main-container {
-            background: #050505; border-radius: 25px; border: 2px solid #00ff96;
-            box-shadow: 0 0 40px rgba(0, 255, 150, 0.2); width: 95%; max-width: 550px;
-            padding: 20px; text-align: center; position: relative; border-top: 8px solid #00ff96;
-            z-index: 1; margin: 20px auto;
+            background: #050505;
+            border-radius: 25px;
+            border: 2px solid #00ff96;
+            box-shadow: 0 0 40px rgba(0, 255, 150, 0.2);
+            width: 95%;
+            max-width: 550px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            border-top: 8px solid #00ff96;
+            z-index: 1;
+            margin: 20px auto;
         }
-        h2 { font-family: 'Orbitron', sans-serif; letter-spacing: 4px; text-shadow: 0 0 15px #00ff96; margin-bottom: 20px; font-size: clamp(14px, 4vw, 22px); }
-        .section-box { background: #080808; border: 1px solid #1a1a1a; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
-        .ad-box { background: #080808; border: 1px solid #00ff9622; border-radius: 15px; padding: 12px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; overflow: hidden; width: 100%; }
-        .ad-box-label { font-size: 10px; color: #333; margin-bottom: 8px; letter-spacing: 2px; text-transform: uppercase; }
-        .ad-box-inner { width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 10px; background: #000; }
-        .ad-box-inner iframe { max-width: 100% !important; border: none !important; }
-        #utc-clock { font-family: 'Orbitron', sans-serif; font-size: clamp(20px, 6vw, 30px); color: #ff3c3c; text-shadow: 0 0 10px #ff3c3c; }
-        .btn-link { background: linear-gradient(90deg, #ff0055, #ff00aa); border-radius: 10px; color: white; display: inline-block; padding: 15px; text-decoration: none; width: 90%; font-weight: bold; font-size: clamp(13px, 3.5vw, 16px); box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4); transition: transform 0.2s; }
-        .btn-link:hover { transform: translateY(-2px); }
-        #generate-btn { background: #111; border: 1px solid #222; color: #333; font-size: clamp(14px, 4vw, 20px); font-weight: bold; padding: 18px; width: 100%; cursor: not-allowed; border-radius: 12px; transition: 0.5s; font-family: 'Orbitron', sans-serif; }
-        #adblock-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; border-radius: 20px; padding: 20px; }
-        .sparkle { position: fixed; pointer-events: none; width: 7px; height: 7px; border-radius: 50%; background: white; box-shadow: 0 0 8px white, 0 0 16px #00ff96; animation: sparkleFade 0.7s forwards; z-index: 9999; }
-        @keyframes sparkleFade { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
-        @media (max-width: 340px) { #main-container { padding: 12px; } h2 { letter-spacing: 2px; } }
+
+/* ======================================================= */
+/*                       العنوان                            */
+/* ======================================================= */
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px #00ff96;
+            margin-bottom: 20px;
+            font-size: clamp(14px, 4vw, 22px);
+        }
+
+/* ======================================================= */
+/*                       الأقسام                            */
+/* ======================================================= */
+        .section-box {
+            background: #080808;
+            border: 1px solid #1a1a1a;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+/* ======================================================= */
+/*                    صناديق الإعلانات                      */
+/* ======================================================= */
+        .ad-box {
+            background: #080808;
+            border: 1px solid #00ff9622;
+            border-radius: 15px;
+            padding: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .ad-box-label {
+            font-size: 10px;
+            color: #333;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .ad-box-inner {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+        }
+
+        .ad-box-inner iframe {
+            max-width: 100% !important;
+            border: none !important;
+        }
+
+/* ======================================================= */
+/*                      ساعة UTC                            */
+/* ======================================================= */
+        #utc-clock {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(20px, 6vw, 30px);
+            color: #ff3c3c;
+            text-shadow: 0 0 10px #ff3c3c;
+        }
+
+/* ======================================================= */
+/*                     زر الرابط                            */
+/* ======================================================= */
+        .btn-link {
+            background: linear-gradient(90deg, #ff0055, #ff00aa);
+            border-radius: 10px;
+            color: white;
+            display: inline-block;
+            padding: 15px;
+            text-decoration: none;
+            width: 90%;
+            font-weight: bold;
+            font-size: clamp(13px, 3.5vw, 16px);
+            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn-link:hover {
+            transform: translateY(-2px);
+        }
+
+/* ======================================================= */
+/*                    زر التوليد                            */
+/* ======================================================= */
+        #generate-btn {
+            background: #111;
+            border: 1px solid #222;
+            color: #333;
+            font-size: clamp(14px, 4vw, 20px);
+            font-weight: bold;
+            padding: 18px;
+            width: 100%;
+            cursor: not-allowed;
+            border-radius: 12px;
+            transition: 0.5s;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+/* ======================================================= */
+/*                   شاشة AdBlock                           */
+/* ======================================================= */
+        #adblock-screen {
+            display: none;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 10000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+/* ======================================================= */
+/*                  نقاط تلمع عند الماوس                   */
+/* ======================================================= */
+        .sparkle {
+            position: fixed;
+            pointer-events: none;
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 8px white, 0 0 16px #00ff96;
+            animation: sparkleFade 0.7s forwards;
+            z-index: 9999;
+        }
+
+        @keyframes sparkleFade {
+            0%   { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+/* ======================================================= */
+/*                   شاشات صغيرة                            */
+/* ======================================================= */
+        @media (max-width: 340px) {
+            #main-container { padding: 12px; }
+            h2 { letter-spacing: 2px; }
+        }
+
     </style>
 </head>
 <body ondragstart="return false;" ondrop="return false;">
 
+<!-- ======================================================= -->
+<!--                  خلفية النقاط المتحركة                  -->
+<!-- ======================================================= -->
 <canvas id="particles-canvas"></canvas>
 
+<!-- ======================================================= -->
+<!--                   الحاوية الرئيسية                      -->
+<!-- ======================================================= -->
 <div id="main-container">
+
+    <!-- ======================================================= -->
+    <!--                  شاشة حماية AdBlock                     -->
+    <!-- ======================================================= -->
     <div id="adblock-screen">
         <span style="font-size: clamp(50px, 15vw, 80px); color: #ff3c3c;">⚠️</span>
         <h2 style="color: #ff3c3c; margin-top: 20px;">مانع الإعلانات نشط</h2>
-        <p style="color: #bbb; padding: 0 20px;">يرجى تعطيله وتحديث الصفحة للحصول على المفتاح.</p>
-        <button onclick="location.reload()" style="background:#ff3c3c; color:white; border:none; padding:15px 35px; border-radius:10px; cursor:pointer; font-weight:bold; margin-top:25px;">إعادة المحاولة</button>
+        <p style="color: #bbb; padding: 0 20px;">
+            يرجى تعطيله وتحديث الصفحة للحصول على المفتاح.
+        </p>
+        <button onclick="location.reload()"
+            style="background:#ff3c3c; color:white; border:none; padding:15px 35px;
+                   border-radius:10px; cursor:pointer; font-weight:bold; margin-top:25px;">
+            إعادة المحاولة
+        </button>
     </div>
 
+    <!-- ======================================================= -->
+    <!--                        العنوان                          -->
+    <!-- ======================================================= -->
     <h2>MASTER SYSTEM ELITE</h2>
 
+    <!-- ======================================================= -->
+    <!--              إعلان 1 - علوي                             -->
+    <!-- ======================================================= -->
     <div class="ad-box">
         <div class="ad-box-label">[ AD SLOT 1 ]</div>
         <div class="ad-box-inner">
@@ -107,185 +311,314 @@ export default {
         </div>
     </div>
 
+    <!-- ======================================================= -->
+    <!--                      ساعة UTC                           -->
+    <!-- ======================================================= -->
     <div class="section-box" style="border-right: 5px solid #ff3c3c;">
-        <div style="font-size: 11px; color: #555; margin-bottom: 8px;">تحديث المفتاح القادم (UTC):</div>
+        <div style="font-size: 11px; color: #555; margin-bottom: 8px;">
+            تحديث المفتاح القادم (UTC):
+        </div>
         <div id="utc-clock">00:00:00</div>
     </div>
 
+    <!-- ======================================================= -->
+    <!--               الخطوة 1 - رابط النقرات                  -->
+    <!-- ======================================================= -->
     <div class="section-box">
-        <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:</p>
-        <a href="https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284" onclick="window.registerClick();" target="_blank" class="btn-link">🔗 تفعيل رابط النقاط</a>
-        <div style="margin-top: 15px; font-weight: bold; font-size: clamp(14px, 4vw, 18px);">النقاط: <span id="click-status">0</span> / 4</div>
+        <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">
+            1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:
+        </p>
+        <a href="https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284"
+            onclick="window.registerClick();"
+            target="_blank"
+            class="btn-link">
+            🔗 تفعيل رابط النقاط
+        </a>
+        <div style="margin-top: 15px; font-weight: bold; font-size: clamp(14px, 4vw, 18px);">
+            النقاط: <span id="click-status">0</span> / 4
+        </div>
     </div>
 
+    <!-- ======================================================= -->
+    <!--           منطقة الإعلان الأوسط والمؤقت                 -->
+    <!-- ======================================================= -->
     <div class="section-box" id="advertisement-area">
-        <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">🛡️ جاري فحص سلامة الإعلانات...</div>
+        <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">
+            🛡️ جاري فحص سلامة الإعلانات...
+        </div>
         <div class="adsbygoogle" id="ad-detector-trap" style="height:1px; width:1px;"></div>
         <div class="ad-box" style="margin-bottom: 12px;">
             <div class="ad-box-label">[ AD SLOT 2 ]</div>
             <div class="ad-box-inner" style="min-height: 250px;">
                 <script>
-                    atOptions = { 'key' : '0e4c2a3b5881e334c05cef8a6c825c1a', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+                    atOptions = {
+                        'key'    : '0e4c2a3b5881e334c05cef8a6c825c1a',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width'  : 300,
+                        'params' : {}
+                    };
                 </script>
                 <script src="https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
             </div>
         </div>
-        <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية</div>
+        <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">
+            ⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية
+        </div>
     </div>
 
-    <button disabled id="generate-btn" onclick="window.runGenerator();">نظام المفاتيح مغلق</button>
+    <!-- ======================================================= -->
+    <!--                   زر توليد المفتاح                      -->
+    <!-- ======================================================= -->
+    <button disabled id="generate-btn" onclick="window.runGenerator();">
+        نظام المفاتيح مغلق
+    </button>
 
-    <div id="key-display" style="display:none; background:#000; border:2px dashed #00ff96; padding:20px; margin-top:20px; color:#fff; word-break:break-all; font-family:monospace; border-radius:10px; font-size: clamp(14px, 4vw, 18px);"></div>
-    <button id="copy-btn" onclick="window.copyKey();" style="display:none; background:transparent; border:1px solid #00ff96; color:#00ff96; padding:15px; width:100%; margin-top:10px; cursor:pointer; border-radius:10px; font-weight:bold;">نسخ المفتاح</button>
+    <!-- ======================================================= -->
+    <!--                    عرض المفتاح                          -->
+    <!-- ======================================================= -->
+    <div id="key-display"
+        style="display:none; background:#000; border:2px dashed #00ff96;
+               padding:20px; margin-top:20px; color:#fff; word-break:break-all;
+               font-family:monospace; border-radius:10px;
+               font-size: clamp(14px, 4vw, 18px);">
+    </div>
 
+    <!-- ======================================================= -->
+    <!--                    زر نسخ المفتاح                       -->
+    <!-- ======================================================= -->
+    <button id="copy-btn" onclick="window.copyKey();"
+        style="display:none; background:transparent; border:1px solid #00ff96;
+               color:#00ff96; padding:15px; width:100%; margin-top:10px;
+               cursor:pointer; border-radius:10px; font-weight:bold;">
+        نسخ المفتاح
+    </button>
+
+    <!-- ======================================================= -->
+    <!--              إعلان 3 - سفلي                             -->
+    <!-- ======================================================= -->
     <div class="ad-box" style="margin-top: 15px;">
         <div class="ad-box-label">[ AD SLOT 3 ]</div>
         <div class="ad-box-inner">
             <script src="https://fundingfashioned.com/a8/29/ee/a829eed37a40a18f9d50aef268bf7656.js"></script>
         </div>
     </div>
+
 </div>
 
+<!-- ======================================================= -->
+<!--                     JavaScript                          -->
+<!-- ======================================================= -->
 <script>
+/* ======================================================= */
+/*               إضافة الحمايات البرمجية للمتصفح           */
+/* ======================================================= */
+
+/* 1. إخفاء وتعطيل console.log بالكامل لحماية الأكواد */
 console.log = console.warn = console.error = console.info = console.debug = function() {};
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('selectstart', e => e.preventDefault());
-document.addEventListener('keydown', e => {
+
+/* 2. منع كليك يمين (الزر الأيمن للماوس) على الصفحة */
+document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+/* 3. منع تحديد النصوص بالسحب أو النسخ */
+document.addEventListener('selectstart', function(e) { e.preventDefault(); });
+
+/* 4. منع اختصارات لوحة المفاتيح الخطيرة */
+document.addEventListener('keydown', function(e) {
     if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
     if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) { e.preventDefault(); return false; }
     if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) { e.preventDefault(); return false; }
-    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73 || e.key === 'J' || e.key === 'j' || e.keyCode === 74 || e.key === 'C' || e.key === 'c' || e.keyCode === 67)) { e.preventDefault(); return false; }
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73 ||
+                                    e.key === 'J' || e.key === 'j' || e.keyCode === 74 ||
+                                    e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+        e.preventDefault(); return false;
+    }
 });
-setInterval(() => {
-    const start = new Date().getTime();
-    debugger;
-    if (new Date().getTime() - start > 100) {
+
+/* 5. تجميد الصفحة وتحويل المستخدم لصفحة بيضاء إذا فتح أدوات المطورين */
+setInterval(function() {
+    var start = new Date().getTime();
+    debugger; // فخ إيقاف التشغيل
+    var end = new Date().getTime();
+    if (end - start > 100) {
         document.body.innerHTML = "<div style='color:red; text-align:center; margin-top:40vh; font-size:24px; font-weight:bold;'>تم رصد محاولة تلاعب. الصفحة غير متاحة.</div>";
         window.location.replace("about:blank");
     }
 }, 1000);
 
+/* ======================================================= */
+/*            خلفية النقاط المتحركة مع هروب الفأرة         */
+/* ======================================================= */
 (function () {
-    const canvas = document.getElementById('particles-canvas');
-    const ctx = canvas.getContext('2d');
-    let points = [];
-    let mouse = { x: -9999, y: -9999 };
+    var canvas = document.getElementById('particles-canvas');
+    var ctx    = canvas.getContext('2d');
+    var points = [];
+    var mouse  = { x: -9999, y: -9999 };
+
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     resize(); window.addEventListener('resize', resize);
-    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-    for (let i = 0; i < 70; i++) {
-        points.push({ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, ox: 0, oy: 0, r: Math.random() * 1.8 + 0.4, op: Math.random() * Math.PI * 2, sp: Math.random() * 0.02 + 0.008, vx: 0, vy: 0 });
+    document.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    for (var i = 0; i < 70; i++) {
+        points.push({
+            x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, ox: 0, oy: 0,
+            r: Math.random() * 1.8 + 0.4, op: Math.random() * Math.PI * 2, sp: Math.random() * 0.02 + 0.008, vx: 0, vy: 0
+        });
     }
+
+    var FLEE_RADIUS = 100, FLEE_FORCE = 3;
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        points.forEach(p => {
+        points.forEach(function (p) {
             p.op += p.sp;
-            let alpha = (Math.sin(p.op) + 1) / 2;
-            let dx = p.x - mouse.x, dy = p.y - mouse.y;
-            let dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 100 && dist > 0) {
-                let force = (100 - dist) / 100;
-                p.vx += (dx / dist) * force * 3; p.vy += (dy / dist) * force * 3;
+            var alpha = (Math.sin(p.op) + 1) / 2;
+            var dx = p.x - mouse.x, dy = p.y - mouse.y;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < FLEE_RADIUS && dist > 0) {
+                var force = (FLEE_RADIUS - dist) / FLEE_RADIUS;
+                p.vx += (dx / dist) * force * FLEE_FORCE;
+                p.vy += (dy / dist) * force * FLEE_FORCE;
             }
             p.x += p.vx; p.y += p.vy; p.vx *= 0.85; p.vy *= 0.85;
             if (p.ox === 0 && p.oy === 0) { p.ox = p.x; p.oy = p.y; }
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')'; ctx.fill();
+
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')'; ctx.fill();
         });
         requestAnimationFrame(draw);
     }
     draw();
 })();
 
+/* ======================================================= */
+/*           نقاط تلمع عند تحريك الماوس                    */
+/* ======================================================= */
 (function () {
     if ('ontouchstart' in window) return;
-    let lastTime = 0;
-    document.addEventListener('mousemove', e => {
-        let now = Date.now(); if (now - lastTime < 90) return; lastTime = now;
-        let dot = document.createElement('div'); dot.className = 'sparkle';
-        dot.style.left = (e.clientX - 3.5) + 'px'; dot.style.top = (e.clientY - 3.5) + 'px';
-        document.body.appendChild(dot); setTimeout(() => dot.remove(), 700);
+    var lastTime = 0;
+    document.addEventListener('mousemove', function (e) {
+        var now = Date.now();
+        if (now - lastTime < 90) return;
+        lastTime = now;
+        var dot = document.createElement('div');
+        dot.className  = 'sparkle';
+        dot.style.left = (e.clientX - 3.5) + 'px';
+        dot.style.top  = (e.clientY - 3.5) + 'px';
+        document.body.appendChild(dot);
+        setTimeout(function () { dot.remove(); }, 700);
     });
 })();
 
+/* ======================================================= */
+/*                  المنطق الرئيسي                         */
+/* ======================================================= */
 (function () {
-    let clickCount = 0; let timerDone = false; let timeLeft = 30; let adblockFound = false;
+    var clickCount = 0;
+    var timerDone = false;
+    var timeLeft = 30;
+    var adblockFound = false;
 
     function updateButton() {
-        let btn = document.getElementById('generate-btn');
+        var btn = document.getElementById('generate-btn');
         if (clickCount >= 4 && timerDone) {
-            btn.disabled = false; btn.style.background = '#00ff96'; btn.style.color = '#000';
-            btn.style.boxShadow = '0 0 25px #00ff96'; btn.style.cursor = 'pointer'; btn.innerText = 'توليد المفتاح الآن';
+            btn.disabled         = false;
+            btn.style.background = '#00ff96';
+            btn.style.color      = '#000';
+            btn.style.boxShadow  = '0 0 25px #00ff96';
+            btn.style.cursor     = 'pointer';
+            btn.innerText        = 'توليد المفتاح الآن';
         } else {
             btn.innerText = (clickCount < 4) ? 'باقي ' + (4 - clickCount) + ' ضغطات' : 'انتظر انتهاء المشاهدة...';
         }
     }
 
     function startClock() {
-        setInterval(() => {
-            let now = new Date(); let h = 23 - now.getUTCHours(), m = 59 - now.getUTCMinutes(), s = 59 - now.getUTCSeconds();
-            document.getElementById('utc-clock').innerText = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
+        setInterval(function () {
+            var now = new Date();
+            var h = 23 - now.getUTCHours(), m = 59 - now.getUTCMinutes(), s = 59 - now.getUTCSeconds();
+            document.getElementById('utc-clock').innerText = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
         }, 1000);
     }
 
     function checkAdBlock() {
-        setTimeout(() => {
-            let trap = document.getElementById('ad-detector-trap'); let container = document.getElementById('advertisement-area');
+        setTimeout(function () {
+            var trap = document.getElementById('ad-detector-trap');
+            var container = document.getElementById('advertisement-area');
             if (!trap || trap.offsetHeight === 0 || !container.querySelector('iframe')) {
-                adblockFound = true; document.getElementById('adblock-screen').style.display = 'flex';
+                adblockFound = true;
+                document.getElementById('adblock-screen').style.display = 'flex';
             } else {
-                let statusEl = document.getElementById('status-text'); statusEl.innerText = '🛡️ تم التحقق من الإعلانات: نشط'; statusEl.style.color = '#00ff96';
+                var statusEl = document.getElementById('status-text');
+                statusEl.innerText = '🛡️ تم التحقق من الإعلانات: نشط';
+                statusEl.style.color = '#00ff96';
             }
         }, 8000);
     }
 
     function startTimer() {
-        let interval = setInterval(() => {
+        var interval = setInterval(function () {
             if (!adblockFound) {
-                timeLeft--; document.getElementById('timer').innerText = timeLeft;
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
                 if (timeLeft <= 0) {
-                    clearInterval(interval); timerDone = true;
-                    document.getElementById('timer').parentElement.innerHTML = '✅ تم إكمال المشاهدة!'; updateButton();
+                    clearInterval(interval);
+                    timerDone = true;
+                    document.getElementById('timer').parentElement.innerHTML = '✅ تم إكمال المشاهدة!';
+                    updateButton();
                 }
             }
         }, 1000);
     }
 
-    window.registerClick = function () { clickCount++; document.getElementById('click-status').innerText = clickCount; updateButton(); };
+    window.registerClick = function () {
+        clickCount++;
+        document.getElementById('click-status').innerText = clickCount;
+        updateButton();
+    };
 
-    // =====================================================================
-    // هنا التغيير السحري! جلب المفتاح من السيرفر بدلاً من صنعه في المتصفح
-    // =====================================================================
+    /* ================================================================= */
+    /*   التعديل السحري: الاتصال بالسيرفر السري للحصول على المفتاح       */
+    /* ================================================================= */
     window.runGenerator = async function () {
         if (clickCount < 4 || !timerDone) return;
         
-        let btn = document.getElementById('generate-btn');
+        var btn = document.getElementById('generate-btn');
         btn.innerText = "جاري الاتصال بالسيرفر...";
         
         try {
-            // نرسل طلب سري للمسار /api/generate
-            let response = await fetch('/api/generate');
-            let key = await response.text();
-            
-            let display = document.getElementById('key-display');
+            // طلب المفتاح من الرابط الآمن الذي صنعناه في أول الكود
+            var response = await fetch('/api/generate');
+            var key = await response.text();
+
+            var display = document.getElementById('key-display');
             display.innerText = key;
             display.style.display = 'block';
             document.getElementById('copy-btn').style.display = 'block';
             btn.innerText = "تم التوليد بنجاح";
         } catch (e) {
-            alert("حدث خطأ، يرجى تحديث الصفحة.");
+            alert('حدث خطأ أثناء التوليد. الرجاء تحديث الصفحة.');
             btn.innerText = "توليد المفتاح الآن";
         }
     };
 
-    window.copyKey = function () { navigator.clipboard.writeText(document.getElementById('key-display').innerText); alert('تم نسخ المفتاح بنجاح!'); };
+    window.copyKey = function () {
+        navigator.clipboard.writeText(document.getElementById('key-display').innerText);
+        alert('تم نسخ المفتاح بنجاح!');
+    };
 
-    window.onload = function () { startClock(); checkAdBlock(); startTimer(); };
+    window.onload = function () {
+        startClock();
+        checkAdBlock();
+        startTimer();
+    };
+
 })();
 </script>
 </body>
 </html>`;
 
-    // إرجاع واجهة الموقع للمستخدم
+    // عرض واجهة الموقع للمستخدم
     return new Response(htmlContent, {
       headers: { "Content-Type": "text/html;charset=UTF-8" }
     });

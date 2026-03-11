@@ -1,52 +1,4 @@
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-
-    // =====================================================================
-    // 1. قسم الخادم السري: (هذا الكود مخفي تماماً ولن يراه أي زائر)
-    // =====================================================================
-    if (url.pathname === '/api/generate') {
-      
-      // الحصول على تاريخ اليوم (UTC)
-      const now = new Date();
-      const day = now.getUTCDate();
-      const month = now.getUTCMonth() + 1;
-      const year = now.getUTCFullYear();
-
-      // كلمات السر مخفية في سيرفرات Cloudflare فقط
-      const part1 = [72, 68, 76, 69];          // HDLE
-      const part2 = [95, 80, 82, 79];          // _PRO
-      const part3 = [95, 57, 57, 95];          // _99_
-      const part4 = [83, 84, 82, 73, 75, 69];  // STRIKE
-
-      const salt = [].concat(part1, part2, part3, part4)
-        .map(function(n) { return String.fromCharCode(n); }).join('');
-
-      // عملية التوليد المعقدة
-      const input = day.toString() + month.toString() + year.toString() + salt;
-      let seed = 0n;
-      for (let i = 0; i < input.length; i++) {
-          seed += BigInt(input.charCodeAt(i)) * BigInt(i + 1);
-      }
-
-      const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-      let key = "";
-      for (let i = 0; i < 16; i++) {
-          seed = (seed * 1664525n + 1013904223n) % 4294967296n;
-          key += charset.charAt(Number(seed % BigInt(charset.length)));
-      }
-
-      // إرسال المفتاح النهائي كنص للمستخدم
-      return new Response(key, { 
-        status: 200, 
-        headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" } 
-      });
-    }
-
-    // =====================================================================
-    // 2. قسم الواجهة: (تصميم الموقع + الحمايات البرمجية للمتصفح)
-    // =====================================================================
-    const htmlContent = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -77,7 +29,7 @@ export default {
             color: #00ff96;
             overflow-x: hidden;
             
-            /* منع تحديد النصوص (حماية CSS) */
+            /* منع تحديد النصوص (حماية إضافية عبر CSS) */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -299,11 +251,13 @@ export default {
     <!-- ======================================================= -->
     <!--                        العنوان                          -->
     <!-- ======================================================= -->
+    <!-- 💡 لتغيير العنوان: عدّل النص بين الوسمين h2 -->
     <h2>MASTER SYSTEM ELITE</h2>
 
     <!-- ======================================================= -->
-    <!--              إعلان 1 - علوي                             -->
+    <!--              إعلان 1 - علوي (fundingfashioned)          -->
     <!-- ======================================================= -->
+    <!-- 💡 لتغيير الإعلان: استبدل رابط src في وسم script -->
     <div class="ad-box">
         <div class="ad-box-label">[ AD SLOT 1 ]</div>
         <div class="ad-box-inner">
@@ -314,6 +268,7 @@ export default {
     <!-- ======================================================= -->
     <!--                      ساعة UTC                           -->
     <!-- ======================================================= -->
+    <!-- 💡 الساعة تعرض الوقت المتبقي حتى منتصف الليل UTC -->
     <div class="section-box" style="border-right: 5px solid #ff3c3c;">
         <div style="font-size: 11px; color: #555; margin-bottom: 8px;">
             تحديث المفتاح القادم (UTC):
@@ -324,6 +279,8 @@ export default {
     <!-- ======================================================= -->
     <!--               الخطوة 1 - رابط النقرات                  -->
     <!-- ======================================================= -->
+    <!-- 💡 لتغيير الرابط: عدّل href في وسم a -->
+    <!-- 💡 لتغيير عدد النقرات المطلوبة: عدّل الرقم 4 في JS -->
     <div class="section-box">
         <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">
             1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:
@@ -343,10 +300,19 @@ export default {
     <!--           منطقة الإعلان الأوسط والمؤقت                 -->
     <!-- ======================================================= -->
     <div class="section-box" id="advertisement-area">
+
+        <!-- حالة فحص الإعلانات -->
         <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">
             🛡️ جاري فحص سلامة الإعلانات...
         </div>
+
+        <!-- فخ كشف AdBlock - لا تحذف هذا -->
         <div class="adsbygoogle" id="ad-detector-trap" style="height:1px; width:1px;"></div>
+
+        <!-- ======================================================= -->
+        <!--          إعلان 2 - أوسط (fundingfashioned)             -->
+        <!-- ======================================================= -->
+        <!-- 💡 لتغيير الإعلان: عدّل قيمة key و src في وسمي script -->
         <div class="ad-box" style="margin-bottom: 12px;">
             <div class="ad-box-label">[ AD SLOT 2 ]</div>
             <div class="ad-box-inner" style="min-height: 250px;">
@@ -362,14 +328,21 @@ export default {
                 <script src="https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
             </div>
         </div>
+
+        <!-- ======================================================= -->
+        <!--                مؤقت المشاهدة                            -->
+        <!-- ======================================================= -->
+        <!-- 💡 لتغيير مدة المؤقت: عدّل قيمة timeLeft في JS -->
         <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">
             ⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية
         </div>
+
     </div>
 
     <!-- ======================================================= -->
     <!--                   زر توليد المفتاح                      -->
     <!-- ======================================================= -->
+    <!-- 💡 نص الزر يتغير تلقائياً حسب حالة المستخدم -->
     <button disabled id="generate-btn" onclick="window.runGenerator();">
         نظام المفاتيح مغلق
     </button>
@@ -395,8 +368,9 @@ export default {
     </button>
 
     <!-- ======================================================= -->
-    <!--              إعلان 3 - سفلي                             -->
+    <!--              إعلان 3 - سفلي (fundingfashioned)          -->
     <!-- ======================================================= -->
+    <!-- 💡 لتغيير الإعلان: استبدل رابط src في وسم script -->
     <div class="ad-box" style="margin-top: 15px;">
         <div class="ad-box-label">[ AD SLOT 3 ]</div>
         <div class="ad-box-inner">
@@ -411,7 +385,7 @@ export default {
 <!-- ======================================================= -->
 <script>
 /* ======================================================= */
-/*               إضافة الحمايات البرمجية للمتصفح           */
+/*               إضافة الحمايات البرمجية المطلوبة          */
 /* ======================================================= */
 
 /* 1. إخفاء وتعطيل console.log بالكامل لحماية الأكواد */
@@ -423,7 +397,7 @@ document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 /* 3. منع تحديد النصوص بالسحب أو النسخ */
 document.addEventListener('selectstart', function(e) { e.preventDefault(); });
 
-/* 4. منع اختصارات لوحة المفاتيح الخطيرة */
+/* 4. منع اختصارات لوحة المفاتيح الخطيرة (F12, Ctrl+U, Ctrl+S, أدوات المطورين) */
 document.addEventListener('keydown', function(e) {
     if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
     if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) { e.preventDefault(); return false; }
@@ -435,19 +409,19 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-/* 5. تجميد الصفحة وتحويل المستخدم لصفحة بيضاء إذا فتح أدوات المطورين */
+/* 5. تجميد الصفحة وتحويل المستخدم لصفحة بيضاء في حال نجح في فتح أدوات المطورين (DevTools) */
 setInterval(function() {
     var start = new Date().getTime();
-    debugger; // فخ إيقاف التشغيل
+    debugger;
     var end = new Date().getTime();
-    if (end - start > 100) {
+    if (end - start > 100) { 
         document.body.innerHTML = "<div style='color:red; text-align:center; margin-top:40vh; font-size:24px; font-weight:bold;'>تم رصد محاولة تلاعب. الصفحة غير متاحة.</div>";
-        window.location.replace("about:blank");
+        window.location.replace("about:blank"); 
     }
 }, 1000);
 
 /* ======================================================= */
-/*            خلفية النقاط المتحركة مع هروب الفأرة         */
+/*            1. خلفية النقاط المتحركة مع هروب الفأرة      */
 /* ======================================================= */
 (function () {
     var canvas = document.getElementById('particles-canvas');
@@ -455,24 +429,44 @@ setInterval(function() {
     var points = [];
     var mouse  = { x: -9999, y: -9999 };
 
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    resize(); window.addEventListener('resize', resize);
-    document.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+    function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    document.addEventListener('mousemove', function (e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
 
     for (var i = 0; i < 70; i++) {
         points.push({
-            x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, ox: 0, oy: 0,
-            r: Math.random() * 1.8 + 0.4, op: Math.random() * Math.PI * 2, sp: Math.random() * 0.02 + 0.008, vx: 0, vy: 0
+            x   : Math.random() * window.innerWidth,
+            y   : Math.random() * window.innerHeight,
+            ox  : 0,
+            oy  : 0,
+            r   : Math.random() * 1.8 + 0.4,
+            op  : Math.random() * Math.PI * 2,
+            sp  : Math.random() * 0.02 + 0.008,
+            vx  : 0,
+            vy  : 0
         });
     }
 
-    var FLEE_RADIUS = 100, FLEE_FORCE = 3;
+    var FLEE_RADIUS = 100;
+    var FLEE_FORCE  = 3;
+
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         points.forEach(function (p) {
             p.op += p.sp;
             var alpha = (Math.sin(p.op) + 1) / 2;
-            var dx = p.x - mouse.x, dy = p.y - mouse.y;
+
+            var dx   = p.x - mouse.x;
+            var dy   = p.y - mouse.y;
             var dist = Math.sqrt(dx * dx + dy * dy);
 
             if (dist < FLEE_RADIUS && dist > 0) {
@@ -480,11 +474,22 @@ setInterval(function() {
                 p.vx += (dx / dist) * force * FLEE_FORCE;
                 p.vy += (dy / dist) * force * FLEE_FORCE;
             }
-            p.x += p.vx; p.y += p.vy; p.vx *= 0.85; p.vy *= 0.85;
-            if (p.ox === 0 && p.oy === 0) { p.ox = p.x; p.oy = p.y; }
 
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')'; ctx.fill();
+            p.x += p.vx;
+            p.y += p.vy;
+
+            p.vx *= 0.85;
+            p.vy *= 0.85;
+
+            if (p.ox === 0 && p.oy === 0) {
+                p.ox = p.x;
+                p.oy = p.y;
+            }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')';
+            ctx.fill();
         });
         requestAnimationFrame(draw);
     }
@@ -492,15 +497,17 @@ setInterval(function() {
 })();
 
 /* ======================================================= */
-/*           نقاط تلمع عند تحريك الماوس                    */
+/*           2. نقاط تلمع عند تحريك الماوس                 */
 /* ======================================================= */
 (function () {
     if ('ontouchstart' in window) return;
     var lastTime = 0;
+
     document.addEventListener('mousemove', function (e) {
         var now = Date.now();
         if (now - lastTime < 90) return;
         lastTime = now;
+
         var dot = document.createElement('div');
         dot.className  = 'sparkle';
         dot.style.left = (e.clientX - 3.5) + 'px';
@@ -511,13 +518,43 @@ setInterval(function() {
 })();
 
 /* ======================================================= */
-/*                  المنطق الرئيسي                         */
+/*                  3. المنطق الرئيسي                      */
 /* ======================================================= */
 (function () {
-    var clickCount = 0;
-    var timerDone = false;
-    var timeLeft = 30;
+    var clickCount   = 0;
+    var timerDone    = false;
+    var timeLeft     = 30;
     var adblockFound = false;
+
+    var part1 = [72, 68, 76, 69];
+    var part2 = [95, 80, 82, 79];
+    var part3 = [95, 57, 57, 95];
+    var part4 = [83, 84, 82, 73, 75, 69];
+
+    function buildSalt() {
+        return [].concat(part1, part2, part3, part4)
+                 .map(function (n) { return String.fromCharCode(n); })
+                 .join('');
+    }
+
+    function generateKey(day, month, year) {
+        var salt    = buildSalt();
+        var input   = day.toString() + month.toString() + year.toString() + salt;
+        var seed    = 0n;
+
+        for (var i = 0; i < input.length; i++) {
+            seed += BigInt(input.charCodeAt(i)) * BigInt(i + 1);
+        }
+
+        var charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        var key     = "";
+
+        for (var i = 0; i < 16; i++) {
+            seed  = (seed * 1664525n + 1013904223n) % 4294967296n;
+            key  += charset.charAt(Number(seed % BigInt(charset.length)));
+        }
+        return key;
+    }
 
     function updateButton() {
         var btn = document.getElementById('generate-btn');
@@ -529,27 +566,34 @@ setInterval(function() {
             btn.style.cursor     = 'pointer';
             btn.innerText        = 'توليد المفتاح الآن';
         } else {
-            btn.innerText = (clickCount < 4) ? 'باقي ' + (4 - clickCount) + ' ضغطات' : 'انتظر انتهاء المشاهدة...';
+            btn.innerText = (clickCount < 4)
+                ? 'باقي ' + (4 - clickCount) + ' ضغطات'
+                : 'انتظر انتهاء المشاهدة...';
         }
     }
 
     function startClock() {
         setInterval(function () {
             var now = new Date();
-            var h = 23 - now.getUTCHours(), m = 59 - now.getUTCMinutes(), s = 59 - now.getUTCSeconds();
-            document.getElementById('utc-clock').innerText = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+            var h   = 23 - now.getUTCHours();
+            var m   = 59 - now.getUTCMinutes();
+            var s   = 59 - now.getUTCSeconds();
+            document.getElementById('utc-clock').innerText =
+                (h < 10 ? '0' + h : h) + ':' +
+                (m < 10 ? '0' + m : m) + ':' +
+                (s < 10 ? '0' + s : s);
         }, 1000);
     }
 
     function checkAdBlock() {
         setTimeout(function () {
-            var trap = document.getElementById('ad-detector-trap');
+            var trap      = document.getElementById('ad-detector-trap');
             var container = document.getElementById('advertisement-area');
             if (!trap || trap.offsetHeight === 0 || !container.querySelector('iframe')) {
                 adblockFound = true;
                 document.getElementById('adblock-screen').style.display = 'flex';
             } else {
-                var statusEl = document.getElementById('status-text');
+                var statusEl       = document.getElementById('status-text');
                 statusEl.innerText = '🛡️ تم التحقق من الإعلانات: نشط';
                 statusEl.style.color = '#00ff96';
             }
@@ -564,7 +608,8 @@ setInterval(function() {
                 if (timeLeft <= 0) {
                     clearInterval(interval);
                     timerDone = true;
-                    document.getElementById('timer').parentElement.innerHTML = '✅ تم إكمال المشاهدة!';
+                    document.getElementById('timer').parentElement.innerHTML =
+                        '✅ تم إكمال المشاهدة!';
                     updateButton();
                 }
             }
@@ -577,29 +622,15 @@ setInterval(function() {
         updateButton();
     };
 
-    /* ================================================================= */
-    /*   التعديل السحري: الاتصال بالسيرفر السري للحصول على المفتاح       */
-    /* ================================================================= */
-    window.runGenerator = async function () {
+    window.runGenerator = function () {
         if (clickCount < 4 || !timerDone) return;
-        
-        var btn = document.getElementById('generate-btn');
-        btn.innerText = "جاري الاتصال بالسيرفر...";
-        
-        try {
-            // طلب المفتاح من الرابط الآمن الذي صنعناه في أول الكود
-            var response = await fetch('/api/generate');
-            var key = await response.text();
+        var now = new Date();
+        var key = generateKey(now.getUTCDate(), now.getUTCMonth() + 1, now.getUTCFullYear());
 
-            var display = document.getElementById('key-display');
-            display.innerText = key;
-            display.style.display = 'block';
-            document.getElementById('copy-btn').style.display = 'block';
-            btn.innerText = "تم التوليد بنجاح";
-        } catch (e) {
-            alert('حدث خطأ أثناء التوليد. الرجاء تحديث الصفحة.');
-            btn.innerText = "توليد المفتاح الآن";
-        }
+        var display           = document.getElementById('key-display');
+        display.innerText     = key;
+        display.style.display = 'block';
+        document.getElementById('copy-btn').style.display = 'block';
     };
 
     window.copyKey = function () {
@@ -612,15 +643,7 @@ setInterval(function() {
         checkAdBlock();
         startTimer();
     };
-
 })();
 </script>
 </body>
-</html>`;
-
-    // عرض واجهة الموقع للمستخدم
-    return new Response(htmlContent, {
-      headers: { "Content-Type": "text/html;charset=UTF-8" }
-    });
-  }
-};
+</html>

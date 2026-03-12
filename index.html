@@ -4,600 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HDLE MASTER ELITE</title>
-
-<!-- ======================================================= -->
-<!--                     الخطوط                              -->
-<!-- ======================================================= -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-
-/* ======================================================= */
-/*                    إعدادات عامة                          */
-/* ======================================================= */
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            background: radial-gradient(circle, #0a0a0a 0%, #000 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #00ff96;
-            overflow-x: hidden;
-            
-            /* منع تحديد النصوص (حماية إضافية عبر CSS) */
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-/* ======================================================= */
-/*                  خلفية النقاط المتحركة                   */
-/* ======================================================= */
-        #particles-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-/* ======================================================= */
-/*                   الحاوية الرئيسية                       */
-/* ======================================================= */
-        #main-container {
-            background: #050505;
-            border-radius: 25px;
-            border: 2px solid #00ff96;
-            box-shadow: 0 0 40px rgba(0, 255, 150, 0.2);
-            width: 95%;
-            max-width: 550px;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-            border-top: 8px solid #00ff96;
-            z-index: 1;
-            margin: 20px auto;
-        }
-
-/* ======================================================= */
-/*                       العنوان                            */
-/* ======================================================= */
-        h2 {
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 4px;
-            text-shadow: 0 0 15px #00ff96;
-            margin-bottom: 20px;
-            font-size: clamp(14px, 4vw, 22px);
-        }
-
-/* ======================================================= */
-/*                       الأقسام                            */
-/* ======================================================= */
-        .section-box {
-            background: #080808;
-            border: 1px solid #1a1a1a;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-/* ======================================================= */
-/*                    صناديق الإعلانات                      */
-/* ======================================================= */
-        .ad-box {
-            background: #080808;
-            border: 1px solid #00ff9622;
-            border-radius: 15px;
-            padding: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        .ad-box-label {
-            font-size: 10px;
-            color: #333;
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .ad-box-inner {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            border-radius: 10px;
-            background: #000;
-        }
-
-        .ad-box-inner iframe {
-            max-width: 100% !important;
-            border: none !important;
-        }
-
-/* ======================================================= */
-/*                      ساعة UTC                            */
-/* ======================================================= */
-        #utc-clock {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(20px, 6vw, 30px);
-            color: #ff3c3c;
-            text-shadow: 0 0 10px #ff3c3c;
-        }
-
-/* ======================================================= */
-/*                     زر الرابط                            */
-/* ======================================================= */
-        .btn-link {
-            background: linear-gradient(90deg, #ff0055, #ff00aa);
-            border-radius: 10px;
-            color: white;
-            display: inline-block;
-            padding: 15px;
-            text-decoration: none;
-            width: 90%;
-            font-weight: bold;
-            font-size: clamp(13px, 3.5vw, 16px);
-            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4);
-            transition: transform 0.2s;
-        }
-
-        .btn-link:hover {
-            transform: translateY(-2px);
-        }
-
-/* ======================================================= */
-/*                    زر التوليد                            */
-/* ======================================================= */
-        #generate-btn {
-            background: #111;
-            border: 1px solid #222;
-            color: #333;
-            font-size: clamp(14px, 4vw, 20px);
-            font-weight: bold;
-            padding: 18px;
-            width: 100%;
-            cursor: not-allowed;
-            border-radius: 12px;
-            transition: 0.5s;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-/* ======================================================= */
-/*                   شاشة AdBlock                           */
-/* ======================================================= */
-        #adblock-screen {
-            display: none;
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.98);
-            z-index: 10000;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 20px;
-            padding: 20px;
-        }
-
-/* ======================================================= */
-/*                  نقاط تلمع عند الماوس                   */
-/* ======================================================= */
-        .sparkle {
-            position: fixed;
-            pointer-events: none;
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 0 8px white, 0 0 16px #00ff96;
-            animation: sparkleFade 0.7s forwards;
-            z-index: 9999;
-        }
-
-        @keyframes sparkleFade {
-            0%   { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0); opacity: 0; }
-        }
-
-/* ======================================================= */
-/*                   شاشات صغيرة                            */
-/* ======================================================= */
-        @media (max-width: 340px) {
-            #main-container { padding: 12px; }
-            h2 { letter-spacing: 2px; }
-        }
-
+        body { background: #000; color: #00ff96; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        #loader { text-align: center; }
+        .spinner { border: 4px solid rgba(0,255,150,0.1); border-left-color: #00ff96; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body ondragstart="return false;" ondrop="return false;">
-
-<!-- ======================================================= -->
-<!--                  خلفية النقاط المتحركة                  -->
-<!-- ======================================================= -->
-<canvas id="particles-canvas"></canvas>
-
-<!-- ======================================================= -->
-<!--                   الحاوية الرئيسية                      -->
-<!-- ======================================================= -->
-<div id="main-container">
-
-    <!-- ======================================================= -->
-    <!--                  شاشة حماية AdBlock                     -->
-    <!-- ======================================================= -->
-    <div id="adblock-screen">
-        <span style="font-size: clamp(50px, 15vw, 80px); color: #ff3c3c;">⚠️</span>
-        <h2 style="color: #ff3c3c; margin-top: 20px;">مانع الإعلانات نشط</h2>
-        <p style="color: #bbb; padding: 0 20px;">
-            يرجى تعطيله وتحديث الصفحة للحصول على المفتاح.
-        </p>
-        <button onclick="location.reload()"
-            style="background:#ff3c3c; color:white; border:none; padding:15px 35px;
-                   border-radius:10px; cursor:pointer; font-weight:bold; margin-top:25px;">
-            إعادة المحاولة
-        </button>
-    </div>
-
-    <!-- ======================================================= -->
-    <!--                        العنوان                          -->
-    <!-- ======================================================= -->
-    <h2>MASTER SYSTEM ELITE</h2>
-
-    <!-- ======================================================= -->
-    <!--              إعلان 1 - علوي                             -->
-    <!-- ======================================================= -->
-    <div class="ad-box">
-        <div class="ad-box-label">[ AD SLOT 1 ]</div>
-        <div class="ad-box-inner">
-            <script src="https://fundingfashioned.com/56/ca/42/56ca42de57c88b107ae373db6cd5ac72.js"></script>
+<body>
+    <div id="app-root">
+        <div id="loader">
+            <div class="spinner"></div>
+            <p>جاري تشغيل النظام المحمي...</p>
         </div>
     </div>
 
-    <!-- ======================================================= -->
-    <!--                      ساعة UTC                           -->
-    <!-- ======================================================= -->
-    <div class="section-box" style="border-right: 5px solid #ff3c3c;">
-        <div style="font-size: 11px; color: #555; margin-bottom: 8px;">
-            تحديث المفتاح القادم (UTC):
-        </div>
-        <div id="utc-clock">00:00:00</div>
-    </div>
+    <!-- كود التشفير والحماية -->
+    <script>
+        /* 
+           PROTECTED CODE - HDLE MASTER ELITE 
+           Unauthorized copying is prohibited.
+        */
+        (function(_0x1a2b,_0x3c4d){var _0x5e6f=function(_0x7a8b){while(--_0x7a8b){_0x1a2b['push'](_0x1a2b['shift']());}};_0x5e6f(++_0x3c4d);}(['\x72\x65\x6e\x64\x65\x72','\x48\x44\x4c\x45\x20\x4d\x41\x53\x54\x45\x52\x20\x45\x4c\x49\x54\x45','\x69\x6e\x6e\x65\x72\x48\x54\x4d\x4c','\x61\x70\x70\x2d\x72\x6f\x6f\x74'],0x123));
+        
+        // فك تشفير المحرك الرئيسي
+        var _0x4441=["\x3c\x73\x74\x79\x6c\x65\x3e\x2a\x7b\x62\x6f\x78\x2d\x73\x69\x7a\x69\x6e\x67\x3a\x62\x6f\x72\x64\x65\x72\x2d\x62\x6f\x78\x7d\x62\x6f\x64\x79\x7b\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x72\x61\x64\x69\x61\x6c\x2d\x67\x72\x61\x64\x69\x65\x6e\x74\x28\x63\x69\x72\x63\x6c\x65\x2c\x23\x30\x61\x30\x61\x30\x61\x20\x30\x25\x2c\x23\x30\x30\x30\x20\x31\x30\x30\x25\x29\x3b\x63\x6f\x6c\x6f\x72\x3a\x23\x30\x30\x66\x66\x39\x36\x3b\x6f\x76\x65\x72\x66\x6c\x6f\x77\x2d\x78\x3a\x68\x69\x64\x64\x65\x6e\x7d\x2e\x73\x65\x63\x74\x69\x6f\x6e\x2d\x62\x6f\x78\x7b\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x23\x30\x38\x30\x38\x30\x38\x3b\x62\x6f\x72\x64\x65\x72\x3a\x31\x70\x78\x20\x73\x6f\x6c\x69\x64\x20\x23\x31\x61\x31\x61\x31\x61\x3b\x62\x6f\x72\x64\x65\x72\x2d\x72\x61\x64\x69\x75\x73\x3a\x31\x35\x70\x78\x3b\x70\x61\x64\x64\x69\x6e\x67\x3a\x31\x35\x70\x78\x3b\x6d\x61\x72\x67\x69\x6e\x2d\x62\x6f\x74\x74\x6f\x6d\x3a\x31\x35\x70\x78\x7d\x23\x6d\x61\x69\x6e\x2d\x63\x6f\x6e\x74\x61\x69\x6e\x65\x72\x7b\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x23\x30\x35\x30\x35\x30\x35\x3b\x62\x6f\x72\x64\x65\x72\x2d\x72\x61\x64\x69\x75\x73\x3a\x32\x35\x70\x78\x3b\x62\x6f\x72\x64\x65\x72\x3a\x32\x70\x78\x20\x73\x6f\x6c\x69\x64\x20\x23\x30\x30\x66\x66\x39\x36\x3b\x62\x6f\x72\x64\x65\x72\x2d\x74\x6f\x70\x3a\x38\x70\x78\x20\x73\x6f\x6c\x69\x64\x20\x23\x30\x30\x66\x66\x39\x36\x3b\x77\x69\x64\x74\x68\x3a\x39\x35\x25\x3b\x6d\x61\x78\x2d\x77\x69\x64\x74\x68\x3a\x35\x35\x30\x70\x78\x3b\x70\x61\x64\x64\x69\x6e\x67\x3a\x32\x30\x70\x78\x3b\x74\x65\x78\x74\x2d\x61\x6c\x69\x67\x6e\x3a\x63\x65\x6e\x74\x65\x72\x3b\x7a\x2d\x69\x6e\x64\x65\x78\x3a\x31\x3b\x6d\x61\x72\x67\x69\x6e\x3a\x32\x30\x70\x78\x20\x61\x75\x74\x6f\x7d\x23\x70\x61\x72\x74\x69\x63\x6c\x65\x73\x2d\x63\x61\x6e\x76\x61\x73\x7b\x70\x6f\x73\x69\x74\x69\x6f\x6e\x3a\x66\x69\x78\x65\x64\x3b\x74\x6f\x70\x3a\x30\x3b\x6c\x65\x66\x74\x3a\x30\x3b\x77\x69\x64\x74\x68\x3a\x31\x30\x30\x25\x3b\x68\x65\x69\x67\x68\x74\x3a\x31\x30\x30\x25\x3b\x70\x6f\x69\x6e\x74\x65\x72\x2d\x65\x76\x65\x6e\x74\x73\x3a\x6e\x6f\x6e\x65\x3b\x7a\x2d\x69\x6e\x64\x65\x78\x3a\x30\x7d\x3c\x2f\x73\x74\x79\x6c\x65\x3e"];
+        
+        // هذه الوظيفة تقوم ببناء التطبيق وفك التشفير وقت التشغيل فقط
+        (function() {
+            var _decodedHtml = atob("PCEtLSBDT05URU5UIC0tPjxjYW52YXMgaWQ9InBhcnRpY2xlcy1jYW52YXMiPjwvY2FudmFzPjxkaXYgaWQ9Im1haW4tY29udGFpbmVyIj48ZGl2IGlkPSJhZGJsb2NrLXNjcmVlbiIgc3R5bGU9ImRpc3BsYXk6bm9uZTsgcG9zaXRpb246YWJzb2x1dGU7IHRvcDowOyBsZWZ0OjA7IHdpZHRoOjEwMCU7IGhlaWdodDoxMDAlOyBiYWNrZ3JvdW5kOnJnYmEoMCwwLDAsMC45OCk7IHotaW5kZXg6MTAwMDA7IGZsZXgtZGlyZWN0aW9uOmNvbHVtjsanVzdGlmeS1jb250ZW50OmNlbnRlcjsgYWxpZ24taXRlbXM6Y2VudGVyOyBib3JkZXItcmFkaXVzOjIwcHg7IHBhZGRpbmc6MjBweDsiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6NTBweDsgY29sb3I6I2ZmM2MzYzsiPuKaoCA8L3NwYW4+PGgyIHN0eWxlPSJjb2xvcjojZmYzYzNjOyBtYXJnaW4tdG9wOjIwcHg7Ij7Zhdin2YbYuSDYp9mE2K3YudmE2KfYqiDZhti02LcgPC9oMj48YnV0dG9uIG9uY2xpY2s9ImxvY2F0aW9uLnJlbG9hZCgpIiBzdHlsZT0iYmFja2dyb3VuZDojZmYzYzNjOyBjb2xvcjp3aGl0ZTsgYm9yZGVyOm5vbmU7IHBhZGRpbmc6MTVweCAzNXB4OyBib3JkZXItcmFkaXVzOjEwcHg7IGN1cnNvcjpwb2ludGVyOyI+2KXYudin2K/ZhyDYp9mE2YXYrdin2YjZhNmHPC9idXR0b24+PC9kaXY+PGgyPk1BU1RFUiBTWVNURU0gRUxJVEU8L2gyPjxkaXYgY2xhc3M9ImFkLWJveCI+PGRpdiBjbGFzcz0iYWQtYm94LWxhYmVsIj5bIEFEIFNMT1QgMSBdPC9kaXY+PGRpdiBjbGFzcz0iYWQtYm94LWlubmVyIj48c2NyaXB0IHNyYz0iaHR0cHM6Ly9mdW5kaW5nZmFzaGlvbmVkLmNvbS81Ni9jYS80Mi81NmNhNDJkZTU3Yzg4YjEwN2FlMzczZGI2Y2Q1YWM3Mi5qcyI+PC9zY3JpcHQ+PC9kaXY+PC9kaXY+PGRpdiBjbGFzcz0ic2VjdGlvbi1ib3giIHN0eWxlPSJib3JkZXItcmlnaHQ6NXB4IHNvbGlkICNmZjNjM2M7Ij48ZGl2IHN0eWxlPSJmb250LXNpemU6MTFweDsgY29sb3I6IzU1NTsgbWFyZ2luLWJvdHRvbTo4cHg7Ij7YqtmP2K3Yr9mK2K0g2KfZhNmF2YZaqtin2K0g2KfZhNmC2KfYr9mFICgpOjxkaXYgaWQ9InV0Yy1jbG9jayIgc3R5bGU9ImZvbnQtc2l6ZTozMHB4OyBjb2xvcjojZmYzYzNjOyI+MDA6MDA6MDA8L2Rpdi48L2Rpdj48L2Rpdj48ZGl2IGNsYXNzPSJzZWN0aW9uLWJveCI+PHA+MS4g2YLYpSDYqNin2YTYtti3INi52YTZiSDYp9mE2LHYp9io2LcgNCDZhdix2KfYqiA6PC9wPjxhIGhyZWY9Imh0dHBzOi8vZnVuZGluZ2Zhc2hpb25lZC5jb20vYzc1MDl4emh5dD9rZXk9YTI2NzE0M2QwZmI2MzQzNTQ2ZjA3ZWI0ZDNlNWQyODQiIG9uY2xpY2s9InJlZ2lzdGVyQ2xpY2soKSIgdGFyZ2V0PSJfYmxhbmsiIGNsYXNzPSJidG4tbGluayIgc3R5bGU9ImRpc3BsYXk6YmxvY2s7IHBhZGRpbmc6MTVweDsgYmFja2dyb3VuZDpsaW5lYXItZ3JhZGllbnQoOTBkZWcsI2ZmMDA1NSwjZmYwMGFhKTsgY29sb3I6I2ZmZjsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IGJvcmRlci1yYWRpdXM6MTBweDsgbWFyZ2luOjEwcHggMDsiPiDwn5K3INiq2YHYudmK2YQg2LHYp9io2Lcg2KfZhNmG2YLYp9i3IDwvYT48ZGl2Ptin2YTZhti32KfYtzogPHNwYW4gaWQ9ImNsaWNrLXN0YXR1cyI+MDwvc3Bhbj4gLyA0PC9kaXY+PC9kaXY+PGRpdiBjbGFzcz0ic2VjdGlvbi1ib3giIGlkPSJhZHZlcnRpc2VtZW50LWFyZWEiPjxkaXYgaWQ9InN0YXR1cy10ZXh0IiBzdHlsZT0iZm9udC1zaXplOjExcHg7IGNvbG9yOiM1NTU7Ij7wn5ShieldiDYrNin2LHZiiDZgdir2Lcg2LPZhNin2YXYqSDYp9mE2KXYudmE2KfYp9iqLi4uPC9kaXY+PGRpdiBpZD0idGltZXItY29udCIgc3R5bGU9ImNvbG9yOiNmZjNjM2M7IGZvbnQtc2l6ZToyMHB4OyBtYXJnaW4tdG9wOjEwcHg7Ij7ij7sg2YXYqtmI2Y3ZiiDZhNmE2YXYtmH2K/ZhyA8c3BhbiBpZD0idGltZXIiPjMwPC9zcGFuPiDZ2p9mG2YrYpTwvZGl2PjwvZGl2PjxidXR0b24gZGlzYWJsZWQgaWQ9ImdlbmVyYXRlLWJ0biIgc3R5bGU9IndpZHRoOjEwMCU7IHBhZGRpbmc6MTVweDsgYmFja2dyb3VuZDojMjIyOyBjb2xvcjpncmV5OyBib3JkZXI6bm9uZTsgYm9yZGVyLXJhZGl1czoxMHB4OyBjdXJzb3I6bm90LWFsbG93ZWQ7IGZvbnQtd2VpZ2h0OmJvbGQ7IiBvbmNsaWNrPSJydW5HZW5lcmF0b3IoKSI+2YbYuNin2Y0g2KfZhNmF2YHYp9iq2YrYrSDZYXbiNmE2YI8L2J1dHRvbj48ZGl2IGlkPSJrZXktZGlzcGxheSIgc3R5bGU9ImRpc3BsYXk6bm9uZTsgbWFyZ2luLXRvcDoyMHB4OyBwYWRkaW5nOjIwcHg7IGJvcmRlcjoycHggZGFzaGVkICMwMGZmOTY7IHdvcmQtYnJlYWs6YnJlYWstYWxsOyI+PC9kaXY+PC9kaXY+");
+            
+            document.getElementById('app-root').innerHTML = _0x4441[0] + _decodedHtml;
+            
+            // --- محرك العمليات المشفر ---
+            var _c=0, _tD=false, _tL=30;
+            var _p1=[72,68,76,69], _p2=[95,80,82,79], _p3=[95,57,57,95], _p4=[83,84,82,73,75,69];
+            
+            window.registerClick = function(){
+                _c++; document.getElementById('click-status').innerText = _c; _uB();
+            };
 
-    <!-- ======================================================= -->
-    <!--               الخطوة 1 - رابط النقرات                  -->
-    <!-- ======================================================= -->
-    <div class="section-box">
-        <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">
-            1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:
-        </p>
-        <a href="https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284"
-            onclick="window.registerClick();"
-            target="_blank"
-            class="btn-link">
-            🔗 تفعيل رابط النقاط
-        </a>
-        <div style="margin-top: 15px; font-weight: bold; font-size: clamp(14px, 4vw, 18px);">
-            النقاط: <span id="click-status">0</span> / 4
-        </div>
-    </div>
-
-    <!-- ======================================================= -->
-    <!--           منطقة الإعلان الأوسط والمؤقت                 -->
-    <!-- ======================================================= -->
-    <div class="section-box" id="advertisement-area">
-        <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">
-            🛡️ جاري فحص سلامة الإعلانات...
-        </div>
-        <div class="adsbygoogle" id="ad-detector-trap" style="height:1px; width:1px;"></div>
-        <div class="ad-box" style="margin-bottom: 12px;">
-            <div class="ad-box-label">[ AD SLOT 2 ]</div>
-            <div class="ad-box-inner" style="min-height: 250px;">
-                <script>
-                    atOptions = {
-                        'key'    : '0e4c2a3b5881e334c05cef8a6c825c1a',
-                        'format' : 'iframe',
-                        'height' : 250,
-                        'width'  : 300,
-                        'params' : {}
-                    };
-                </script>
-                <script src="https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
-            </div>
-        </div>
-        <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">
-            ⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية
-        </div>
-    </div>
-
-    <!-- ======================================================= -->
-    <!--                   زر توليد المفتاح                      -->
-    <!-- ======================================================= -->
-    <button disabled id="generate-btn" onclick="window.runGenerator();">
-        نظام المفاتيح مغلق
-    </button>
-
-    <!-- ======================================================= -->
-    <!--                    عرض المفتاح                          -->
-    <!-- ======================================================= -->
-    <div id="key-display"
-        style="display:none; background:#000; border:2px dashed #00ff96;
-               padding:20px; margin-top:20px; color:#fff; word-break:break-all;
-               font-family:monospace; border-radius:10px;
-               font-size: clamp(14px, 4vw, 18px);">
-    </div>
-
-    <!-- ======================================================= -->
-    <!--                    زر نسخ المفتاح                       -->
-    <!-- ======================================================= -->
-    <button id="copy-btn" onclick="window.copyKey();"
-        style="display:none; background:transparent; border:1px solid #00ff96;
-               color:#00ff96; padding:15px; width:100%; margin-top:10px;
-               cursor:pointer; border-radius:10px; font-weight:bold;">
-        نسخ المفتاح
-    </button>
-
-    <!-- ======================================================= -->
-    <!--              إعلان 3 - سفلي                             -->
-    <!-- ======================================================= -->
-    <div class="ad-box" style="margin-top: 15px;">
-        <div class="ad-box-label">[ AD SLOT 3 ]</div>
-        <div class="ad-box-inner">
-            <script src="https://fundingfashioned.com/a8/29/ee/a829eed37a40a18f9d50aef268bf7656.js"></script>
-        </div>
-    </div>
-
-</div>
-
-<!-- ======================================================= -->
-<!--                     JavaScript                          -->
-<!-- ======================================================= -->
-<script>
-/* ======================================================= */
-/*               إضافة الحمايات البرمجية للمتصفح           */
-/* ======================================================= */
-
-/* 1. إخفاء وتعطيل console.log بالكامل لحماية الأكواد */
-console.log = console.warn = console.error = console.info = console.debug = function() {};
-
-/* 2. منع كليك يمين (الزر الأيمن للماوس) على الصفحة */
-document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-
-/* 3. منع تحديد النصوص بالسحب أو النسخ */
-document.addEventListener('selectstart', function(e) { e.preventDefault(); });
-
-/* 4. منع اختصارات لوحة المفاتيح الخطيرة */
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
-    if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) { e.preventDefault(); return false; }
-    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) { e.preventDefault(); return false; }
-    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73 ||
-                                    e.key === 'J' || e.key === 'j' || e.keyCode === 74 ||
-                                    e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
-        e.preventDefault(); return false;
-    }
-});
-
-/* 5. كشف DevTools عبر تغيير حجم النافذة بدون debugger */
-(function() {
-    var devtools = false;
-    var threshold = 160;
-
-    setInterval(function() {
-        if (
-            window.outerWidth - window.innerWidth > threshold ||
-            window.outerHeight - window.innerHeight > threshold
-        ) {
-            if (!devtools) {
-                devtools = true;
-                document.body.innerHTML = "<div style='color:#ff3c3c; text-align:center; margin-top:40vh; font-size:24px; font-weight:bold; font-family:sans-serif;'>⚠️ تم رصد محاولة تلاعب</div>";
-            }
-        } else {
-            devtools = false;
-        }
-    }, 500);
-})();
-
-/* ======================================================= */
-/*            خلفية النقاط المتحركة مع هروب الفأرة         */
-/* ======================================================= */
-(function () {
-    var canvas = document.getElementById('particles-canvas');
-    var ctx    = canvas.getContext('2d');
-    var points = [];
-    var mouse  = { x: -9999, y: -9999 };
-
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    resize(); window.addEventListener('resize', resize);
-    document.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
-
-    for (var i = 0; i < 70; i++) {
-        points.push({
-            x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, ox: 0, oy: 0,
-            r: Math.random() * 1.8 + 0.4, op: Math.random() * Math.PI * 2, sp: Math.random() * 0.02 + 0.008, vx: 0, vy: 0
-        });
-    }
-
-    var FLEE_RADIUS = 100, FLEE_FORCE = 3;
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        points.forEach(function (p) {
-            p.op += p.sp;
-            var alpha = (Math.sin(p.op) + 1) / 2;
-            var dx = p.x - mouse.x, dy = p.y - mouse.y;
-            var dist = Math.sqrt(dx * dx + dy * dy);
-
-            if (dist < FLEE_RADIUS && dist > 0) {
-                var force = (FLEE_RADIUS - dist) / FLEE_RADIUS;
-                p.vx += (dx / dist) * force * FLEE_FORCE;
-                p.vy += (dy / dist) * force * FLEE_FORCE;
-            }
-            p.x += p.vx; p.y += p.vy; p.vx *= 0.85; p.vy *= 0.85;
-            if (p.ox === 0 && p.oy === 0) { p.ox = p.x; p.oy = p.y; }
-
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')'; ctx.fill();
-        });
-        requestAnimationFrame(draw);
-    }
-    draw();
-})();
-
-/* ======================================================= */
-/*           نقاط تلمع عند تحريك الماوس                    */
-/* ======================================================= */
-(function () {
-    if ('ontouchstart' in window) return;
-    var lastTime = 0;
-    document.addEventListener('mousemove', function (e) {
-        var now = Date.now();
-        if (now - lastTime < 90) return;
-        lastTime = now;
-        var dot = document.createElement('div');
-        dot.className  = 'sparkle';
-        dot.style.left = (e.clientX - 3.5) + 'px';
-        dot.style.top  = (e.clientY - 3.5) + 'px';
-        document.body.appendChild(dot);
-        setTimeout(function () { dot.remove(); }, 700);
-    });
-})();
-
-/* ======================================================= */
-/*                  المنطق الرئيسي                         */
-/* ======================================================= */
-(function () {
-    var clickCount   = 0;
-    var timerDone    = false;
-    var timeLeft     = 30;
-    var adblockFound = false;
-
-    var part1 = [72, 68, 76, 69];
-    var part2 = [95, 80, 82, 79];
-    var part3 = [95, 57, 57, 95];
-    var part4 = [83, 84, 82, 73, 75, 69];
-
-    function buildSalt() {
-        return [].concat(part1, part2, part3, part4)
-                 .map(function (n) { return String.fromCharCode(n); })
-                 .join('');
-    }
-
-    function generateKey(day, month, year) {
-        var salt    = buildSalt();
-        var input   = day.toString() + month.toString() + year.toString() + salt;
-        var seed    = 0n;
-
-        for (var i = 0; i < input.length; i++) {
-            seed += BigInt(input.charCodeAt(i)) * BigInt(i + 1);
-        }
-
-        var charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-        var key     = "";
-
-        for (var i = 0; i < 16; i++) {
-            seed  = (seed * 1664525n + 1013904223n) % 4294967296n;
-            key  += charset.charAt(Number(seed % BigInt(charset.length)));
-        }
-        return key;
-    }
-
-    function updateButton() {
-        var btn = document.getElementById('generate-btn');
-        if (clickCount >= 4 && timerDone) {
-            btn.disabled         = false;
-            btn.style.background = '#00ff96';
-            btn.style.color      = '#000';
-            btn.style.boxShadow  = '0 0 25px #00ff96';
-            btn.style.cursor     = 'pointer';
-            btn.innerText        = 'توليد المفتاح الآن';
-        } else {
-            btn.innerText = (clickCount < 4)
-                ? 'باقي ' + (4 - clickCount) + ' ضغطات'
-                : 'انتظر انتهاء المشاهدة...';
-        }
-    }
-
-    function startClock() {
-        setInterval(function () {
-            var now = new Date();
-            var h   = 23 - now.getUTCHours();
-            var m   = 59 - now.getUTCMinutes();
-            var s   = 59 - now.getUTCSeconds();
-            document.getElementById('utc-clock').innerText =
-                (h < 10 ? '0' + h : h) + ':' +
-                (m < 10 ? '0' + m : m) + ':' +
-                (s < 10 ? '0' + s : s);
-        }, 1000);
-    }
-
-    function checkAdBlock() {
-        setTimeout(function () {
-            var trap      = document.getElementById('ad-detector-trap');
-            var container = document.getElementById('advertisement-area');
-            if (!trap || trap.offsetHeight === 0 || !container.querySelector('iframe')) {
-                adblockFound = true;
-                document.getElementById('adblock-screen').style.display = 'flex';
-            } else {
-                var statusEl       = document.getElementById('status-text');
-                statusEl.innerText = '🛡️ تم التحقق من الإعلانات: نشط';
-                statusEl.style.color = '#00ff96';
-            }
-        }, 8000);
-    }
-
-    function startTimer() {
-        var interval = setInterval(function () {
-            if (!adblockFound) {
-                timeLeft--;
-                document.getElementById('timer').innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    timerDone = true;
-                    document.getElementById('timer').parentElement.innerHTML =
-                        '✅ تم إكمال المشاهدة!';
-                    updateButton();
+            function _uB(){
+                var b=document.getElementById('generate-btn');
+                if(_c>=4 && _tD){
+                    b.disabled=false; b.style.background='#00ff96'; b.style.color='#000'; b.innerText='توليد المفتاح الآن'; b.style.cursor='pointer';
+                } else {
+                    b.innerText=(_c<4)?'باقي ' + (4-_c) + ' ضغطات':'انتظر المؤقت...';
                 }
             }
-        }, 1000);
-    }
 
-    window.registerClick = function () {
-        clickCount++;
-        document.getElementById('click-status').innerText = clickCount;
-        updateButton();
-    };
+            setInterval(function(){
+                var n=new Date();
+                var h=23-n.getUTCHours(), m=59-n.getUTCMinutes(), s=59-n.getUTCSeconds();
+                var el=document.getElementById('utc-clock');
+                if(el) el.innerText=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+            },1000);
 
-    window.runGenerator = function () {
-        if (clickCount < 4 || !timerDone) return;
-        var now = new Date();
-        var key = generateKey(now.getUTCDate(), now.getUTCMonth() + 1, now.getUTCFullYear());
+            var _ti=setInterval(function(){
+                _tL--; 
+                var te=document.getElementById('timer');
+                if(te) te.innerText=_tL;
+                if(_tL<=0){ clearInterval(_ti); _tD=true; if(document.getElementById('timer-cont')) document.getElementById('timer-cont').innerHTML="✅ تم!"; _uB();}
+            },1000);
 
-        var display           = document.getElementById('key-display');
-        display.innerText     = key;
-        display.style.display = 'block';
-        document.getElementById('copy-btn').style.display = 'block';
-    };
+            window.runGenerator = function(){
+                var n=new Date(), d=n.getUTCDate(), mo=n.getUTCMonth()+1, y=n.getUTCFullYear();
+                var s=[].concat(_p1,_p2,_p3,_p4).map(x=>String.fromCharCode(x)).join('');
+                var i=d.toString()+mo.toString()+y.toString()+s, sd=0n;
+                for(var j=0;j<i.length;j++) sd+=BigInt(i.charCodeAt(j))*(BigInt(j)+1n);
+                var ch="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*", k="";
+                for(var j=0;j<16;j++){ sd=(sd*1664525n+1013904223n)%4294967296n; k+=ch.charAt(Number(sd%BigInt(ch.length))); }
+                var kd=document.getElementById('key-display');
+                kd.innerText=k; kd.style.display='block';
+            };
 
-    window.copyKey = function () {
-        navigator.clipboard.writeText(document.getElementById('key-display').innerText);
-        alert('تم نسخ المفتاح بنجاح!');
-    };
-
-    window.onload = function () {
-        startClock();
-        checkAdBlock();
-        startTimer();
-    };
-})();
-</script>
+            // تشغيل تأثير النقاط
+            (function(){var c=document.getElementById('particles-canvas');if(!c)return;var x=c.getContext('2d'),p=[];c.width=window.innerWidth;c.height=window.innerHeight;for(var i=0;i<50;i++)p.push({x:Math.random()*c.width,y:Math.random()*c.height,v:Math.random()*0.5+0.2});function d(){x.clearRect(0,0,c.width,c.height);x.fillStyle='#00ff96';p.forEach(i=>{i.y-=i.v;if(i.y<0)i.y=c.height;x.beginPath();x.arc(i.x,i.y,1,0,6.28);x.fill();});requestAnimationFrame(d);}d();})();
+        })();
+    </script>
 </body>
 </html>

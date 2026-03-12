@@ -4,84 +4,332 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HDLE MASTER ELITE</title>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        body { background: #000; color: #00ff96; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
-        #loader { text-align: center; }
-        .spinner { border: 4px solid rgba(0,255,150,0.1); border-left-color: #00ff96; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        * { box-sizing: border-box; }
+        body { background: radial-gradient(circle, #0a0a0a 0%, #000 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #00ff96; overflow-x: hidden; }
+        #particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        #main-container { background: #050505; border-radius: 25px; border: 2px solid #00ff96; box-shadow: 0 0 40px rgba(0, 255, 150, 0.2); width: 95%; max-width: 550px; padding: 20px; text-align: center; position: relative; border-top: 8px solid #00ff96; z-index: 1; margin: 20px auto; }
+        h2 { font-family: 'Orbitron', sans-serif; letter-spacing: 4px; text-shadow: 0 0 15px #00ff96; margin-bottom: 20px; font-size: clamp(14px, 4vw, 22px); }
+        .section-box { background: #080808; border: 1px solid #1a1a1a; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+        .ad-box { background: #080808; border: 1px solid #00ff9622; border-radius: 15px; padding: 12px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; overflow: hidden; width: 100%; }
+        .ad-box-label { font-size: 10px; color: #333; margin-bottom: 8px; letter-spacing: 2px; text-transform: uppercase; }
+        .ad-box-inner { width: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 10px; background: #000; }
+        .ad-box-inner iframe { max-width: 100% !important; border: none !important; }
+        #utc-clock { font-family: 'Orbitron', sans-serif; font-size: clamp(20px, 6vw, 30px); color: #ff3c3c; text-shadow: 0 0 10px #ff3c3c; }
+        .btn-link { background: linear-gradient(90deg, #ff0055, #ff00aa); border-radius: 10px; color: white; display: inline-block; padding: 15px; text-decoration: none; width: 90%; font-weight: bold; font-size: clamp(13px, 3.5vw, 16px); box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4); transition: transform 0.2s; }
+        .btn-link:hover { transform: translateY(-2px); }
+        #generate-btn { background: #111; border: 1px solid #222; color: #333; font-size: clamp(14px, 4vw, 20px); font-weight: bold; padding: 18px; width: 100%; cursor: not-allowed; border-radius: 12px; transition: 0.5s; font-family: 'Orbitron', sans-serif; }
+        #adblock-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; border-radius: 20px; padding: 20px; }
+        .sparkle { position: fixed; pointer-events: none; width: 7px; height: 7px; border-radius: 50%; background: white; box-shadow: 0 0 8px white, 0 0 16px #00ff96; animation: sparkleFade 0.7s forwards; z-index: 9999; }
+        @keyframes sparkleFade { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
+        @media (max-width: 340px) { #main-container { padding: 12px; } h2 { letter-spacing: 2px; } }
     </style>
 </head>
 <body>
-    <div id="app-root">
-        <div id="loader">
-            <div class="spinner"></div>
-            <p>جاري تشغيل النظام المحمي...</p>
+
+<canvas id="particles-canvas"></canvas>
+
+<div id="main-container">
+    <div id="adblock-screen">
+        <span style="font-size: clamp(50px, 15vw, 80px); color: #ff3c3c;">⚠️</span>
+        <h2 style="color: #ff3c3c; margin-top: 20px;">مانع الإعلانات نشط</h2>
+        <p style="color: #bbb; padding: 0 20px;">
+            يرجى تعطيله وتحديث الصفحة للحصول على المفتاح.
+        </p>
+        <button onclick="location.reload()" style="background:#ff3c3c; color:white; border:none; padding:15px 35px; border-radius:10px; cursor:pointer; font-weight:bold; margin-top:25px;">
+            إعادة المحاولة
+        </button>
+    </div>
+
+    <h2>MASTER SYSTEM ELITE</h2>
+
+    <div class="ad-box">
+        <div class="ad-box-label">[ AD SLOT 1 ]</div>
+        <div class="ad-box-inner">
+            <script src="https://fundingfashioned.com/56/ca/42/56ca42de57c88b107ae373db6cd5ac72.js"></script>
         </div>
     </div>
 
-    <!-- كود التشفير والحماية -->
-    <script>
-        /* 
-           PROTECTED CODE - HDLE MASTER ELITE 
-           Unauthorized copying is prohibited.
-        */
-        (function(_0x1a2b,_0x3c4d){var _0x5e6f=function(_0x7a8b){while(--_0x7a8b){_0x1a2b['push'](_0x1a2b['shift']());}};_0x5e6f(++_0x3c4d);}(['\x72\x65\x6e\x64\x65\x72','\x48\x44\x4c\x45\x20\x4d\x41\x53\x54\x45\x52\x20\x45\x4c\x49\x54\x45','\x69\x6e\x6e\x65\x72\x48\x54\x4d\x4c','\x61\x70\x70\x2d\x72\x6f\x6f\x74'],0x123));
-        
-        // فك تشفير المحرك الرئيسي
-        var _0x4441=["\x3c\x73\x74\x79\x6c\x65\x3e\x2a\x7b\x62\x6f\x78\x2d\x73\x69\x7a\x69\x6e\x67\x3a\x62\x6f\x72\x64\x65\x72\x2d\x62\x6f\x78\x7d\x62\x6f\x64\x79\x7b\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x72\x61\x64\x69\x61\x6c\x2d\x67\x72\x61\x64\x69\x65\x6e\x74\x28\x63\x69\x72\x63\x6c\x65\x2c\x23\x30\x61\x30\x61\x30\x61\x20\x30\x25\x2c\x23\x30\x30\x30\x20\x31\x30\x30\x25\x29\x3b\x63\x6f\x6c\x6f\x72\x3a\x23\x30\x30\x66\x66\x39\x36\x3b\x6f\x76\x65\x72\x66\x6c\x6f\x77\x2d\x78\x3a\x68\x69\x64\x64\x65\x6e\x7d\x2e\x73\x65\x63\x74\x69\x6f\x6e\x2d\x62\x6f\x78\x7b\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x23\x30\x38\x30\x38\x30\x38\x3b\x62\x6f\x72\x64\x65\x72\x3a\x31\x70\x78\x20\x73\x6f\x6c\x69\x64\x20\x23\x31\x61\x31\x61\x31\x61\x3b\x62\x6f\x72\x64\x65\x72\x2d\x72\x61\x64\x69\x75\x73\x3a\x31\x35\x70\x78\x3b\x70\x61\x64\x64\x69\x6e\x67\x3a\x31\x35\x70\x78\x3b\x6d\x61\x72\x67\x69\x6e\x2d\x62\x6f\x74\x74\x6f\x6d\x3a\x31\x35\x70\x78\x7d\x23\x6d\x61\x69\x6e\x2d\x63\x6f\x6e\x74\x61\x69\x6e\x65\x72\x7b\x62\x61\x63\x6b\x67\x72\x6f\x75\x6e\x64\x3a\x23\x30\x35\x30\x35\x30\x35\x3b\x62\x6f\x72\x64\x65\x72\x2d\x72\x61\x64\x69\x75\x73\x3a\x32\x35\x70\x78\x3b\x62\x6f\x72\x64\x65\x72\x3a\x32\x70\x78\x20\x73\x6f\x6c\x69\x64\x20\x23\x30\x30\x66\x66\x39\x36\x3b\x62\x6f\x72\x64\x65\x72\x2d\x74\x6f\x70\x3a\x38\x70\x78\x20\x73\x6f\x6c\x69\x64\x20\x23\x30\x30\x66\x66\x39\x36\x3b\x77\x69\x64\x74\x68\x3a\x39\x35\x25\x3b\x6d\x61\x78\x2d\x77\x69\x64\x74\x68\x3a\x35\x35\x30\x70\x78\x3b\x70\x61\x64\x64\x69\x6e\x67\x3a\x32\x30\x70\x78\x3b\x74\x65\x78\x74\x2d\x61\x6c\x69\x67\x6e\x3a\x63\x65\x6e\x74\x65\x72\x3b\x7a\x2d\x69\x6e\x64\x65\x78\x3a\x31\x3b\x6d\x61\x72\x67\x69\x6e\x3a\x32\x30\x70\x78\x20\x61\x75\x74\x6f\x7d\x23\x70\x61\x72\x74\x69\x63\x6c\x65\x73\x2d\x63\x61\x6e\x76\x61\x73\x7b\x70\x6f\x73\x69\x74\x69\x6f\x6e\x3a\x66\x69\x78\x65\x64\x3b\x74\x6f\x70\x3a\x30\x3b\x6c\x65\x66\x74\x3a\x30\x3b\x77\x69\x64\x74\x68\x3a\x31\x30\x30\x25\x3b\x68\x65\x69\x67\x68\x74\x3a\x31\x30\x30\x25\x3b\x70\x6f\x69\x6e\x74\x65\x72\x2d\x65\x76\x65\x6e\x74\x73\x3a\x6e\x6f\x6e\x65\x3b\x7a\x2d\x69\x6e\x64\x65\x78\x3a\x30\x7d\x3c\x2f\x73\x74\x79\x6c\x65\x3e"];
-        
-        // هذه الوظيفة تقوم ببناء التطبيق وفك التشفير وقت التشغيل فقط
-        (function() {
-            var _decodedHtml = atob("PCEtLSBDT05URU5UIC0tPjxjYW52YXMgaWQ9InBhcnRpY2xlcy1jYW52YXMiPjwvY2FudmFzPjxkaXYgaWQ9Im1haW4tY29udGFpbmVyIj48ZGl2IGlkPSJhZGJsb2NrLXNjcmVlbiIgc3R5bGU9ImRpc3BsYXk6bm9uZTsgcG9zaXRpb246YWJzb2x1dGU7IHRvcDowOyBsZWZ0OjA7IHdpZHRoOjEwMCU7IGhlaWdodDoxMDAlOyBiYWNrZ3JvdW5kOnJnYmEoMCwwLDAsMC45OCk7IHotaW5kZXg6MTAwMDA7IGZsZXgtZGlyZWN0aW9uOmNvbHVtjsanVzdGlmeS1jb250ZW50OmNlbnRlcjsgYWxpZ24taXRlbXM6Y2VudGVyOyBib3JkZXItcmFkaXVzOjIwcHg7IHBhZGRpbmc6MjBweDsiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6NTBweDsgY29sb3I6I2ZmM2MzYzsiPuKaoCA8L3NwYW4+PGgyIHN0eWxlPSJjb2xvcjojZmYzYzNjOyBtYXJnaW4tdG9wOjIwcHg7Ij7Zhdin2YbYuSDYp9mE2K3YudmE2KfYqiDZhti02LcgPC9oMj48YnV0dG9uIG9uY2xpY2s9ImxvY2F0aW9uLnJlbG9hZCgpIiBzdHlsZT0iYmFja2dyb3VuZDojZmYzYzNjOyBjb2xvcjp3aGl0ZTsgYm9yZGVyOm5vbmU7IHBhZGRpbmc6MTVweCAzNXB4OyBib3JkZXItcmFkaXVzOjEwcHg7IGN1cnNvcjpwb2ludGVyOyI+2KXYudin2K/ZhyDYp9mE2YXYrdin2YjZhNmHPC9idXR0b24+PC9kaXY+PGgyPk1BU1RFUiBTWVNURU0gRUxJVEU8L2gyPjxkaXYgY2xhc3M9ImFkLWJveCI+PGRpdiBjbGFzcz0iYWQtYm94LWxhYmVsIj5bIEFEIFNMT1QgMSBdPC9kaXY+PGRpdiBjbGFzcz0iYWQtYm94LWlubmVyIj48c2NyaXB0IHNyYz0iaHR0cHM6Ly9mdW5kaW5nZmFzaGlvbmVkLmNvbS81Ni9jYS80Mi81NmNhNDJkZTU3Yzg4YjEwN2FlMzczZGI2Y2Q1YWM3Mi5qcyI+PC9zY3JpcHQ+PC9kaXY+PC9kaXY+PGRpdiBjbGFzcz0ic2VjdGlvbi1ib3giIHN0eWxlPSJib3JkZXItcmlnaHQ6NXB4IHNvbGlkICNmZjNjM2M7Ij48ZGl2IHN0eWxlPSJmb250LXNpemU6MTFweDsgY29sb3I6IzU1NTsgbWFyZ2luLWJvdHRvbTo4cHg7Ij7YqtmP2K3Yr9mK2K0g2KfZhNmF2YZaqtin2K0g2KfZhNmC2KfYr9mFICgpOjxkaXYgaWQ9InV0Yy1jbG9jayIgc3R5bGU9ImZvbnQtc2l6ZTozMHB4OyBjb2xvcjojZmYzYzNjOyI+MDA6MDA6MDA8L2Rpdi48L2Rpdj48L2Rpdj48ZGl2IGNsYXNzPSJzZWN0aW9uLWJveCI+PHA+MS4g2YLYpSDYqNin2YTYtti3INi52YTZiSDYp9mE2LHYp9io2LcgNCDZhdix2KfYqiA6PC9wPjxhIGhyZWY9Imh0dHBzOi8vZnVuZGluZ2Zhc2hpb25lZC5jb20vYzc1MDl4emh5dD9rZXk9YTI2NzE0M2QwZmI2MzQzNTQ2ZjA3ZWI0ZDNlNWQyODQiIG9uY2xpY2s9InJlZ2lzdGVyQ2xpY2soKSIgdGFyZ2V0PSJfYmxhbmsiIGNsYXNzPSJidG4tbGluayIgc3R5bGU9ImRpc3BsYXk6YmxvY2s7IHBhZGRpbmc6MTVweDsgYmFja2dyb3VuZDpsaW5lYXItZ3JhZGllbnQoOTBkZWcsI2ZmMDA1NSwjZmYwMGFhKTsgY29sb3I6I2ZmZjsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IGJvcmRlci1yYWRpdXM6MTBweDsgbWFyZ2luOjEwcHggMDsiPiDwn5K3INiq2YHYudmK2YQg2LHYp9io2Lcg2KfZhNmG2YLYp9i3IDwvYT48ZGl2Ptin2YTZhti32KfYtzogPHNwYW4gaWQ9ImNsaWNrLXN0YXR1cyI+MDwvc3Bhbj4gLyA0PC9kaXY+PC9kaXY+PGRpdiBjbGFzcz0ic2VjdGlvbi1ib3giIGlkPSJhZHZlcnRpc2VtZW50LWFyZWEiPjxkaXYgaWQ9InN0YXR1cy10ZXh0IiBzdHlsZT0iZm9udC1zaXplOjExcHg7IGNvbG9yOiM1NTU7Ij7wn5ShieldiDYrNin2LHZiiDZgdir2Lcg2LPZhNin2YXYqSDYp9mE2KXYudmE2KfYp9iqLi4uPC9kaXY+PGRpdiBpZD0idGltZXItY29udCIgc3R5bGU9ImNvbG9yOiNmZjNjM2M7IGZvbnQtc2l6ZToyMHB4OyBtYXJnaW4tdG9wOjEwcHg7Ij7ij7sg2YXYqtmI2Y3ZiiDZhNmE2YXYtmH2K/ZhyA8c3BhbiBpZD0idGltZXIiPjMwPC9zcGFuPiDZ2p9mG2YrYpTwvZGl2PjwvZGl2PjxidXR0b24gZGlzYWJsZWQgaWQ9ImdlbmVyYXRlLWJ0biIgc3R5bGU9IndpZHRoOjEwMCU7IHBhZGRpbmc6MTVweDsgYmFja2dyb3VuZDojMjIyOyBjb2xvcjpncmV5OyBib3JkZXI6bm9uZTsgYm9yZGVyLXJhZGl1czoxMHB4OyBjdXJzb3I6bm90LWFsbG93ZWQ7IGZvbnQtd2VpZ2h0OmJvbGQ7IiBvbmNsaWNrPSJydW5HZW5lcmF0b3IoKSI+2YbYuNin2Y0g2KfZhNmF2YHYp9iq2YrYrSDZYXbiNmE2YI8L2J1dHRvbj48ZGl2IGlkPSJrZXktZGlzcGxheSIgc3R5bGU9ImRpc3BsYXk6bm9uZTsgbWFyZ2luLXRvcDoyMHB4OyBwYWRkaW5nOjIwcHg7IGJvcmRlcjoycHggZGFzaGVkICMwMGZmOTY7IHdvcmQtYnJlYWs6YnJlYWstYWxsOyI+PC9kaXY+PC9kaXY+");
-            
-            document.getElementById('app-root').innerHTML = _0x4441[0] + _decodedHtml;
-            
-            // --- محرك العمليات المشفر ---
-            var _c=0, _tD=false, _tL=30;
-            var _p1=[72,68,76,69], _p2=[95,80,82,79], _p3=[95,57,57,95], _p4=[83,84,82,73,75,69];
-            
-            window.registerClick = function(){
-                _c++; document.getElementById('click-status').innerText = _c; _uB();
-            };
+    <div class="section-box" style="border-right: 5px solid #ff3c3c;">
+        <div style="font-size: 11px; color: #555; margin-bottom: 8px;">
+            تحديث المفتاح القادم (UTC):
+        </div>
+        <div id="utc-clock">00:00:00</div>
+    </div>
 
-            function _uB(){
-                var b=document.getElementById('generate-btn');
-                if(_c>=4 && _tD){
-                    b.disabled=false; b.style.background='#00ff96'; b.style.color='#000'; b.innerText='توليد المفتاح الآن'; b.style.cursor='pointer';
-                } else {
-                    b.innerText=(_c<4)?'باقي ' + (4-_c) + ' ضغطات':'انتظر المؤقت...';
-                }
-            }
+    <div class="section-box">
+        <p style="color: #aaa; font-size: 13px; margin-bottom: 15px;">
+            1. قم بالضغط على الرابط التالي 4 مرات لتفعيل الزر:
+        </p>
+        <a href="https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284"
+            onclick="window.registerClick();"
+            target="_blank"
+            class="btn-link">
+            🔗 تفعيل رابط النقاط
+        </a>
+        <div style="margin-top: 15px; font-weight: bold; font-size: clamp(14px, 4vw, 18px);">
+            النقاط: <span id="click-status">0</span> / 4
+        </div>
+    </div>
 
-            setInterval(function(){
-                var n=new Date();
-                var h=23-n.getUTCHours(), m=59-n.getUTCMinutes(), s=59-n.getUTCSeconds();
-                var el=document.getElementById('utc-clock');
-                if(el) el.innerText=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
-            },1000);
+    <div class="section-box" id="advertisement-area">
+        <div id="status-text" style="font-size: 11px; color: #555; margin-bottom: 10px;">
+            🛡️ جاري فحص سلامة الإعلانات...
+        </div>
+        <div class="adsbygoogle" id="ad-detector-trap" style="height:1px; width:1px;"></div>
+        <div class="ad-box" style="margin-bottom: 12px;">
+            <div class="ad-box-label">[ AD SLOT 2 ]</div>
+            <div class="ad-box-inner" style="min-height: 250px;">
+                <script>
+                    atOptions = {
+                        'key'    : '0e4c2a3b5881e334c05cef8a6c825c1a',
+                        'format' : 'iframe',
+                        'height' : 250,
+                        'width'  : 300,
+                        'params' : {}
+                    };
+                </script>
+                <script src="https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
+            </div>
+        </div>
+        <div style="color: #ff3c3c; font-size: clamp(14px, 4vw, 20px); font-weight: bold;">
+            ⏳ متبقي للمشاهدة: <span id="timer">30</span> ثانية
+        </div>
+    </div>
 
-            var _ti=setInterval(function(){
-                _tL--; 
-                var te=document.getElementById('timer');
-                if(te) te.innerText=_tL;
-                if(_tL<=0){ clearInterval(_ti); _tD=true; if(document.getElementById('timer-cont')) document.getElementById('timer-cont').innerHTML="✅ تم!"; _uB();}
-            },1000);
+    <button disabled id="generate-btn" onclick="window.runGenerator();">
+        نظام المفاتيح مغلق
+    </button>
 
-            window.runGenerator = function(){
-                var n=new Date(), d=n.getUTCDate(), mo=n.getUTCMonth()+1, y=n.getUTCFullYear();
-                var s=[].concat(_p1,_p2,_p3,_p4).map(x=>String.fromCharCode(x)).join('');
-                var i=d.toString()+mo.toString()+y.toString()+s, sd=0n;
-                for(var j=0;j<i.length;j++) sd+=BigInt(i.charCodeAt(j))*(BigInt(j)+1n);
-                var ch="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*", k="";
-                for(var j=0;j<16;j++){ sd=(sd*1664525n+1013904223n)%4294967296n; k+=ch.charAt(Number(sd%BigInt(ch.length))); }
-                var kd=document.getElementById('key-display');
-                kd.innerText=k; kd.style.display='block';
-            };
+    <div id="key-display" style="display:none; background:#000; border:2px dashed #00ff96; padding:20px; margin-top:20px; color:#fff; word-break:break-all; font-family:monospace; border-radius:10px; font-size: clamp(14px, 4vw, 18px);">
+    </div>
 
-            // تشغيل تأثير النقاط
-            (function(){var c=document.getElementById('particles-canvas');if(!c)return;var x=c.getContext('2d'),p=[];c.width=window.innerWidth;c.height=window.innerHeight;for(var i=0;i<50;i++)p.push({x:Math.random()*c.width,y:Math.random()*c.height,v:Math.random()*0.5+0.2});function d(){x.clearRect(0,0,c.width,c.height);x.fillStyle='#00ff96';p.forEach(i=>{i.y-=i.v;if(i.y<0)i.y=c.height;x.beginPath();x.arc(i.x,i.y,1,0,6.28);x.fill();});requestAnimationFrame(d);}d();})();
-        })();
-    </script>
+    <button id="copy-btn" onclick="window.copyKey();" style="display:none; background:transparent; border:1px solid #00ff96; color:#00ff96; padding:15px; width:100%; margin-top:10px; cursor:pointer; border-radius:10px; font-weight:bold;">
+        نسخ المفتاح
+    </button>
+
+    <div class="ad-box" style="margin-top: 15px;">
+        <div class="ad-box-label">[ AD SLOT 3 ]</div>
+        <div class="ad-box-inner">
+            <script src="https://fundingfashioned.com/a8/29/ee/a829eed37a40a18f9d50aef268bf7656.js"></script>
+        </div>
+    </div>
+</div>
+
+<script>
+var _0x4a5c=['charCodeAt','fromCharCode','getElementById','startClock','checkAdBlock','startTimer','registerClick','runGenerator','copyKey','innerHTML','innerText','style','display','onload','appendChild','addEventListener','clientX','clientY','clearRect','arc','fill','fill','context','length','log','forEach','concat','splice','push','pop','random','Math','floor','ceil','round','max','min','substr','substring','slice','split','join','replace','match','search','indexOf','lastIndexOf','includes','startsWith','endsWith','trim','toLowerCase','toUpperCase','charAt','charCodeAt','fromCharCode'];
+(function(_0x2d7f40){
+  var _0x4f9d9c=function(_0x1e8b3f){
+    this['__0x4a5c']=_0x4a5c;
+    this['__index']=_0x1e8b3f;
+  };
+  _0x4f9d9c['prototype']['__get']=function(){
+    return this['__0x4a5c'][this['__index']];
+  };
+  _0x2d7f40['__encoder']=_0x4f9d9c;
+})(_0x4a5c);
+
+var _0x536e=function(){
+  var _0x4b2a8a=document['getElementById']('particles-canvas');
+  var _0x1c5f6e=_0x4b2a8a['getContext']('2d');
+  var _0x2d1e4c=[];
+  var _0x3f8c7d={'x':-9999,'y':-9999};
+  
+  function _0x2b5d8e(){
+    _0x4b2a8a['width']=window['innerWidth'];
+    _0x4b2a8a['height']=window['innerHeight'];
+  }
+  _0x2b5d8e();
+  window['addEventListener']('resize',_0x2b5d8e);
+  document['addEventListener']('mousemove',function(_0x4c5a8d){
+    _0x3f8c7d['x']=_0x4c5a8d['clientX'];
+    _0x3f8c7d['y']=_0x4c5a8d['clientY'];
+  });
+  
+  for(var _0x2e3a4f=0;_0x2e3a4f<70;_0x2e3a4f++){
+    _0x2d1e4c['push']({
+      'x':Math['random']()*window['innerWidth'],
+      'y':Math['random']()*window['innerHeight'],
+      'ox':0,
+      'oy':0,
+      'r':Math['random']()*1.8+0.4,
+      'op':Math['random']()*Math['PI']*2,
+      'sp':Math['random']()*0.02+0.008,
+      'vx':0,
+      'vy':0
+    });
+  }
+  
+  var _0x3b4f7a=100;
+  var _0x1f8c5e=3;
+  var _0x4a8c3f=0.05;
+  
+  function _0x2f3c9b(){
+    _0x1c5f6e['clearRect'](0,0,_0x4b2a8a['width'],_0x4b2a8a['height']);
+    _0x2d1e4c['forEach'](function(_0x2b1d4a){
+      _0x2b1d4a['op']+=_0x2b1d4a['sp'];
+      var _0x4d7e3c=(Math['sin'](_0x2b1d4a['op'])+1)/2;
+      var _0x1b2c4d=_0x2b1d4a['x']-_0x3f8c7d['x'];
+      var _0x3d5e5f=_0x2b1d4a['y']-_0x3f8c7d['y'];
+      var _0x2d6e4c=Math['sqrt'](_0x1b2c4d*_0x1b2c4d+_0x3d5e5f*_0x3d5e5f);
+      if(_0x2d6e4c<_0x3b4f7a&&_0x2d6e4c>0){
+        var _0x4b3d8e=(_0x3b4f7a-_0x2d6e4c)/_0x3b4f7a;
+        _0x2b1d4a['vx']+=(_0x1b2c4d/_0x2d6e4c)*_0x4b3d8e*_0x1f8c5e;
+        _0x2b1d4a['vy']+=(_0x3d5e5f/_0x2d6e4c)*_0x4b3d8e*_0x1f8c5e;
+      }
+      _0x2b1d4a['x']+=_0x2b1d4a['vx'];
+      _0x2b1d4a['y']+=_0x2b1d4a['vy'];
+      _0x2b1d4a['vx']*=0.85;
+      _0x2b1d4a['vy']*=0.85;
+      if(_0x2b1d4a['ox']===0&&_0x2b1d4a['oy']===0){
+        _0x2b1d4a['ox']=_0x2b1d4a['x'];
+        _0x2b1d4a['oy']=_0x2b1d4a['y'];
+      }
+      _0x1c5f6e['beginPath']();
+      _0x1c5f6e['arc'](_0x2b1d4a['x'],_0x2b1d4a['y'],_0x2b1d4a['r'],0,Math['PI']*2);
+      _0x1c5f6e['fillStyle']='rgba(0,255,150,'+_0x4d7e3c['toFixed'](2)+')';
+      _0x1c5f6e['fill']();
+    });
+    requestAnimationFrame(_0x2f3c9b);
+  }
+  _0x2f3c9b();
+};
+
+var _0x2c4e=function(){
+  if('ontouchstart' in window)return;
+  var _0x3c5d8a=0;
+  document['addEventListener']('mousemove',function(_0x2a3f4c){
+    var _0x1b8c7d=Date['now']();
+    if(_0x1b8c7d-_0x3c5d8a<90)return;
+    _0x3c5d8a=_0x1b8c7d;
+    var _0x3a2b5e=document['createElement']('div');
+    _0x3a2b5e['className']='sparkle';
+    _0x3a2b5e['style']['left']=(_0x2a3f4c['clientX']-3.5)+'px';
+    _0x3a2b5e['style']['top']=(_0x2a3f4c['clientY']-3.5)+'px';
+    document['body']['appendChild'](_0x3a2b5e);
+    setTimeout(function(){_0x3a2b5e['remove']();},700);
+  });
+};
+
+var _0x1a2b=function(){
+  var _0x5f6e8c=0;
+  var _0x4c3d9e=false;
+  var _0x2b1c4a=30;
+  var _0x3e4f7a=false;
+  
+  var _0x1b4c5d=[72,68,76,69];
+  var _0x2c5d6e=[95,80,82,79];
+  var _0x3d6e7f=[95,57,57,95];
+  var _0x4e7f8a=[83,84,82,73,75,69];
+  
+  function _0x5f6e8c_build(){
+    return [].concat(_0x1b4c5d,_0x2c5d6e,_0x3d6e7f,_0x4e7f8a).map(function(_0x4b5c8a){return String['fromCharCode'](_0x4b5c8a);}).join('');
+  }
+  
+  function _0x1c2d3e(_0x5c6d7e,_0x6d7e8f,_0x7e8f9a){
+    var _0x8f9a0b=_0x5f6e8c_build();
+    var _0x9a0b1c=_0x5c6d7e['toString']()+_0x6d7e8f['toString']()+_0x7e8f9a['toString']()+_0x8f9a0b;
+    var _0x0b1c2d=0n;
+    for(var _0x1c2d3e=0;_0x1c2d3e<_0x9a0b1c['length'];_0x1c2d3e++){
+      _0x0b1c2d+=BigInt(_0x9a0b1c['charCodeAt'](_0x1c2d3e))*BigInt(_0x1c2d3e+1);
+    }
+    var _0x2d3e4f="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    var _0x3e4f5a="";
+    for(var _0x4f5a6b=0;_0x4f5a6b<16;_0x4f5a6b++){
+      _0x0b1c2d=((_0x0b1c2d*1664525n+1013904223n)%4294967296n);
+      _0x3e4f5a+=_0x2d3e4f['charAt'](Number(_0x0b1c2d%BigInt(_0x2d3e4f['length'])));
+    }
+    return _0x3e4f5a;
+  }
+  
+  function _0x4f5a6b_update(){
+    var _0x5a6b7c=document['getElementById']('generate-btn');
+    if(_0x5f6e8c>=4&&_0x4c3d9e){
+      _0x5a6b7c['disabled']=false;
+      _0x5a6b7c['style']['background']='#00ff96';
+      _0x5a6b7c['style']['color']='#000';
+      _0x5a6b7c['style']['boxShadow']='0 0 25px #00ff96';
+      _0x5a6b7c['style']['cursor']='pointer';
+      _0x5a6b7c['innerText']='توليد المفتاح الآن';
+    }else{
+      _0x5a6b7c['innerText']=(_0x5f6e8c<4)?'باقي '+(4-_0x5f6e8c)+' ضغطات':'انتظر انتهاء المشاهدة...';
+    }
+  }
+  
+  function _0x5a6b7c_clock(){
+    setInterval(function(){
+      var _0x6b7c8d=new Date();
+      var _0x7c8d9e=23-_0x6b7c8d['getUTCHours']();
+      var _0x8d9e0f=59-_0x6b7c8d['getUTCMinutes']();
+      var _0x9e0f10=59-_0x6b7c8d['getUTCSeconds']();
+      document['getElementById']('utc-clock')['innerText']=(_0x7c8d9e<10?'0'+_0x7c8d9e:_0x7c8d9e)+':'+(_0x8d9e0f<10?'0'+_0x8d9e0f:_0x8d9e0f)+':'+(_0x9e0f10<10?'0'+_0x9e0f10:_0x9e0f10);
+    },1000);
+  }
+  
+  function _0x9e0f10_adblock(){
+    setTimeout(function(){
+      var _0x0f1021=document['getElementById']('ad-detector-trap');
+      var _0x1f1132=document['getElementById']('advertisement-area');
+      if(!_0x0f1021||_0x0f1021['offsetHeight']===0||!_0x1f1132['querySelector']('iframe')){
+        _0x3e4f7a=true;
+        document['getElementById']('adblock-screen')['style']['display']='flex';
+      }else{
+        var _0x2f1243=document['getElementById']('status-text');
+        _0x2f1243['innerText']='🛡️ تم التحقق من الإعلانات: نشط';
+        _0x2f1243['style']['color']='#00ff96';
+      }
+    },8000);
+  }
+  
+  function _0x2f1243_timer(){
+    var _0x3f1354=setInterval(function(){
+      if(!_0x3e4f7a){
+        _0x2b1c4a--;
+        document['getElementById']('timer')['innerText']=_0x2b1c4a;
+        if(_0x2b1c4a<=0){
+          clearInterval(_0x3f1354);
+          _0x4c3d9e=true;
+          document['getElementById']('timer')['parentElement']['innerHTML']='✅ تم إكمال المشاهدة!';
+          _0x4f5a6b_update();
+        }
+      }
+    },1000);
+  }
+  
+  window['registerClick']=function(){
+    _0x5f6e8c++;
+    document['getElementById']('click-status')['innerText']=_0x5f6e8c;
+    _0x4f5a6b_update();
+  };
+  
+  window['runGenerator']=function(){
+    if(_0x5f6e8c<4||!_0x4c3d9e)return;
+    var _0x4f1465=new Date();
+    var _0x5f1576=_0x1c2d3e(_0x4f1465['getUTCDate'](),_0x4f1465['getUTCMonth']()+1,_0x4f1465['getUTCFullYear']());
+    var _0x60167f=document['getElementById']('key-display');
+    _0x60167f['innerText']=_0x5f1576;
+    _0x60167f['style']['display']='block';
+    document['getElementById']('copy-btn')['style']['display']='block';
+  };
+  
+  window['copyKey']=function(){
+    navigator['clipboard']['writeText'](document['getElementById']('key-display')['innerText']);
+    alert('تم نسخ المفتاح بنجاح!');
+  };
+  
+  window['onload']=function(){
+    _0x5a6b7c_clock();
+    _0x9e0f10_adblock();
+    _0x2f1243_timer();
+  };
+};
+
+_0x536e();
+_0x2c4e();
+_0x1a2b();
+</script>
+
 </body>
 </html>

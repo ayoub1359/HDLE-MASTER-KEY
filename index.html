@@ -500,61 +500,106 @@
     })();
 
     // ================================================================
-    // MAIN LOGIC
+    // MAIN LOGIC - Anti-Fail Failover System with async/await
     // ================================================================
     (function () {
 
-      // ── Worker URL & Site Secret ─────────────────────────────
-      var WORKER_URL = "https://snowy-surf-8e37.master-key.workers.dev";
-      var SITE_SECRET = "HDLE_SITE_2025_AYOUB";
+      // ── Configuration ─────────────────────────────────────────────
+      const WORKER_URL = "https://snowy-surf-8e37.master-key.workers.dev";
+      const SITE_SECRET = "HDLE_SITE_2025_AYOUB";
+      
+      // ✅ Supabase Credentials (محدثة وصحيحة)
+      const SUPABASE_URL = "https://jqyghgflqbpgfaagyrzk.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_4iz7tck-ammXSXP73bJWVQ_e4lJM";
+      const SUPABASE_TABLE_URL = `${SUPABASE_URL}/rest/v1/keys`;
+      
+      const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1488990191787184192/CeaLiiGXot0QjU_wR0n0MFEG7AKx_kk65-ENRw49qYy5lo9IpuHkz_L91tM5wFygK58w";
 
-      // ── UTC Clock ────────────────────────────────────────────────
+      // ── Helper Functions ──────────────────────────────────────────
+      
+      // توليد مفتاح محلي
+      function makeLocalKey(type) {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        const prefix = type === '3d' ? 'MASTER-3D' : 'HDLE';
+        let seg = '';
+        for (let i = 0; i < 20; i++) seg += chars[Math.floor(Math.random() * chars.length)];
+        const parts = [];
+        for (let j = 0; j < 20; j += 4) parts.push(seg.slice(j, j + 4));
+        return prefix + '-' + parts.join('-');
+      }
+
+      // إرسال تنبيه لديسكورد (صامت)
+      async function notifyDiscord(msg, color = 16776960) {
+        try {
+          await fetch(DISCORD_WEBHOOK, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              embeds: [{ 
+                title: '🔔 HDLE Key System', 
+                description: msg, 
+                color: color, 
+                timestamp: new Date().toISOString() 
+              }] 
+            })
+          });
+        } catch (e) { /* Silent fail */ }
+      }
+
+      // ── UTC Clock ─────────────────────────────────────────────────
       function startClock() {
-        setInterval(function () {
-          var now = new Date();
-          var h = 23 - now.getUTCHours(), m = 59 - now.getUTCMinutes(), s = 59 - now.getUTCSeconds();
-          var el = document.getElementById('utc-clock');
-          if (el) el.innerText = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+        setInterval(() => {
+          const now = new Date();
+          const h = 23 - now.getUTCHours();
+          const m = 59 - now.getUTCMinutes();
+          const s = 59 - now.getUTCSeconds();
+          const el = document.getElementById('utc-clock');
+          if (el) el.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }, 1000);
       }
 
-      // ── AdBlock check ────────────────────────────────────────────
+      // ── AdBlock Check ────────────────────────────────────────────
       function checkAdBlock() {
-        setTimeout(function () {
-          var trap = document.getElementById('ad-detector-trap');
-          var container = document.getElementById('advertisement-area');
+        setTimeout(() => {
+          const trap = document.getElementById('ad-detector-trap');
+          const container = document.getElementById('advertisement-area');
           if (!trap || trap.offsetHeight === 0 || !container.querySelector('iframe')) {
             document.getElementById('adblock-screen').style.display = 'flex';
           } else {
-            var statusEl = document.getElementById('status-text');
-            if (statusEl) { statusEl.innerText = '🛡️ Ad Check: ACTIVE'; statusEl.style.color = '#00ff96' }
+            const statusEl = document.getElementById('status-text');
+            if (statusEl) { statusEl.innerText = '🛡️ Ad Check: ACTIVE'; statusEl.style.color = '#00ff96'; }
           }
         }, 8000);
       }
 
-      // ── 24h timer ────────────────────────────────────────────────
-      var clickCount = 0, timerDone = false, timeLeft = 30, adblockFound = false;
+      // ── 24h Timer & Clicks ───────────────────────────────────────
+      let clickCount = 0, timerDone = false, timeLeft = 30, adblockFound = false;
 
       function updateButton() {
-        var btn = document.getElementById('generate-btn');
+        const btn = document.getElementById('generate-btn');
         if (!btn) return;
         if (clickCount >= 4 && timerDone) {
-          btn.disabled = false; btn.style.background = '#00ff96'; btn.style.color = '#000';
-          btn.style.boxShadow = '0 0 25px #00ff96'; btn.style.cursor = 'pointer';
+          btn.disabled = false;
+          btn.style.background = '#00ff96';
+          btn.style.color = '#000';
+          btn.style.boxShadow = '0 0 25px #00ff96';
+          btn.style.cursor = 'pointer';
           btn.innerText = 'Generate Key Now';
         } else {
-          btn.innerText = (clickCount < 4) ? 'Remaining ' + (4 - clickCount) + ' clicks' : 'Waiting for ads...';
+          btn.innerText = clickCount < 4 ? `Remaining ${4 - clickCount} clicks` : 'Waiting for ads...';
         }
       }
 
       function startTimer() {
-        var interval = setInterval(function () {
+        const interval = setInterval(() => {
           if (!adblockFound) {
-            timeLeft--; var el = document.getElementById('timer');
+            timeLeft--;
+            const el = document.getElementById('timer');
             if (el) el.innerText = timeLeft;
             if (timeLeft <= 0) {
-              clearInterval(interval); timerDone = true;
-              var parent = el && el.parentElement;
+              clearInterval(interval);
+              timerDone = true;
+              const parent = el?.parentElement;
               if (parent) parent.innerHTML = '✅ Watch Completed!';
               updateButton();
             }
@@ -562,347 +607,371 @@
         }, 1000);
       }
 
-      window.registerClick = function () { clickCount++; var el = document.getElementById('click-status'); if (el) el.innerText = clickCount; updateButton() };
+      window.registerClick = () => {
+        clickCount++;
+        const el = document.getElementById('click-status');
+        if (el) el.innerText = clickCount;
+        updateButton();
+      };
 
       // ================================================================
-      // ── DUAL-FAILOVER SYSTEM ─────────────────────────────────────
+      // ── ANTI-FAIL FAILOVER SYSTEM ──────────────────────────────────
       // ================================================================
 
-      // ✅ Supabase Config (أضف الـ anon key من لوحة Supabase → Settings → API)
-      var SUPABASE_URL = "https://jqyghgflqbpgfaagyrzk.supabase.co";
-      var SUPABASE_KEY = "sb_publishable_4iz7tck-ammXSXP73bJWVQ_e4lJM"; // anon public key
+      // ── حفظ المفتاح في Supabase (نظام الاحتياط) ───────────────────
+      async function saveKeyToSupabase(type) {
+        const key = makeLocalKey(type);
+        const now = Math.floor(Date.now() / 1000);
+        const ttlSecs = type === '3d' ? 259200 : 86400; // 3 days or 1 day
+        const expiry = now + ttlSecs;
+        
+        // تنسيق ISO8601 صحيح لـ timestamptz
+        const expiryISO = new Date(expiry * 1000).toISOString();
+        const expiryFormatted = expiryISO.replace('T', ' ').slice(0, 19) + ' UTC';
 
-      var DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1488990191787184192/CeaLiiGXot0QjU_wR0n0MFEG7AKx_kk65-ENRw49qYy5lo9IpuHkz_L91tM5wFygK58w";
+        // البيانات تطابق أعمدة الجدول تماماً
+        const payload = {
+          key_value: key,
+          type: type,
+          status: 'active',
+          expiry_timestamp: expiryISO
+        };
 
-      // توليد مفتاح محلي (يُستخدم فقط في النظام الاحتياطي)
-      function makeLocalKey(type) {
-        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        var prefix = type === '3d' ? 'MASTER-3D' : 'HDLE';
-        var seg = '';
-        for (var i = 0; i < 20; i++) seg += chars[Math.floor(Math.random() * chars.length)];
-        var parts = [];
-        for (var j = 0; j < 20; j += 4) parts.push(seg.slice(j, j + 4));
-        return prefix + '-' + parts.join('-');
-      }
-
-      // إرسال تنبيه صامت لديسكورد (لا يؤثر على تجربة المستخدم)
-      function notifyDiscord(msg, color) {
         try {
-          fetch(DISCORD_WEBHOOK, {
+          const response = await fetch(SUPABASE_TABLE_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ embeds: [{ title: '🔔 HDLE Key System', description: msg, color: color || 16776960, timestamp: new Date().toISOString() }] })
-          }).catch(function () {});
-        } catch (e) {}
-      }
-
-      // ── النظام الاحتياطي: Supabase ──────────────────────────────
-      function generateBackupKey(type, onSuccess, onFail) {
-        if (!SUPABASE_KEY || SUPABASE_KEY.length < 20) {
-          onFail('Supabase key not configured or invalid.');
-          return;
-        }
-        var key = makeLocalKey(type);
-        var now = Math.floor(Date.now() / 1000);
-        var ttlSecs = type === '3d' ? 259200 : 86400;
-        var expiry = now + ttlSecs;
-        var expiryFormatted = new Date(expiry * 1000).toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
-
-        fetch(SUPABASE_URL + '/rest/v1/keys', {
-          method: 'POST',
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': 'Bearer ' + SUPABASE_KEY,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify({
-            key: key,
-            type: type,
-            status: 'active',
-            created: now,
-            expiry: expiry,
-            expiry_formatted: expiryFormatted,
-            source: 'supabase_backup'
-          })
-        })
-        .then(function (r) {
-          if (!r.ok) throw new Error('Supabase HTTP ' + r.status);
-          return r.json();
-        })
-        .then(function () {
-          notifyDiscord('⚠️ تم توليد المفتاح عبر Supabase بنجاح (نظام الطوارئ)\nالنوع: ' + type, 16776960);
-          onSuccess({ key: key, expiry_formatted: expiryFormatted });
-        })
-        .catch(function (e) {
-          notifyDiscord('❌ فشل نظام Supabase الاحتياطي: ' + e.message, 16711680);
-          onFail(e.message);
-        });
-      }
-
-      // فحص إذا كان الخطأ يتطلب التحويل للنظام الاحتياطي
-      function shouldFailover(data, status) {
-        if (status === 500) return true;
-        if (data && data.error === 'server_error') return true;
-        if (data && data.details && data.details.toLowerCase().indexOf('limit exceeded') !== -1) return true;
-        if (data && data.message && data.message.toLowerCase().indexOf('limit exceeded') !== -1) return true;
-        return false;
-      }
-
-      // ── Generate 24h key via Worker (مع Failover) ────────────────
-      window.runGenerator = function () {
-        if (clickCount < 4 || !timerDone) return;
-        var btn = document.getElementById('generate-btn');
-        btn.disabled = true; btn.innerText = 'Generating...';
-
-        fetch(WORKER_URL + '/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Site-Token': SITE_SECRET },
-          body: JSON.stringify({ type: '1d' })
-        })
-          .then(function (r) {
-            var status = r.status;
-            return r.json().then(function (data) { return { data: data, status: status }; });
-          })
-          .then(function (res) {
-            var data = res.data, status = res.status;
-            if (data.key) {
-              var display = document.getElementById('key-display');
-              display.innerHTML = '<div style="font-size:11px;color:#555;margin-bottom:8px">YOUR KEY:</div>' + data.key;
-              display.style.display = 'block';
-              document.getElementById('copy-btn').style.display = 'block';
-              btn.innerText = '✅ Key Generated!';
-            } else if (shouldFailover(data, status)) {
-              // ── تفعيل النظام الاحتياطي ──
-              btn.innerText = '🔄 Switching to backup...';
-              notifyDiscord('⚠️ Cloudflare Worker فشل (Status ' + status + '). جاري التحويل لـ Supabase...', 16744272);
-              generateBackupKey('1d',
-                function (backupData) {
-                  var display = document.getElementById('key-display');
-                  display.innerHTML = '<div style="font-size:11px;color:#555;margin-bottom:8px">YOUR KEY (Emergency):</div>' + backupData.key;
-                  display.style.display = 'block';
-                  document.getElementById('copy-btn').style.display = 'block';
-                  btn.innerText = '✅ Key Generated!';
-                },
-                function (errMsg) {
-                  btn.disabled = false; btn.innerText = 'Try Again';
-                  var msg = data.message || 'Generation failed on both systems.';
-                  if (data.details) msg += '\n\nDebug: ' + data.details;
-                  alert('⚠️ ' + msg);
-                }
-              );
-            } else if (data.message) {
-              btn.disabled = false; btn.innerText = 'Try Again';
-              var alertMsg = "⚠️ " + data.message;
-              if (data.details) alertMsg += "\n\n━━━━━━━━━━━━━━\nDEBUG DETAILS:\n" + data.details;
-              alert(alertMsg);
-            } else {
-              btn.disabled = false; btn.innerText = 'Try Again';
-              alert('Error generating key. Try again.');
-            }
-          })
-          .catch(function (e) {
-            // شبكة معطلة كلياً → محاولة Supabase مباشرة
-            btn.innerText = '🔄 Switching to backup...';
-            notifyDiscord('⚠️ Network error reaching Cloudflare Worker. Attempting Supabase fallback...', 16744272);
-            generateBackupKey('1d',
-              function (backupData) {
-                var display = document.getElementById('key-display');
-                display.innerHTML = '<div style="font-size:11px;color:#555;margin-bottom:8px">YOUR KEY (Emergency):</div>' + backupData.key;
-                display.style.display = 'block';
-                document.getElementById('copy-btn').style.display = 'block';
-                btn.innerText = '✅ Key Generated!';
-              },
-              function () {
-                btn.disabled = false; btn.style.background = '#ff3c3c'; btn.style.color = '#fff';
-                btn.innerText = 'Server Error — Retry';
-              }
-            );
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify(payload)
           });
+
+          if (response.ok || (response.status >= 200 && response.status < 300)) {
+            await notifyDiscord(`✅ Key saved to Supabase\\nKey: ${key}`, 65280);
+            return { success: true, key, expiryFormatted };
+          } else if (response.status === 401) {
+            throw new Error('401 Unauthorized - Invalid Supabase Key');
+          } else if (response.status === 403) {
+            throw new Error('403 Forbidden - Check RLS policies');
+          } else if (response.status === 500) {
+            throw new Error('500 Server Error');
+          } else {
+            const text = await response.text();
+            throw new Error(`Status ${response.status}: ${text}`);
+          }
+        } catch (error) {
+          await notifyDiscord(`❌ Supabase Error: ${error.message}`, 16711680);
+          throw error;
+        }
+      }
+
+      // ── توليد المفتاح الرئيسي مع Failover ─────────────────────────
+      async function generateKeyWithFailover(type) {
+        // محاولة 1: السيرفر الأساسي (Worker)
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 ثواني timeout
+
+          const response = await fetch(`${WORKER_URL}/generate`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json', 
+              'X-Site-Token': SITE_SECRET 
+            },
+            body: JSON.stringify({ type }),
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+
+          // Failover على أي خطأ 401, 403, 500 أو !response.ok
+          if (!response.ok || [401, 403, 500].includes(response.status)) {
+            throw new Error(`Worker failed with status ${response.status}`);
+          }
+
+          const data = await response.json();
+          
+          if (data.key) {
+            return { 
+              success: true, 
+              key: data.key, 
+              source: 'worker',
+              expiryFormatted: data.expiry_formatted || 'N/A'
+            };
+          } else {
+            throw new Error('Worker returned no key');
+          }
+        } catch (workerError) {
+          // محاولة 2: النظام الاحتياطي (Supabase)
+          await notifyDiscord(`⚠️ Worker failed (${workerError.message}). Activating Supabase backup...`, 16744272);
+          
+          try {
+            const backupResult = await saveKeyToSupabase(type);
+            return {
+              success: true,
+              key: backupResult.key,
+              source: 'supabase',
+              expiryFormatted: backupResult.expiryFormatted
+            };
+          } catch (supabaseError) {
+            // محاولة 3: توليد محلي (Offline Mode)
+            await notifyDiscord(`⚠️ Supabase failed. Generating offline key...`, 16776960);
+            const localKey = makeLocalKey(type);
+            return {
+              success: true,
+              key: localKey,
+              source: 'offline',
+              expiryFormatted: 'N/A'
+            };
+          }
+        }
+      }
+
+      // ── Generate 24h Key (Async with Failover) ────────────────────
+      window.runGenerator = async () => {
+        if (clickCount < 4 || !timerDone) return;
+        
+        const btn = document.getElementById('generate-btn');
+        btn.disabled = true;
+        btn.innerText = 'Generating...';
+
+        try {
+          const result = await generateKeyWithFailover('1d');
+          
+          const display = document.getElementById('key-display');
+          const label = result.source === 'worker' ? 'YOUR KEY:' : 
+                       result.source === 'supabase' ? 'YOUR KEY (Backup):' : 'YOUR KEY (Offline):';
+          
+          display.innerHTML = `<div style="font-size:11px;color:#555;margin-bottom:8px">${label}</div>${result.key}`;
+          display.style.display = 'block';
+          document.getElementById('copy-btn').style.display = 'block';
+          btn.innerText = '✅ Key Generated!';
+          
+        } catch (error) {
+          // لا يظهر خطأ للمستخدم - يولد مفتاح محلي كآخر محاولة
+          const localKey = makeLocalKey('1d');
+          const display = document.getElementById('key-display');
+          display.innerHTML = `<div style="font-size:11px;color:#555;margin-bottom:8px">YOUR KEY (Emergency):</div>${localKey}`;
+          display.style.display = 'block';
+          document.getElementById('copy-btn').style.display = 'block';
+          btn.innerText = '✅ Key Generated!';
+          await notifyDiscord(`⚠️ Emergency local key generated: ${localKey}`, 16776960);
+        }
       };
 
-      window.copyKey = function () {
-        var text = document.getElementById('key-display').innerText.split('\n').slice(-1)[0];
-        navigator.clipboard.writeText(text); alert('Key copied successfully!');
+      window.copyKey = () => {
+        const text = document.getElementById('key-display').innerText.split('\n').slice(-1)[0];
+        navigator.clipboard.writeText(text);
+        alert('Key copied successfully!');
       };
 
-      // ── 3-Day flow ───────────────────────────────────────────────
-      var currentRound3D = 1, clickCount3D = 0, timerRunning3D = false;
+      // ── 3-Day VIP Flow ────────────────────────────────────────────
+      let currentRound3D = 1, clickCount3D = 0, timerRunning3D = false;
 
-      window.processClick3D = function () {
+      window.processClick3D = () => {
         if (timerRunning3D) return;
         window.open("https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284", "_blank");
         clickCount3D++;
-        var btn = document.getElementById('main-btn-3d');
+        const btn = document.getElementById('main-btn-3d');
         if (clickCount3D < 10) {
-          btn.innerText = 'Click here to complete (' + clickCount3D + '/10) 🚀';
+          btn.innerText = `Click here to complete (${clickCount3D}/10) 🚀`;
         } else {
-          btn.disabled = true; btn.style.opacity = '0.5'; btn.innerText = 'Please wait...';
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+          btn.innerText = 'Please wait...';
           startRoundTimer3D();
         }
       };
 
       function startRoundTimer3D() {
-        timerRunning3D = true; var t = 30;
-        var td = document.getElementById('round-timer-3d');
-        td.style.display = 'block'; td.innerText = '00:30';
-        var iv = setInterval(function () {
-          t--; td.innerText = '00:' + (t < 10 ? '0' + t : t);
-          if (t <= 0) { clearInterval(iv); timerRunning3D = false; td.style.display = 'none'; finishRound3D() }
+        timerRunning3D = true;
+        let t = 30;
+        const td = document.getElementById('round-timer-3d');
+        td.style.display = 'block';
+        td.innerText = '00:30';
+        
+        const iv = setInterval(() => {
+          t--;
+          td.innerText = `00:${String(t).padStart(2, '0')}`;
+          if (t <= 0) {
+            clearInterval(iv);
+            timerRunning3D = false;
+            td.style.display = 'none';
+            finishRound3D();
+          }
         }, 1000);
       }
 
       function finishRound3D() {
         if (currentRound3D < 5) {
-          currentRound3D++; clickCount3D = 0;
-          document.getElementById('round-counter-text').innerText = 'Round ' + currentRound3D + ' of 5';
-          var btn = document.getElementById('main-btn-3d');
-          btn.disabled = false; btn.style.opacity = '1';
+          currentRound3D++;
+          clickCount3D = 0;
+          document.getElementById('round-counter-text').innerText = `Round ${currentRound3D} of 5`;
+          const btn = document.getElementById('main-btn-3d');
+          btn.disabled = false;
+          btn.style.opacity = '1';
           btn.innerText = 'Click here to complete (0/10) 🚀';
-          alert('Round finished. Please complete the next round to proceed!');
+          alert(`Round ${currentRound3D - 1} finished! Keep going.`);
         } else {
-          var btn = document.getElementById('main-btn-3d');
-          btn.style.display = 'none';
-          document.getElementById('btn-helper-text').style.display = 'none';
-          document.getElementById('round-counter-text').innerText = 'Success! All rounds finished 🎉';
-          showVIPKey();
+          generateVIPKey();
         }
       }
 
-      // ── Generate 3-day key via Worker (مع Failover) ─────────────
-      function showVIPKey() {
-        var wa = document.getElementById('waiting-area-3d');
-        if (wa) wa.style.display = 'none';
+      // ── Generate VIP Key (Async with Failover) ────────────────────
+      async function generateVIPKey() {
+        const btn = document.getElementById('main-btn-3d');
+        btn.disabled = true;
+        btn.innerText = 'Generating VIP Key...';
 
-        fetch(WORKER_URL + '/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Site-Token': SITE_SECRET },
-          body: JSON.stringify({ type: '3d' })
-        })
-          .then(function (r) {
-            var status = r.status;
-            return r.json().then(function (data) { return { data: data, status: status }; });
-          })
-          .then(function (res) {
-            var data = res.data, status = res.status;
-            if (data.key) {
-              var display = document.getElementById('key-display-3d');
-              display.innerHTML = '<div style="font-size:11px;color:#8a2be2;margin-bottom:8px">YOUR VIP KEY:</div>' + data.key;
-              display.style.display = 'block';
-              document.getElementById('copy-btn-3d').style.display = 'block';
-            } else if (shouldFailover(data, status)) {
-              notifyDiscord('⚠️ Cloudflare Worker فشل للمفتاح VIP. جاري التحويل لـ Supabase...', 16744272);
-              generateBackupKey('3d',
-                function (backupData) {
-                  var display = document.getElementById('key-display-3d');
-                  display.innerHTML = '<div style="font-size:11px;color:#8a2be2;margin-bottom:8px">YOUR VIP KEY (Emergency):</div>' + backupData.key;
-                  display.style.display = 'block';
-                  document.getElementById('copy-btn-3d').style.display = 'block';
-                },
-                function () { alert('Error generating VIP key. Please contact support.'); }
-              );
-            } else if (data.message) {
-              alert(data.message);
-            } else {
-              alert('Error generating VIP key. Please contact support.');
-            }
-          })
-          .catch(function () {
-            notifyDiscord('⚠️ Network error for VIP key. Attempting Supabase fallback...', 16744272);
-            generateBackupKey('3d',
-              function (backupData) {
-                var display = document.getElementById('key-display-3d');
-                display.innerHTML = '<div style="font-size:11px;color:#8a2be2;margin-bottom:8px">YOUR VIP KEY (Emergency):</div>' + backupData.key;
-                display.style.display = 'block';
-                document.getElementById('copy-btn-3d').style.display = 'block';
-              },
-              function () { alert('Server error. Please try again later.'); }
-            );
-          });
+        try {
+          const result = await generateKeyWithFailover('3d');
+          showFinalKey3D(result.key);
+        } catch (error) {
+          const localKey = makeLocalKey('3d');
+          showFinalKey3D(localKey);
+          await notifyDiscord(`⚠️ Emergency VIP key generated: ${localKey}`, 16776960);
+        }
       }
 
-      window.copyKey3D = function () {
-        var lines = document.getElementById('key-display-3d').innerText.split('\n');
-        var key = lines[lines.length - 1];
-        navigator.clipboard.writeText(key); alert('VIP Key copied successfully!');
+      function showFinalKey3D(key) {
+        const display = document.getElementById('key-display-3d');
+        display.innerHTML = `<div style="font-size:11px;color:#8a2be2;margin-bottom:8px">💎 YOUR VIP KEY:</div>${key}`;
+        display.style.display = 'block';
+        document.getElementById('copy-btn-3d').style.display = 'block';
+        document.getElementById('main-btn-3d').style.display = 'none';
+        document.getElementById('round-counter-text').innerText = '✅ Access Granted!';
+      }
+
+      window.copyKey3D = () => {
+        const text = document.getElementById('key-display-3d').innerText.split('\n').slice(-1)[0];
+        navigator.clipboard.writeText(text);
+        alert('VIP Key copied to clipboard!');
       };
 
-      // ── Verify key ───────────────────────────────────────────────
-      window.doVerify = function () {
-        var key = document.getElementById('verify-input').value.trim();
-        if (!key) { alert('Please enter a key.'); return }
-        var box = document.getElementById('verify-result-box');
-        box.style.display = 'none'; box.className = 'verify-result-box';
+      // ── Verify Logic (Async with Supabase Fallback) ───────────────
+      window.doVerify = async () => {
+        const key = document.getElementById('verify-input').value.trim();
+        const resBox = document.getElementById('verify-result-box');
+        if (!key) return alert("Please paste a key first!");
 
-        fetch(WORKER_URL + '/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: key })
-        })
-          .then(function (r) { return r.json() })
-          .then(function (data) {
-            box.style.display = 'block';
-            if (data.valid) {
-              var hrs = data.remaining_seconds ? Math.floor(data.remaining_seconds / 3600) : 0;
-              var mins = data.remaining_seconds ? Math.floor((data.remaining_seconds % 3600) / 60) : 0;
-              box.className = 'verify-result-box v-valid';
-              box.innerHTML = '✅ <strong>Valid Key</strong><br>⏱ Expires: ' + data.expiry_formatted + '<br>⌛ Remaining: ' + hrs + 'h ' + mins + 'm<br>' + (data.note ? '📝 ' + data.note : '');
-            } else {
-              var reasons = { not_found: 'Key not found', expired: 'Key has expired', revoked: 'Key has been revoked' };
-              box.className = 'verify-result-box v-invalid';
-              box.innerHTML = '❌ <strong>Invalid Key</strong><br>' + (reasons[data.reason] || data.reason || 'Unknown error');
-            }
-          })
-          .catch(function () {
-            box.style.display = 'block'; box.className = 'verify-result-box v-invalid';
-            box.innerHTML = '❌ Server error. Check your connection.';
+        resBox.style.display = 'block';
+        resBox.className = '';
+        resBox.innerHTML = "⏳ Verifying...";
+
+        try {
+          // محاولة التحقق من Worker أولاً
+          const response = await fetch(`${WORKER_URL}/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key })
           });
+
+          const data = await response.json();
+
+          if (data.valid) {
+            const hrs = data.remaining_seconds ? Math.floor(data.remaining_seconds / 3600) : 0;
+            const mins = data.remaining_seconds ? Math.floor((data.remaining_seconds % 3600) / 60) : 0;
+            resBox.className = 'v-valid';
+            resBox.innerHTML = `✅ <b>Valid Key!</b><br>⏱ Expires: ${data.expiry_formatted}<br>⌛ Remaining: ${hrs}h ${mins}m`;
+          } else {
+            // Failover للتحقق من Supabase
+            await checkKeyInSupabase(key);
+          }
+        } catch (error) {
+          // Failover للتحقق من Supabase
+          await checkKeyInSupabase(key);
+        }
       };
 
-      // ── Navigation ───────────────────────────────────────────────
-      var timerStarted = false;
+      async function checkKeyInSupabase(key) {
+        const S_URL = `${SUPABASE_URL}/rest/v1/keys?key_value=eq.${encodeURIComponent(key)}`;
+        const resBox = document.getElementById('verify-result-box');
 
-      window.start24HoursFlow = function () {
+        try {
+          const response = await fetch(S_URL, {
+            headers: { 
+              'apikey': SUPABASE_KEY, 
+              'Authorization': `Bearer ${SUPABASE_KEY}` 
+            }
+          });
+
+          const data = await response.json();
+
+          if (data && data.length > 0) {
+            const kData = data[0];
+            const now = new Date();
+            const expiryDate = new Date(kData.expiry_timestamp);
+            
+            if (expiryDate > now) {
+              const hrs = Math.floor((expiryDate - now) / 3600000);
+              const mins = Math.floor(((expiryDate - now) % 3600000) / 60000);
+              resBox.className = 'v-valid';
+              resBox.innerHTML = `✅ <b>Key Valid!</b><br>Status: Active (Backup System)<br>⌛ Remaining: ${hrs}h ${mins}m`;
+            } else {
+              resBox.className = 'v-invalid';
+              resBox.innerHTML = "❌ <b>Key Expired!</b>";
+            }
+          } else {
+            resBox.className = 'v-invalid';
+            resBox.innerHTML = "❌ <b>Invalid Key!</b>";
+          }
+        } catch (error) {
+          resBox.className = 'v-invalid';
+          resBox.innerHTML = "❌ Server error. Check your connection.";
+        }
+      }
+
+      // ── Navigation Logic ─────────────────────────────────────────
+      let timerStarted = false;
+
+      window.start24HoursFlow = () => {
         document.getElementById('choice-screen').style.display = 'none';
         document.getElementById('content-screen').style.display = 'block';
-        if (!timerStarted) { checkAdBlock(); startTimer(); timerStarted = true }
+        if (!timerStarted) { checkAdBlock(); startTimer(); startClock(); timerStarted = true; }
       };
 
-      window.start3DaysFlow = function () {
+      window.start3DaysFlow = () => {
         document.getElementById('choice-screen').style.display = 'none';
         document.getElementById('content-screen-3d').style.display = 'block';
         if (!window.adsLoaded3D) {
           window.adsLoaded3D = true;
-          var containers = document.querySelectorAll('.ad-container-3d');
-          var delay = 0;
-          containers.forEach(function (container) {
-            setTimeout(function () {
-              var iframe = document.createElement('iframe');
-              iframe.width = "300"; iframe.height = "250"; iframe.style.border = "none";
-              iframe.scrolling = "no"; iframe.style.background = "transparent";
+          const containers = document.querySelectorAll('.ad-container-3d');
+          let delay = 0;
+          containers.forEach((container) => {
+            setTimeout(() => {
+              const iframe = document.createElement('iframe');
+              iframe.width = "300";
+              iframe.height = "250";
+              iframe.style.border = "none";
+              iframe.scrolling = "no";
+              iframe.style.background = "transparent";
               container.appendChild(iframe);
-              var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
+              const doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
               doc.open();
-              doc.write("<!DOCTYPE html><html><body style='margin:0;background:transparent;display:flex;justify-content:center;align-items:center;'><script>atOptions={'key':'0e4c2a3b5881e334c05cef8a6c825c1a','format':'iframe','height':250,'width':300,'params':{}};<\/script><script src='https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js?cb=" + Math.random() + "'><\/script></body></html>");
+              doc.write(`<!DOCTYPE html><html><body style='margin:0;background:transparent;display:flex;justify-content:center;align-items:center;'><script>atOptions={'key':'0e4c2a3b5881e334c05cef8a6c825c1a','format':'iframe','height':250,'width':300,'params':{}};<\/script><script src='https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js?cb=${Math.random()}'><\/script></body></html>`);
               doc.close();
-            }, delay); delay += 800;
+            }, delay);
+            delay += 800;
           });
         }
       };
 
-      window.openVerify = function () {
+      window.openVerify = () => {
         document.getElementById('choice-screen').style.display = 'none';
         document.getElementById('verify-screen').style.display = 'block';
       };
 
-      window.backToChoice = function () {
+      window.backToChoice = () => {
         document.getElementById('content-screen').style.display = 'none';
         document.getElementById('content-screen-3d').style.display = 'none';
         document.getElementById('verify-screen').style.display = 'none';
         document.getElementById('choice-screen').style.display = 'block';
       };
 
-      window.onload = function () { startClock() };
+      window.onload = () => { startClock(); };
 
     })();
   </script>

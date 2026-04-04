@@ -500,34 +500,19 @@
     })();
 
     // ================================================================
-    // MAIN LOGIC - Anti-Fail Failover System with async/await
+    // MAIN LOGIC - Server-Only System with Dual Servers
     // ================================================================
     (function () {
 
       // ── Configuration ─────────────────────────────────────────────
-      const WORKER_URL = "https://snowy-surf-8e37.master-key.workers.dev";
+      const PRIMARY_SERVER = "https://snowy-surf-8e37.master-key.workers.dev";
+      const BACKUP_SERVER = "https://dawn-grass-13cd.yosefelmosk.workers.dev";
       const SITE_SECRET = "HDLE_SITE_2025_AYOUB";
-      
-      // ✅ Supabase Credentials (محدثة وصحيحة)
-      const SUPABASE_URL = "https://jqyghgflqbpgfaagyrzk.supabase.co";
-      const SUPABASE_KEY = "sb_publishable_4iz7tck-ammXSXP73bJWVQ_e4lJM";
-      const SUPABASE_TABLE_URL = `${SUPABASE_URL}/rest/v1/keys`;
       
       const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1488990191787184192/CeaLiiGXot0QjU_wR0n0MFEG7AKx_kk65-ENRw49qYy5lo9IpuHkz_L91tM5wFygK58w";
 
       // ── Helper Functions ──────────────────────────────────────────
       
-      // توليد مفتاح محلي
-      function makeLocalKey(type) {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        const prefix = type === '3d' ? 'MASTER-3D' : 'HDLE';
-        let seg = '';
-        for (let i = 0; i < 20; i++) seg += chars[Math.floor(Math.random() * chars.length)];
-        const parts = [];
-        for (let j = 0; j < 20; j += 4) parts.push(seg.slice(j, j + 4));
-        return prefix + '-' + parts.join('-');
-      }
-
       // إرسال تنبيه لديسكورد (صامت)
       async function notifyDiscord(msg, color = 16776960) {
         try {
@@ -615,122 +600,66 @@
       };
 
       // ================================================================
-      // ── ANTI-FAIL FAILOVER SYSTEM ──────────────────────────────────
+      // ── SERVER-ONLY KEY GENERATION SYSTEM ──────────────────────────
       // ================================================================
 
-      // ── حفظ المفتاح في Supabase (نظام الاحتياط) ───────────────────
-      async function saveKeyToSupabase(type) {
-        const key = makeLocalKey(type);
-        const now = Math.floor(Date.now() / 1000);
-        const ttlSecs = type === '3d' ? 259200 : 86400; // 3 days or 1 day
-        const expiry = now + ttlSecs;
+      // ── طلب مفتاح من سيرفر معين ──────────────────────────────────
+      async function fetchKeyFromServer(serverUrl, type) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 ثواني timeout
+
+        const response = await fetch(`${serverUrl}/generate`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'X-Site-Token': SITE_SECRET 
+          },
+          body: JSON.stringify({ type }),
+          signal: controller.signal
+        });
         
-        // تنسيق ISO8601 صحيح لـ timestamptz
-        const expiryISO = new Date(expiry * 1000).toISOString();
-        const expiryFormatted = expiryISO.replace('T', ' ').slice(0, 19) + ' UTC';
+        clearTimeout(timeoutId);
 
-        // البيانات تطابق أعمدة الجدول تماماً
-        const payload = {
-          key_value: key,
-          type: type,
-          status: 'active',
-          expiry_timestamp: expiryISO
-        };
+        // Failover على أي خطأ 401, 429, 500 أو !response.ok
+        if (!response.ok || [401, 429, 500].includes(response.status)) {
+          throw new Error(`Server ${serverUrl} failed with status ${response.status}`);
+        }
 
-        try {
-          const response = await fetch(SUPABASE_TABLE_URL, {
-            method: 'POST',
-            headers: {
-              'apikey': SUPABASE_KEY,
-              'Authorization': `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
-            },
-            body: JSON.stringify(payload)
-          });
-
-          if (response.ok || (response.status >= 200 && response.status < 300)) {
-            await notifyDiscord(`✅ Key saved to Supabase\\nKey: ${key}`, 65280);
-            return { success: true, key, expiryFormatted };
-          } else if (response.status === 401) {
-            throw new Error('401 Unauthorized - Invalid Supabase Key');
-          } else if (response.status === 403) {
-            throw new Error('403 Forbidden - Check RLS policies');
-          } else if (response.status === 500) {
-            throw new Error('500 Server Error');
-          } else {
-            const text = await response.text();
-            throw new Error(`Status ${response.status}: ${text}`);
-          }
-        } catch (error) {
-          await notifyDiscord(`❌ Supabase Error: ${error.message}`, 16711680);
-          throw error;
+        const data = await response.json();
+        
+        if (data.key) {
+          return { 
+            success: true, 
+            key: data.key, 
+            source: serverUrl === PRIMARY_SERVER ? 'primary' : 'backup',
+            expiryFormatted: data.expiry_formatted || 'N/A'
+          };
+        } else {
+          throw new Error('Server returned no key');
         }
       }
 
-      // ── توليد المفتاح الرئيسي مع Failover ─────────────────────────
+      // ── توليد المفتاح مع نظام Failover بين السيرفرين ──────────────
       async function generateKeyWithFailover(type) {
-        // محاولة 1: السيرفر الأساسي (Worker)
+        // محاولة 1: السيرفر الأساسي (Primary)
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 ثواني timeout
-
-          const response = await fetch(`${WORKER_URL}/generate`, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json', 
-              'X-Site-Token': SITE_SECRET 
-            },
-            body: JSON.stringify({ type }),
-            signal: controller.signal
-          });
+          const result = await fetchKeyFromServer(PRIMARY_SERVER, type);
+          return result;
+        } catch (primaryError) {
+          await notifyDiscord(`⚠️ Primary server failed. Trying backup...`, 16744272);
           
-          clearTimeout(timeoutId);
-
-          // Failover على أي خطأ 401, 403, 500 أو !response.ok
-          if (!response.ok || [401, 403, 500].includes(response.status)) {
-            throw new Error(`Worker failed with status ${response.status}`);
-          }
-
-          const data = await response.json();
-          
-          if (data.key) {
-            return { 
-              success: true, 
-              key: data.key, 
-              source: 'worker',
-              expiryFormatted: data.expiry_formatted || 'N/A'
-            };
-          } else {
-            throw new Error('Worker returned no key');
-          }
-        } catch (workerError) {
-          // محاولة 2: النظام الاحتياطي (Supabase)
-          await notifyDiscord(`⚠️ Worker failed (${workerError.message}). Activating Supabase backup...`, 16744272);
-          
+          // محاولة 2: السيرفر الاحتياطي (Backup)
           try {
-            const backupResult = await saveKeyToSupabase(type);
-            return {
-              success: true,
-              key: backupResult.key,
-              source: 'supabase',
-              expiryFormatted: backupResult.expiryFormatted
-            };
-          } catch (supabaseError) {
-            // محاولة 3: توليد محلي (Offline Mode)
-            await notifyDiscord(`⚠️ Supabase failed. Generating offline key...`, 16776960);
-            const localKey = makeLocalKey(type);
-            return {
-              success: true,
-              key: localKey,
-              source: 'offline',
-              expiryFormatted: 'N/A'
-            };
+            const result = await fetchKeyFromServer(BACKUP_SERVER, type);
+            return result;
+          } catch (backupError) {
+            await notifyDiscord(`❌ Both servers failed`, 16711680);
+            throw new Error('Both servers unavailable');
           }
         }
       }
 
-      // ── Generate 24h Key (Async with Failover) ────────────────────
+      // ── Generate 24h Key (Server-Only) ────────────────────────────
       window.runGenerator = async () => {
         if (clickCount < 4 || !timerDone) return;
         
@@ -742,8 +671,7 @@
           const result = await generateKeyWithFailover('1d');
           
           const display = document.getElementById('key-display');
-          const label = result.source === 'worker' ? 'YOUR KEY:' : 
-                       result.source === 'supabase' ? 'YOUR KEY (Backup):' : 'YOUR KEY (Offline):';
+          const label = result.source === 'primary' ? 'YOUR KEY:' : 'YOUR KEY (Backup Server):';
           
           display.innerHTML = `<div style="font-size:11px;color:#555;margin-bottom:8px">${label}</div>${result.key}`;
           display.style.display = 'block';
@@ -751,14 +679,12 @@
           btn.innerText = '✅ Key Generated!';
           
         } catch (error) {
-          // لا يظهر خطأ للمستخدم - يولد مفتاح محلي كآخر محاولة
-          const localKey = makeLocalKey('1d');
+          // لا يوجد توليد محلي - إظهار رسالة خطأ واضحة
           const display = document.getElementById('key-display');
-          display.innerHTML = `<div style="font-size:11px;color:#555;margin-bottom:8px">YOUR KEY (Emergency):</div>${localKey}`;
+          display.innerHTML = `<div style="font-size:14px;color:#ff6b6b;text-align:center">⚠️ Servers are busy. Please try again in 5 minutes.</div>`;
           display.style.display = 'block';
-          document.getElementById('copy-btn').style.display = 'block';
-          btn.innerText = '✅ Key Generated!';
-          await notifyDiscord(`⚠️ Emergency local key generated: ${localKey}`, 16776960);
+          btn.innerText = '❌ Failed';
+          await notifyDiscord(`❌ Both servers failed - User shown error message`, 16711680);
         }
       };
 
@@ -820,7 +746,7 @@
         }
       }
 
-      // ── Generate VIP Key (Async with Failover) ────────────────────
+      // ── Generate VIP Key (Server-Only) ──────────────────────────
       async function generateVIPKey() {
         const btn = document.getElementById('main-btn-3d');
         btn.disabled = true;
@@ -830,9 +756,12 @@
           const result = await generateKeyWithFailover('3d');
           showFinalKey3D(result.key);
         } catch (error) {
-          const localKey = makeLocalKey('3d');
-          showFinalKey3D(localKey);
-          await notifyDiscord(`⚠️ Emergency VIP key generated: ${localKey}`, 16776960);
+          // لا يوجد توليد محلي - إظهار رسالة خطأ واضحة
+          const display = document.getElementById('key-display-3d');
+          display.innerHTML = `<div style="font-size:14px;color:#ff6b6b;text-align:center">⚠️ Servers are busy. Please try again in 5 minutes.</div>`;
+          display.style.display = 'block';
+          btn.innerText = '❌ Failed';
+          await notifyDiscord(`❌ VIP generation failed - Both servers unavailable`, 16711680);
         }
       }
 
@@ -851,7 +780,7 @@
         alert('VIP Key copied to clipboard!');
       };
 
-      // ── Verify Logic (Async with Supabase Fallback) ───────────────
+      // ── Verify Logic (Check Both Servers) ─────────────────────────
       window.doVerify = async () => {
         const key = document.getElementById('verify-input').value.trim();
         const resBox = document.getElementById('verify-result-box');
@@ -861,11 +790,14 @@
         resBox.className = '';
         resBox.innerHTML = "⏳ Verifying...";
 
+        // محاولة التحقق من السيرفر الأساسي أولاً
         try {
-          // محاولة التحقق من Worker أولاً
-          const response = await fetch(`${WORKER_URL}/verify`, {
+          const response = await fetch(`${PRIMARY_SERVER}/verify`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'X-Site-Token': SITE_SECRET
+            },
             body: JSON.stringify({ key })
           });
 
@@ -876,53 +808,40 @@
             const mins = data.remaining_seconds ? Math.floor((data.remaining_seconds % 3600) / 60) : 0;
             resBox.className = 'v-valid';
             resBox.innerHTML = `✅ <b>Valid Key!</b><br>⏱ Expires: ${data.expiry_formatted}<br>⌛ Remaining: ${hrs}h ${mins}m`;
-          } else {
-            // Failover للتحقق من Supabase
-            await checkKeyInSupabase(key);
+            return;
           }
         } catch (error) {
-          // Failover للتحقق من Supabase
-          await checkKeyInSupabase(key);
+          // Primary server failed, try backup
         }
-      };
 
-      async function checkKeyInSupabase(key) {
-        const S_URL = `${SUPABASE_URL}/rest/v1/keys?key_value=eq.${encodeURIComponent(key)}`;
-        const resBox = document.getElementById('verify-result-box');
-
+        // محاولة التحقق من السيرفر الاحتياطي
         try {
-          const response = await fetch(S_URL, {
+          const response = await fetch(`${BACKUP_SERVER}/verify`, {
+            method: 'POST',
             headers: { 
-              'apikey': SUPABASE_KEY, 
-              'Authorization': `Bearer ${SUPABASE_KEY}` 
-            }
+              'Content-Type': 'application/json',
+              'X-Site-Token': SITE_SECRET
+            },
+            body: JSON.stringify({ key })
           });
 
           const data = await response.json();
 
-          if (data && data.length > 0) {
-            const kData = data[0];
-            const now = new Date();
-            const expiryDate = new Date(kData.expiry_timestamp);
-            
-            if (expiryDate > now) {
-              const hrs = Math.floor((expiryDate - now) / 3600000);
-              const mins = Math.floor(((expiryDate - now) % 3600000) / 60000);
-              resBox.className = 'v-valid';
-              resBox.innerHTML = `✅ <b>Key Valid!</b><br>Status: Active (Backup System)<br>⌛ Remaining: ${hrs}h ${mins}m`;
-            } else {
-              resBox.className = 'v-invalid';
-              resBox.innerHTML = "❌ <b>Key Expired!</b>";
-            }
+          if (data.valid) {
+            const hrs = data.remaining_seconds ? Math.floor(data.remaining_seconds / 3600) : 0;
+            const mins = data.remaining_seconds ? Math.floor((data.remaining_seconds % 3600) / 60) : 0;
+            resBox.className = 'v-valid';
+            resBox.innerHTML = `✅ <b>Valid Key!</b><br>⏱ Expires: ${data.expiry_formatted}<br>⌛ Remaining: ${hrs}h ${mins}m<br><small>(Verified via Backup Server)</small>`;
+            return;
           } else {
             resBox.className = 'v-invalid';
-            resBox.innerHTML = "❌ <b>Invalid Key!</b>";
+            resBox.innerHTML = "❌ <b>Invalid or Expired Key!</b>";
           }
         } catch (error) {
           resBox.className = 'v-invalid';
-          resBox.innerHTML = "❌ Server error. Check your connection.";
+          resBox.innerHTML = "❌ <b>Unable to verify.</b><br>Servers are currently unavailable.";
         }
-      }
+      };
 
       // ── Navigation Logic ─────────────────────────────────────────
       let timerStarted = false;

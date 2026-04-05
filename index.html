@@ -1,1023 +1,516 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HDLE MASTER ELITE</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HDLE MASTER ELITE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
-    * {
-      box-sizing: border-box
-    }
+*{box-sizing:border-box}
+body{
+  background:radial-gradient(circle,#0a0a0a 0%,#000 100%);
+  display:flex;justify-content:center;align-items:center;
+  min-height:100vh;margin:0;
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  color:#00ff96;overflow-x:hidden;
+}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
 
-    body {
-      background: radial-gradient(circle, #0a0a0a 0%, #000 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #00ff96;
-      overflow-x: hidden;
-    }
+#main-container{
+  background:#050505;border-radius:25px;border:2px solid #00ff96;
+  box-shadow:0 0 40px rgba(0,255,150,0.2);
+  width:95%;max-width:550px;padding:20px;text-align:center;
+  position:relative;border-top:8px solid #00ff96;z-index:1;margin:20px auto;
+}
+h2{font-family:'Orbitron',sans-serif;letter-spacing:4px;text-shadow:0 0 15px #00ff96;margin-bottom:20px;font-size:clamp(14px,4vw,22px)}
+.section-box{background:#080808;border:1px solid #1a1a1a;border-radius:15px;padding:15px;margin-bottom:15px}
+.ad-box{background:#080808;border:1px solid #00ff9622;border-radius:15px;padding:12px;margin-bottom:15px;display:flex;flex-direction:column;align-items:center;overflow:hidden;width:100%}
+.ad-box-label{font-size:10px;color:#333;margin-bottom:8px;letter-spacing:2px;text-transform:uppercase}
+.ad-box-inner{width:100%;display:flex;justify-content:center;align-items:center;overflow:hidden;border-radius:10px;background:#000}
+.ad-box-inner iframe{max-width:100%!important;border:none!important}
+#utc-clock{font-family:'Orbitron',sans-serif;font-size:clamp(20px,6vw,30px);color:#ff3c3c;text-shadow:0 0 10px #ff3c3c}
+.btn-link{background:linear-gradient(90deg,#ff0055,#ff00aa);border-radius:10px;color:white;display:inline-block;padding:15px;text-decoration:none;width:90%;font-weight:bold;font-size:clamp(13px,3.5vw,16px);box-shadow:0 5px 15px rgba(255,0,85,0.4);transition:transform 0.2s}
+.btn-link:hover{transform:translateY(-2px)}
+#generate-btn{background:#111;border:1px solid #222;color:#333;font-size:clamp(14px,4vw,20px);font-weight:bold;padding:18px;width:100%;cursor:not-allowed;border-radius:12px;transition:0.5s;font-family:'Orbitron',sans-serif}
+#adblock-screen{display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);z-index:10000;flex-direction:column;justify-content:center;align-items:center;border-radius:20px;padding:20px}
+.sparkle{position:fixed;pointer-events:none;width:7px;height:7px;border-radius:50%;background:white;box-shadow:0 0 8px white,0 0 16px #00ff96;animation:sparkleFade 0.7s forwards;z-index:9999}
+@keyframes sparkleFade{0%{transform:scale(1);opacity:1}100%{transform:scale(0);opacity:0}}
+@media(max-width:340px){#main-container{padding:12px}h2{letter-spacing:2px}}
+@keyframes pulse{0%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:0.7}100%{transform:scale(1);opacity:1}}
 
-    #particles-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0
-    }
-
-    #main-container {
-      background: #050505;
-      border-radius: 25px;
-      border: 2px solid #00ff96;
-      box-shadow: 0 0 40px rgba(0, 255, 150, 0.2);
-      width: 95%;
-      max-width: 550px;
-      padding: 20px;
-      text-align: center;
-      position: relative;
-      border-top: 8px solid #00ff96;
-      z-index: 1;
-      margin: 20px auto;
-    }
-
-    h2 {
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 4px;
-      text-shadow: 0 0 15px #00ff96;
-      margin-bottom: 20px;
-      font-size: clamp(14px, 4vw, 22px)
-    }
-
-    .section-box {
-      background: #080808;
-      border: 1px solid #1a1a1a;
-      border-radius: 15px;
-      padding: 15px;
-      margin-bottom: 15px
-    }
-
-    .ad-box {
-      background: #080808;
-      border: 1px solid #00ff9622;
-      border-radius: 15px;
-      padding: 12px;
-      margin-bottom: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow: hidden;
-      width: 100%
-    }
-
-    .ad-box-label {
-      font-size: 10px;
-      color: #333;
-      margin-bottom: 8px;
-      letter-spacing: 2px;
-      text-transform: uppercase
-    }
-
-    .ad-box-inner {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      border-radius: 10px;
-      background: #000
-    }
-
-    .ad-box-inner iframe {
-      max-width: 100% !important;
-      border: none !important
-    }
-
-    #utc-clock {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(20px, 6vw, 30px);
-      color: #ff3c3c;
-      text-shadow: 0 0 10px #ff3c3c
-    }
-
-    .btn-link {
-      background: linear-gradient(90deg, #ff0055, #ff00aa);
-      border-radius: 10px;
-      color: white;
-      display: inline-block;
-      padding: 15px;
-      text-decoration: none;
-      width: 90%;
-      font-weight: bold;
-      font-size: clamp(13px, 3.5vw, 16px);
-      box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4);
-      transition: transform 0.2s
-    }
-
-    .btn-link:hover {
-      transform: translateY(-2px)
-    }
-
-    #generate-btn {
-      background: #111;
-      border: 1px solid #222;
-      color: #333;
-      font-size: clamp(14px, 4vw, 20px);
-      font-weight: bold;
-      padding: 18px;
-      width: 100%;
-      cursor: not-allowed;
-      border-radius: 12px;
-      transition: 0.5s;
-      font-family: 'Orbitron', sans-serif
-    }
-
-    #adblock-screen {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.98);
-      z-index: 10000;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      border-radius: 20px;
-      padding: 20px
-    }
-
-    .sparkle {
-      position: fixed;
-      pointer-events: none;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: white;
-      box-shadow: 0 0 8px white, 0 0 16px #00ff96;
-      animation: sparkleFade 0.7s forwards;
-      z-index: 9999
-    }
-
-    @keyframes sparkleFade {
-      0% {
-        transform: scale(1);
-        opacity: 1
-      }
-
-      100% {
-        transform: scale(0);
-        opacity: 0
-      }
-    }
-
-    @media(max-width:340px) {
-      #main-container {
-        padding: 12px
-      }
-
-      h2 {
-        letter-spacing: 2px
-      }
-    }
-
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 1
-      }
-
-      50% {
-        transform: scale(1.1);
-        opacity: 0.7
-      }
-
-      100% {
-        transform: scale(1);
-        opacity: 1
-      }
-    }
-
-    /* Verify screen */
-    #verify-screen {
-      display: none;
-      padding: 20px 0
-    }
-
-    #verify-input {
-      background: #0a0a0a;
-      border: 1px solid #00ff9655;
-      border-radius: 10px;
-      color: #00ff96;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 12px;
-      padding: 14px;
-      width: 100%;
-      margin-bottom: 12px;
-      outline: none;
-      text-align: center;
-      letter-spacing: 1px
-    }
-
-    #verify-input:focus {
-      border-color: #00ff96;
-      box-shadow: 0 0 10px rgba(0, 255, 150, 0.2)
-    }
-
-    #verify-result-box {
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 10px;
-      display: none;
-      font-size: 14px;
-      line-height: 1.8
-    }
-
-    .v-valid {
-      background: rgba(0, 255, 150, 0.06);
-      border: 1px solid rgba(0, 255, 150, 0.3);
-      color: #00ff96
-    }
-
-    .v-invalid {
-      background: rgba(255, 60, 60, 0.06);
-      border: 1px solid rgba(255, 60, 60, 0.3);
-      color: #ff3c3c
-    }
-  </style>
+/* Verify screen */
+#verify-screen{display:none;padding:20px 0}
+#verify-input{background:#0a0a0a;border:1px solid #00ff9655;border-radius:10px;color:#00ff96;font-family:'Orbitron',sans-serif;font-size:12px;padding:14px;width:100%;margin-bottom:12px;outline:none;text-align:center;letter-spacing:1px}
+#verify-input:focus{border-color:#00ff96;box-shadow:0 0 10px rgba(0,255,150,0.2)}
+#verify-result-box{padding:15px;border-radius:12px;margin-top:10px;display:none;font-size:14px;line-height:1.8}
+.v-valid{background:rgba(0,255,150,0.06);border:1px solid rgba(0,255,150,0.3);color:#00ff96}
+.v-invalid{background:rgba(255,60,60,0.06);border:1px solid rgba(255,60,60,0.3);color:#ff3c3c}
+</style>
 </head>
-
 <body>
 
-  <canvas id="particles-canvas"></canvas>
+<canvas id="particles-canvas"></canvas>
 
-  <div id="main-container">
+<div id="main-container">
 
-    <!-- ===== CHOICE SCREEN ===== -->
-    <div id="choice-screen" style="padding:20px 0">
-      <h2 style="font-size:clamp(16px,5vw,24px);margin-bottom:30px;line-height:1.5;color:#00ff96">
-        Please Select Key Type<br>
-        <span style="font-size:14px;font-family:'Segoe UI',sans-serif;color:#aaa">Select the duration of your
-          access</span>
-      </h2>
-      <div style="display:flex;gap:15px;justify-content:center;align-items:stretch;width:100%;margin-bottom:20px">
-        <button onclick="window.start24HoursFlow()" class="btn-link"
-          style="flex:1;padding:20px 10px;border:1px solid #ff3377;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:auto;background:linear-gradient(90deg,#ff0055,#ff00aa);box-shadow:0 5px 15px rgba(255,0,85,0.4);border-radius:12px;transition:transform 0.2s">
-          <span style="font-size:clamp(24px,6vw,32px)">⏱️</span>
-          <span style="font-weight:bold;font-family:'Orbitron',sans-serif">24 Hours Key</span>
-          <span style="font-size:12px;font-weight:normal;color:#eee;font-family:'Segoe UI',sans-serif">Standard
-            Access</span>
-        </button>
-        <button onclick="window.start3DaysFlow()" class="btn-link"
-          style="flex:1;padding:20px 10px;border:1px solid #9932cc;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:auto;background:linear-gradient(90deg,#8a2be2,#4b0082);box-shadow:0 5px 15px rgba(138,43,226,0.4);border-radius:12px;transition:transform 0.2s">
-          <span style="font-size:clamp(24px,6vw,32px)">💎</span>
-          <span style="font-weight:bold;font-family:'Orbitron',sans-serif">3 Days VIP Key</span>
-          <span style="font-size:12px;font-weight:normal;color:#eee;font-family:'Segoe UI',sans-serif">Premium
-            Access</span>
-        </button>
-      </div>
-      <!-- Verify link -->
-      <div style="margin-top:10px">
-        <button onclick="window.openVerify()"
-          style="background:transparent;border:1px solid #00ff9644;color:#00ff9688;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Segoe UI',sans-serif;transition:all 0.2s"
-          onmouseover="this.style.borderColor='#00ff96';this.style.color='#00ff96'"
-          onmouseout="this.style.borderColor='#00ff9644';this.style.color='#00ff9688'">
-          🔍 Verify Existing Key
-        </button>
+  <!-- ===== CHOICE SCREEN ===== -->
+  <div id="choice-screen" style="padding:20px 0">
+    <h2 style="font-size:clamp(16px,5vw,24px);margin-bottom:30px;line-height:1.5;color:#00ff96">
+      Please Select Key Type<br>
+      <span style="font-size:14px;font-family:'Segoe UI',sans-serif;color:#aaa">Select the duration of your access</span>
+    </h2>
+    <div style="display:flex;gap:15px;justify-content:center;align-items:stretch;width:100%;margin-bottom:20px">
+      <button onclick="window.start24HoursFlow()" class="btn-link"
+        style="flex:1;padding:20px 10px;border:1px solid #ff3377;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:auto;background:linear-gradient(90deg,#ff0055,#ff00aa);box-shadow:0 5px 15px rgba(255,0,85,0.4);border-radius:12px;transition:transform 0.2s">
+        <span style="font-size:clamp(24px,6vw,32px)">⏱️</span>
+        <span style="font-weight:bold;font-family:'Orbitron',sans-serif">24 Hours Key</span>
+        <span style="font-size:12px;font-weight:normal;color:#eee;font-family:'Segoe UI',sans-serif">Standard Access</span>
+      </button>
+      <button onclick="window.start3DaysFlow()" class="btn-link"
+        style="flex:1;padding:20px 10px;border:1px solid #9932cc;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:auto;background:linear-gradient(90deg,#8a2be2,#4b0082);box-shadow:0 5px 15px rgba(138,43,226,0.4);border-radius:12px;transition:transform 0.2s">
+        <span style="font-size:clamp(24px,6vw,32px)">💎</span>
+        <span style="font-weight:bold;font-family:'Orbitron',sans-serif">3 Days VIP Key</span>
+        <span style="font-size:12px;font-weight:normal;color:#eee;font-family:'Segoe UI',sans-serif">Premium Access</span>
+      </button>
+    </div>
+    <!-- Verify link -->
+    <div style="margin-top:10px">
+      <button onclick="window.openVerify()"
+        style="background:transparent;border:1px solid #00ff9644;color:#00ff9688;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Segoe UI',sans-serif;transition:all 0.2s"
+        onmouseover="this.style.borderColor='#00ff96';this.style.color='#00ff96'"
+        onmouseout="this.style.borderColor='#00ff9644';this.style.color='#00ff9688'">
+        🔍 Verify Existing Key
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== VERIFY SCREEN ===== -->
+  <div id="verify-screen">
+    <div style="text-align:left">
+      <button onclick="window.backToChoice()"
+        style="background:transparent;border:1px solid #00ff9655;color:#00ff96;padding:6px 12px;border-radius:8px;cursor:pointer;margin-bottom:15px;font-weight:bold;display:inline-flex;align-items:center;gap:5px;font-family:'Segoe UI',sans-serif">
+        🔙 Back
+      </button>
+    </div>
+    <h2 style="font-size:18px;margin-bottom:20px">🔍 VERIFY YOUR KEY</h2>
+    <div class="section-box">
+      <p style="color:#aaa;font-size:13px;margin-bottom:15px">Enter your key below to check if it's valid and see remaining time.</p>
+      <input id="verify-input" type="text" placeholder="Paste your key here..." spellcheck="false">
+      <button onclick="window.doVerify()"
+        style="background:linear-gradient(90deg,#00c870,#00ff96);color:#000;border:none;padding:14px;width:100%;border-radius:10px;font-weight:bold;font-size:15px;cursor:pointer;font-family:'Orbitron',sans-serif;margin-top:5px">
+        VERIFY KEY
+      </button>
+      <div id="verify-result-box"></div>
+    </div>
+  </div>
+
+  <!-- ===== 24H CONTENT SCREEN ===== -->
+  <div id="content-screen" style="display:none">
+    <div style="text-align:left">
+      <button onclick="window.backToChoice()"
+        style="background:transparent;border:1px solid #ff3c3c;color:#ff3c3c;padding:6px 12px;border-radius:8px;cursor:pointer;margin-bottom:15px;font-weight:bold;display:inline-flex;align-items:center;gap:5px;font-family:'Segoe UI',sans-serif">
+        🔙 Back
+      </button>
+    </div>
+
+    <div id="adblock-screen">
+      <span style="font-size:clamp(50px,15vw,80px);color:#ff3c3c">⚠️</span>
+      <h2 style="color:#ff3c3c;margin-top:20px">AdBlock Detected</h2>
+      <p style="color:#bbb;padding:0 20px">Please disable it and refresh the page to obtain your key.</p>
+      <button onclick="location.reload()" style="background:#ff3c3c;color:white;border:none;padding:15px 35px;border-radius:10px;cursor:pointer;font-weight:bold;margin-top:25px">Retry</button>
+    </div>
+
+    <h2>MASTER SYSTEM ELITE</h2>
+
+    <div class="ad-box">
+      <div class="ad-box-label">[ AD SLOT 1 ]</div>
+      <div class="ad-box-inner">
+        <script src="https://fundingfashioned.com/56/ca/42/56ca42de57c88b107ae373db6cd5ac72.js"></script>
       </div>
     </div>
 
-    <!-- ===== VERIFY SCREEN ===== -->
-    <div id="verify-screen">
-      <div style="text-align:left">
-        <button onclick="window.backToChoice()"
-          style="background:transparent;border:1px solid #00ff9655;color:#00ff96;padding:6px 12px;border-radius:8px;cursor:pointer;margin-bottom:15px;font-weight:bold;display:inline-flex;align-items:center;gap:5px;font-family:'Segoe UI',sans-serif">
-          🔙 Back
-        </button>
-      </div>
-      <h2 style="font-size:18px;margin-bottom:20px">🔍 VERIFY YOUR KEY</h2>
-      <div class="section-box">
-        <p style="color:#aaa;font-size:13px;margin-bottom:15px">Enter your key below to check if it's valid and see
-          remaining time.</p>
-        <input id="verify-input" type="text" placeholder="Paste your key here..." spellcheck="false">
-        <button onclick="window.doVerify()"
-          style="background:linear-gradient(90deg,#00c870,#00ff96);color:#000;border:none;padding:14px;width:100%;border-radius:10px;font-weight:bold;font-size:15px;cursor:pointer;font-family:'Orbitron',sans-serif;margin-top:5px">
-          VERIFY KEY
-        </button>
-        <div id="verify-result-box"></div>
+    <div class="section-box" style="border-left:5px solid #ff3c3c">
+      <div style="font-size:11px;color:#555;margin-bottom:8px">Next Key Update (UTC):</div>
+      <div id="utc-clock">00:00:00</div>
+    </div>
+
+    <div class="section-box">
+      <p style="color:#aaa;font-size:13px;margin-bottom:15px">1. Click the following link 4 times to activate the button:</p>
+      <a href="https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284"
+        onclick="window.registerClick();" target="_blank" class="btn-link">
+        🔗 Activate Click Link
+      </a>
+      <div style="margin-top:15px;font-weight:bold;font-size:clamp(14px,4vw,18px)">
+        Clicks: <span id="click-status">0</span> / 4
       </div>
     </div>
 
-    <!-- ===== 24H CONTENT SCREEN ===== -->
-    <div id="content-screen" style="display:none">
-      <div style="text-align:left">
-        <button onclick="window.backToChoice()"
-          style="background:transparent;border:1px solid #ff3c3c;color:#ff3c3c;padding:6px 12px;border-radius:8px;cursor:pointer;margin-bottom:15px;font-weight:bold;display:inline-flex;align-items:center;gap:5px;font-family:'Segoe UI',sans-serif">
-          🔙 Back
-        </button>
-      </div>
-
-      <div id="adblock-screen">
-        <span style="font-size:clamp(50px,15vw,80px);color:#ff3c3c">⚠️</span>
-        <h2 style="color:#ff3c3c;margin-top:20px">AdBlock Detected</h2>
-        <p style="color:#bbb;padding:0 20px">Please disable it and refresh the page to obtain your key.</p>
-        <button onclick="location.reload()"
-          style="background:#ff3c3c;color:white;border:none;padding:15px 35px;border-radius:10px;cursor:pointer;font-weight:bold;margin-top:25px">Retry</button>
-      </div>
-
-      <h2>MASTER SYSTEM ELITE</h2>
-
-      <div class="ad-box">
-        <div class="ad-box-label">[ AD SLOT 1 ]</div>
-        <div class="ad-box-inner">
-          <script type="text/javascript">
-            atOptions = {
-              'key' : '0e4c2a3b5881e334c05cef8a6c825c1a',
-              'format' : 'iframe',
-              'height' : 250,
-              'width' : 300,
-              'params' : {}
-            };
-          </script>
-          <script type="text/javascript" src="//fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
+    <div class="section-box" id="advertisement-area">
+      <div id="status-text" style="font-size:11px;color:#555;margin-bottom:10px">🛡️ Checking ad integrity...</div>
+      <div class="adsbygoogle" id="ad-detector-trap" style="height:1px;width:1px"></div>
+      <div class="ad-box" style="margin-bottom:12px">
+        <div class="ad-box-label">[ AD SLOT 2 ]</div>
+        <div class="ad-box-inner" style="min-height:250px">
+          <script>atOptions={'key':'0e4c2a3b5881e334c05cef8a6c825c1a','format':'iframe','height':250,'width':300,'params':{}}</script>
+          <script src="https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
         </div>
       </div>
-
-      <div class="section-box" style="border-left:5px solid #ff3c3c">
-        <div style="font-size:11px;color:#555;margin-bottom:8px">Next Key Update (UTC):</div>
-        <div id="utc-clock">00:00:00</div>
-      </div>
-
-      <div class="section-box">
-        <p style="color:#aaa;font-size:13px;margin-bottom:15px">1. Click the following link 4 times to activate the
-          button:</p>
-        <a href="https://fundingfashioned.com/ksqct6vy?key=fa548e3e21d1d8d69dd3ad6e42668404" target="_blank" class="btn-link">
-          🔗 Activate Click Link
-        </a>
-        <div style="margin-top:15px;font-weight:bold;font-size:clamp(14px,4vw,18px)">
-          Clicks: <span id="click-status">0</span> / 4
-        </div>
-      </div>
-
-      <div class="section-box" id="advertisement-area">
-        <div id="status-text" style="font-size:11px;color:#555;margin-bottom:10px">🛡️ Checking ad integrity...</div>
-        <div class="adsbygoogle" id="ad-detector-trap" style="height:1px;width:1px"></div>
-        <div class="ad-box" style="margin-bottom:12px">
-          <div class="ad-box-label">[ AD SLOT 2 ]</div>
-          <div class="ad-box-inner" style="min-height:250px">
-            <script type="text/javascript">
-              atOptions = {
-                'key' : '0e4c2a3b5881e334c05cef8a6c825c1a',
-                'format' : 'iframe',
-                'height' : 250,
-                'width' : 300,
-                'params' : {}
-              };
-            </script>
-            <script type="text/javascript" src="//fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
-          </div>
-        </div>
-        <div style="color:#ff3c3c;font-size:clamp(14px,4vw,20px);font-weight:bold">
-          ⏳ Watch time remaining: <span id="timer">30</span>s
-        </div>
-      </div>
-
-      <button disabled id="generate-btn" onclick="window.runGenerator()">Key System Locked</button>
-
-      <div id="key-display"
-        style="display:none;background:#000;border:2px dashed #00ff96;padding:20px;margin-top:20px;color:#fff;word-break:break-all;font-family:monospace;border-radius:10px;font-size:clamp(14px,4vw,18px)">
-      </div>
-      <button id="copy-btn" onclick="window.copyKey()"
-        style="display:none;background:transparent;border:1px solid #00ff96;color:#00ff96;padding:15px;width:100%;margin-top:10px;cursor:pointer;border-radius:10px;font-weight:bold">Copy
-        Key</button>
-
-      <div class="ad-box" style="margin-top:15px">
-        <div class="ad-box-label">[ AD SLOT 3 ]</div>
-        <div class="ad-box-inner">
-          <script type="text/javascript">
-            atOptions = {
-              'key' : '0e4c2a3b5881e334c05cef8a6c825c1a',
-              'format' : 'iframe',
-              'height' : 250,
-              'width' : 300,
-              'params' : {}
-            };
-          </script>
-          <script type="text/javascript" src="//fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
-        </div>
+      <div style="color:#ff3c3c;font-size:clamp(14px,4vw,20px);font-weight:bold">
+        ⏳ Watch time remaining: <span id="timer">30</span>s
       </div>
     </div>
 
-    <!-- ===== 3-DAYS CONTENT SCREEN ===== -->
-    <div id="content-screen-3d" style="display:none">
-      <div style="text-align:left">
-        <button onclick="window.backToChoice()"
-          style="background:transparent;border:1px solid #8a2be2;color:#8a2be2;padding:6px 12px;border-radius:8px;cursor:pointer;margin-bottom:15px;font-weight:bold;display:inline-flex;align-items:center;gap:5px;font-family:'Segoe UI',sans-serif">
-          🔙 Back
-        </button>
+    <button disabled id="generate-btn" onclick="window.runGenerator()">Key System Locked</button>
+
+    <div id="key-display" style="display:none;background:#000;border:2px dashed #00ff96;padding:20px;margin-top:20px;color:#fff;word-break:break-all;font-family:monospace;border-radius:10px;font-size:clamp(14px,4vw,18px)"></div>
+    <button id="copy-btn" onclick="window.copyKey()" style="display:none;background:transparent;border:1px solid #00ff96;color:#00ff96;padding:15px;width:100%;margin-top:10px;cursor:pointer;border-radius:10px;font-weight:bold">Copy Key</button>
+
+    <div class="ad-box" style="margin-top:15px">
+      <div class="ad-box-label">[ AD SLOT 3 ]</div>
+      <div class="ad-box-inner">
+        <script src="https://fundingfashioned.com/a8/29/ee/a829eed37a40a18f9d50aef268bf7656.js"></script>
       </div>
+    </div>
+  </div>
 
-      <div id="adblock-screen-3d" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);z-index:10000;flex-direction:column;justify-content:center;align-items:center;border-radius:20px;padding:20px">
-        <span style="font-size:clamp(50px,15vw,80px);color:#8a2be2">⚠️</span>
-        <h2 style="color:#8a2be2;margin-top:20px">AdBlock Detected</h2>
-        <p style="color:#bbb;padding:0 20px">Please disable it and refresh the page to obtain your VIP key.</p>
-        <button onclick="location.reload()" style="background:#8a2be2;color:white;border:none;padding:15px 35px;border-radius:10px;cursor:pointer;font-weight:bold;margin-top:25px">Retry</button>
-      </div>
-
-      <!-- Ad detector trap for 3d screen -->
-      <div id="ad-detector-trap-3d" class="adsbygoogle" style="height:1px;width:1px"></div>
-      <div id="advertisement-area-3d" style="display:none">
-        <script type="text/javascript">
-          atOptions = {
-            'key' : '0e4c2a3b5881e334c05cef8a6c825c1a',
-            'format' : 'iframe',
-            'height' : 250,
-            'width' : 300,
-            'params' : {}
-          };
-        </script>
-        <script type="text/javascript" src="//fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
-      </div>
-
-      <h2>MASTER VIP SYSTEM</h2>
-
-      <div class="section-box" style="border-left:5px solid #8a2be2;text-align:left">
-        <div style="font-size:15px;color:#fff;margin-bottom:8px;font-weight:bold">💎 3 Days Key (VIP)</div>
-        <p style="color:#aaa;font-size:13px;line-height:1.6">Complete 5 rounds to unlock your VIP key. Each round
-          requires 10 clicks + 30 second wait.</p>
-      </div>
-
-      <div class="section-box" id="waiting-area-3d"
-        style="text-align:center;border:1px solid #8a2be233;padding:20px 15px">
-        <div style="color:#8a2be2;font-weight:bold;margin-bottom:10px;font-size:18px" id="round-counter-text">Round 1 of
-          5</div>
-        <div style="color:#fff;font-size:14px;margin-bottom:20px">Complete 10 clicks to unlock the current round timer!
-        </div>
-        <div style="display:flex;flex-direction:column;gap:15px;margin-bottom:20px">
-          <div class="ad-container-3d"
-            style="margin:0 auto;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden">
-          </div>
-          <div class="ad-container-3d"
-            style="margin:0 auto;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden">
-          </div>
-          <div class="ad-container-3d"
-            style="margin:0 auto;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden">
-          </div>
-          <div class="ad-container-3d"
-            style="margin:0 auto;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden">
-          </div>
-        </div>
-        <button id="main-btn-3d" onclick="window.processClick3D()"
-          style="background:linear-gradient(90deg,#8a2be2,#4b0082);color:white;border:none;padding:15px 30px;border-radius:10px;font-weight:bold;font-size:16px;cursor:pointer;box-shadow:0 5px 15px rgba(138,43,226,0.4);width:100%">
-          Click here to complete (0/10) 🚀
-        </button>
-        <div style="font-size:12px;color:#888;margin-top:10px" id="btn-helper-text">Click the button, wait for the ad to
-          load, then return.</div>
-        <div id="round-timer-3d"
-          style="display:none;font-size:24px;color:#00ff96;font-weight:bold;margin-top:20px;text-shadow:0 0 10px #00ff96">
-          00:30</div>
-        <div class="ad-container-3d"
-          style="margin:20px auto 0;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden">
-        </div>
-      </div>
-
-      <script type="text/javascript">
-        atOptions = {
-          'key' : '0e4c2a3b5881e334c05cef8a6c825c1a',
-          'format' : 'iframe',
-          'height' : 250,
-          'width' : 300,
-          'params' : {}
-        };
-      </script>
-      <script type="text/javascript" src="//fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
-      <script type="text/javascript">
-        atOptions = {
-          'key' : '0e4c2a3b5881e334c05cef8a6c825c1a',
-          'format' : 'iframe',
-          'height' : 250,
-          'width' : 300,
-          'params' : {}
-        };
-      </script>
-      <script type="text/javascript" src="//fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js"></script>
-
-      <div id="key-display-3d"
-        style="display:none;background:#000;border:2px dashed #8a2be2;padding:20px;margin-top:20px;color:#fff;word-break:break-all;font-family:monospace;border-radius:10px;font-size:clamp(14px,4vw,18px);box-shadow:0 0 20px rgba(138,43,226,0.2)">
-      </div>
-      <button id="copy-btn-3d" onclick="window.copyKey3D()"
-        style="display:none;background:transparent;border:1px solid #8a2be2;color:#8a2be2;padding:15px;width:100%;margin-top:10px;cursor:pointer;border-radius:10px;font-weight:bold">Copy
-        VIP Key</button>
+  <!-- ===== 3-DAYS CONTENT SCREEN ===== -->
+  <div id="content-screen-3d" style="display:none">
+    <div style="text-align:left">
+      <button onclick="window.backToChoice()"
+        style="background:transparent;border:1px solid #8a2be2;color:#8a2be2;padding:6px 12px;border-radius:8px;cursor:pointer;margin-bottom:15px;font-weight:bold;display:inline-flex;align-items:center;gap:5px;font-family:'Segoe UI',sans-serif">
+        🔙 Back
+      </button>
     </div>
 
-  </div><!-- end main-container -->
+    <h2>MASTER VIP SYSTEM</h2>
 
-  <script>
-      // ================================================================
-      // PARTICLES
-      // ================================================================
-      (function () {
-        var canvas = document.getElementById('particles-canvas');
-        var ctx = canvas.getContext('2d');
-        var points = [];
-        var mouse = { x: -9999, y: -9999 };
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight }
-        resize(); window.addEventListener('resize', resize);
-        document.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY });
-        for (var i = 0; i < 70; i++)points.push({ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, ox: 0, oy: 0, r: Math.random() * 1.8 + 0.4, op: Math.random() * Math.PI * 2, sp: Math.random() * 0.02 + 0.008, vx: 0, vy: 0 });
-        var FR = 100, FF = 3;
-        function draw() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          points.forEach(function (p) {
-            p.op += p.sp; var alpha = (Math.sin(p.op) + 1) / 2;
-            var dx = p.x - mouse.x, dy = p.y - mouse.y, dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < FR && dist > 0) { var force = (FR - dist) / FR; p.vx += (dx / dist) * force * FF; p.vy += (dy / dist) * force * FF }
-            p.x += p.vx; p.y += p.vy; p.vx *= 0.85; p.vy *= 0.85;
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,255,150,' + alpha.toFixed(2) + ')'; ctx.fill();
-          });
-          requestAnimationFrame(draw);
+    <div class="section-box" style="border-left:5px solid #8a2be2;text-align:left">
+      <div style="font-size:15px;color:#fff;margin-bottom:8px;font-weight:bold">💎 3 Days Key (VIP)</div>
+      <p style="color:#aaa;font-size:13px;line-height:1.6">Complete 5 rounds to unlock your VIP key. Each round requires 10 clicks + 30 second wait.</p>
+    </div>
+
+    <div class="section-box" id="waiting-area-3d" style="text-align:center;border:1px solid #8a2be233;padding:20px 15px">
+      <div style="color:#8a2be2;font-weight:bold;margin-bottom:10px;font-size:18px" id="round-counter-text">Round 1 of 5</div>
+      <div style="color:#fff;font-size:14px;margin-bottom:20px">Complete 10 clicks to unlock the current round timer!</div>
+      <div style="display:flex;flex-direction:column;gap:15px;margin-bottom:20px">
+        <div class="ad-container-3d" style="margin:0 auto;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden"></div>
+        <div class="ad-container-3d" style="margin:0 auto;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden"></div>
+        <div class="ad-container-3d" style="margin:0 auto;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden"></div>
+        <div class="ad-container-3d" style="margin:0 auto;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden"></div>
+      </div>
+      <button id="main-btn-3d" onclick="window.processClick3D()"
+        style="background:linear-gradient(90deg,#8a2be2,#4b0082);color:white;border:none;padding:15px 30px;border-radius:10px;font-weight:bold;font-size:16px;cursor:pointer;box-shadow:0 5px 15px rgba(138,43,226,0.4);width:100%">
+        Click here to complete (0/10) 🚀
+      </button>
+      <div style="font-size:12px;color:#888;margin-top:10px" id="btn-helper-text">Click the button, wait for the ad to load, then return.</div>
+      <div id="round-timer-3d" style="display:none;font-size:24px;color:#00ff96;font-weight:bold;margin-top:20px;text-shadow:0 0 10px #00ff96">00:30</div>
+      <div class="ad-container-3d" style="margin:20px auto 0;min-height:250px;width:300px;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.3);border-radius:10px;overflow:hidden"></div>
+    </div>
+
+    <script src="https://fundingfashioned.com/a8/29/ee/a829eed37a40a18f9d50aef268bf7656.js"></script>
+    <script src="https://fundingfashioned.com/56/ca/42/56ca42de57c88b107ae373db6cd5ac72.js"></script>
+
+    <div id="key-display-3d" style="display:none;background:#000;border:2px dashed #8a2be2;padding:20px;margin-top:20px;color:#fff;word-break:break-all;font-family:monospace;border-radius:10px;font-size:clamp(14px,4vw,18px);box-shadow:0 0 20px rgba(138,43,226,0.2)"></div>
+    <button id="copy-btn-3d" onclick="window.copyKey3D()" style="display:none;background:transparent;border:1px solid #8a2be2;color:#8a2be2;padding:15px;width:100%;margin-top:10px;cursor:pointer;border-radius:10px;font-weight:bold">Copy VIP Key</button>
+  </div>
+
+</div><!-- end main-container -->
+
+<script>
+// ================================================================
+// PARTICLES
+// ================================================================
+(function(){
+  var canvas=document.getElementById('particles-canvas');
+  var ctx=canvas.getContext('2d');
+  var points=[];
+  var mouse={x:-9999,y:-9999};
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+  resize();window.addEventListener('resize',resize);
+  document.addEventListener('mousemove',function(e){mouse.x=e.clientX;mouse.y=e.clientY});
+  for(var i=0;i<70;i++)points.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,ox:0,oy:0,r:Math.random()*1.8+0.4,op:Math.random()*Math.PI*2,sp:Math.random()*0.02+0.008,vx:0,vy:0});
+  var FR=100,FF=3;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    points.forEach(function(p){
+      p.op+=p.sp;var alpha=(Math.sin(p.op)+1)/2;
+      var dx=p.x-mouse.x,dy=p.y-mouse.y,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<FR&&dist>0){var force=(FR-dist)/FR;p.vx+=(dx/dist)*force*FF;p.vy+=(dy/dist)*force*FF}
+      p.x+=p.vx;p.y+=p.vy;p.vx*=0.85;p.vy*=0.85;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,255,150,'+alpha.toFixed(2)+')';ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ================================================================
+// SPARKLES
+// ================================================================
+(function(){
+  if('ontouchstart'in window)return;
+  var lastTime=0;
+  document.addEventListener('mousemove',function(e){
+    var now=Date.now();if(now-lastTime<90)return;lastTime=now;
+    var dot=document.createElement('div');dot.className='sparkle';
+    dot.style.left=(e.clientX-3.5)+'px';dot.style.top=(e.clientY-3.5)+'px';
+    document.body.appendChild(dot);setTimeout(function(){dot.remove()},700);
+  });
+})();
+
+// ================================================================
+// MAIN LOGIC
+// ================================================================
+(function(){
+
+  // ── Worker URL & Site Secret ─────────────────────────────
+  var WORKER_URL = "https://snowy-surf-8e37.master-key.workers.dev";
+  var SITE_SECRET = "HDLE_SITE_2025_AYOUB";
+
+  // ── UTC Clock ────────────────────────────────────────────────
+  function startClock(){
+    setInterval(function(){
+      var now=new Date();
+      var h=23-now.getUTCHours(),m=59-now.getUTCMinutes(),s=59-now.getUTCSeconds();
+      var el=document.getElementById('utc-clock');
+      if(el)el.innerText=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+    },1000);
+  }
+
+  // ── AdBlock check ────────────────────────────────────────────
+  function checkAdBlock(){
+    setTimeout(function(){
+      var trap=document.getElementById('ad-detector-trap');
+      var container=document.getElementById('advertisement-area');
+      if(!trap||trap.offsetHeight===0||!container.querySelector('iframe')){
+        document.getElementById('adblock-screen').style.display='flex';
+      } else {
+        var statusEl=document.getElementById('status-text');
+        if(statusEl){statusEl.innerText='🛡️ Ad Check: ACTIVE';statusEl.style.color='#00ff96'}
+      }
+    },8000);
+  }
+
+  // ── 24h timer ────────────────────────────────────────────────
+  var clickCount=0,timerDone=false,timeLeft=30,adblockFound=false;
+
+  function updateButton(){
+    var btn=document.getElementById('generate-btn');
+    if(!btn)return;
+    if(clickCount>=4&&timerDone){
+      btn.disabled=false;btn.style.background='#00ff96';btn.style.color='#000';
+      btn.style.boxShadow='0 0 25px #00ff96';btn.style.cursor='pointer';
+      btn.innerText='Generate Key Now';
+    } else {
+      btn.innerText=(clickCount<4)?'Remaining '+(4-clickCount)+' clicks':'Waiting for ads...';
+    }
+  }
+
+  function startTimer(){
+    var interval=setInterval(function(){
+      if(!adblockFound){
+        timeLeft--;var el=document.getElementById('timer');
+        if(el)el.innerText=timeLeft;
+        if(timeLeft<=0){
+          clearInterval(interval);timerDone=true;
+          var parent=el&&el.parentElement;
+          if(parent)parent.innerHTML='✅ Watch Completed!';
+          updateButton();
         }
-        draw();
-      })();
+      }
+    },1000);
+  }
 
-    // ================================================================
-    // SPARKLES
-    // ================================================================
-    (function () {
-      if ('ontouchstart' in window) return;
-      var lastTime = 0;
-      document.addEventListener('mousemove', function (e) {
-        var now = Date.now(); if (now - lastTime < 90) return; lastTime = now;
-        var dot = document.createElement('div'); dot.className = 'sparkle';
-        dot.style.left = (e.clientX - 3.5) + 'px'; dot.style.top = (e.clientY - 3.5) + 'px';
-        document.body.appendChild(dot); setTimeout(function () { dot.remove() }, 700);
+  window.registerClick=function(){clickCount++;var el=document.getElementById('click-status');if(el)el.innerText=clickCount;updateButton()};
+
+  // ── Generate 24h key via Worker ──────────────────────────────
+  window.runGenerator=function(){
+    if(clickCount<4||!timerDone)return;
+    var btn=document.getElementById('generate-btn');
+    btn.disabled=true;btn.innerText='Generating...';
+
+    fetch(WORKER_URL+'/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Site-Token':SITE_SECRET},
+      body:JSON.stringify({type:'1d'})
+    })
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.key){
+        var display=document.getElementById('key-display');
+        display.innerHTML='<div style="font-size:11px;color:#555;margin-bottom:8px">YOUR KEY:</div>'+data.key;
+        display.style.display='block';
+        document.getElementById('copy-btn').style.display='block';
+        btn.innerText='✅ Key Generated!';
+      } else {
+        btn.disabled=false;btn.innerText='Try Again';
+        alert('Error generating key. Try again.');
+      }
+    })
+    .catch(function(){
+      btn.disabled=false;btn.style.background='#ff3c3c';btn.style.color='#fff';
+      btn.innerText='Server Error — Retry';
+    });
+  };
+
+  window.copyKey=function(){
+    var text=document.getElementById('key-display').innerText.split('\n').slice(-1)[0];
+    navigator.clipboard.writeText(text);alert('Key copied successfully!');
+  };
+
+  // ── 3-Day flow ───────────────────────────────────────────────
+  var currentRound3D=1,clickCount3D=0,timerRunning3D=false;
+
+  window.processClick3D=function(){
+    if(timerRunning3D)return;
+    window.open("https://fundingfashioned.com/c7509xzhyt?key=a267143d0fb6343546f07eb4d3e5d284","_blank");
+    clickCount3D++;
+    var btn=document.getElementById('main-btn-3d');
+    if(clickCount3D<10){
+      btn.innerText='Click here to complete ('+clickCount3D+'/10) 🚀';
+    } else {
+      btn.disabled=true;btn.style.opacity='0.5';btn.innerText='Please wait...';
+      startRoundTimer3D();
+    }
+  };
+
+  function startRoundTimer3D(){
+    timerRunning3D=true;var t=30;
+    var td=document.getElementById('round-timer-3d');
+    td.style.display='block';td.innerText='00:30';
+    var iv=setInterval(function(){
+      t--;td.innerText='00:'+(t<10?'0'+t:t);
+      if(t<=0){clearInterval(iv);timerRunning3D=false;td.style.display='none';finishRound3D()}
+    },1000);
+  }
+
+  function finishRound3D(){
+    if(currentRound3D<5){
+      currentRound3D++;clickCount3D=0;
+      document.getElementById('round-counter-text').innerText='Round '+currentRound3D+' of 5';
+      var btn=document.getElementById('main-btn-3d');
+      btn.disabled=false;btn.style.opacity='1';
+      btn.innerText='Click here to complete (0/10) 🚀';
+      alert('Round finished. Please complete the next round to proceed!');
+    } else {
+      var btn=document.getElementById('main-btn-3d');
+      btn.style.display='none';
+      document.getElementById('btn-helper-text').style.display='none';
+      document.getElementById('round-counter-text').innerText='Success! All rounds finished 🎉';
+      showVIPKey();
+    }
+  }
+
+  // ── Generate 3-day key via Worker ────────────────────────────
+  function showVIPKey(){
+    var wa=document.getElementById('waiting-area-3d');
+    if(wa)wa.style.display='none';
+
+    fetch(WORKER_URL+'/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Site-Token':SITE_SECRET},
+      body:JSON.stringify({type:'3d'})
+    })
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(data.key){
+        var display=document.getElementById('key-display-3d');
+        display.innerHTML='<div style="font-size:11px;color:#8a2be2;margin-bottom:8px">YOUR VIP KEY:</div>'+data.key;
+        display.style.display='block';
+        document.getElementById('copy-btn-3d').style.display='block';
+      } else {
+        alert('Error generating VIP key. Please contact support.');
+      }
+    })
+    .catch(function(){alert('Server error. Please try again later.')});
+  }
+
+  window.copyKey3D=function(){
+    var lines=document.getElementById('key-display-3d').innerText.split('\n');
+    var key=lines[lines.length-1];
+    navigator.clipboard.writeText(key);alert('VIP Key copied successfully!');
+  };
+
+  // ── Verify key ───────────────────────────────────────────────
+  window.doVerify=function(){
+    var key=document.getElementById('verify-input').value.trim();
+    if(!key){alert('Please enter a key.');return}
+    var box=document.getElementById('verify-result-box');
+    box.style.display='none';box.className='verify-result-box';
+
+    fetch(WORKER_URL+'/verify',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({key:key})
+    })
+    .then(function(r){return r.json()})
+    .then(function(data){
+      box.style.display='block';
+      if(data.valid){
+        var hrs=data.remaining_seconds?Math.floor(data.remaining_seconds/3600):0;
+        var mins=data.remaining_seconds?Math.floor((data.remaining_seconds%3600)/60):0;
+        box.className='verify-result-box v-valid';
+        box.innerHTML='✅ <strong>Valid Key</strong><br>⏱ Expires: '+data.expiry_formatted+'<br>⌛ Remaining: '+hrs+'h '+mins+'m<br>'+(data.note?'📝 '+data.note:'');
+      } else {
+        var reasons={not_found:'Key not found',expired:'Key has expired',revoked:'Key has been revoked'};
+        box.className='verify-result-box v-invalid';
+        box.innerHTML='❌ <strong>Invalid Key</strong><br>'+(reasons[data.reason]||data.reason||'Unknown error');
+      }
+    })
+    .catch(function(){
+      box.style.display='block';box.className='verify-result-box v-invalid';
+      box.innerHTML='❌ Server error. Check your connection.';
+    });
+  };
+
+  // ── Navigation ───────────────────────────────────────────────
+  var timerStarted=false;
+
+  window.start24HoursFlow=function(){
+    document.getElementById('choice-screen').style.display='none';
+    document.getElementById('content-screen').style.display='block';
+    if(!timerStarted){checkAdBlock();startTimer();timerStarted=true}
+  };
+
+  window.start3DaysFlow=function(){
+    document.getElementById('choice-screen').style.display='none';
+    document.getElementById('content-screen-3d').style.display='block';
+    if(!window.adsLoaded3D){
+      window.adsLoaded3D=true;
+      var containers=document.querySelectorAll('.ad-container-3d');
+      var delay=0;
+      containers.forEach(function(container){
+        setTimeout(function(){
+          var iframe=document.createElement('iframe');
+          iframe.width="300";iframe.height="250";iframe.style.border="none";
+          iframe.scrolling="no";iframe.style.background="transparent";
+          container.appendChild(iframe);
+          var doc=iframe.contentWindow?iframe.contentWindow.document:iframe.contentDocument;
+          doc.open();
+          doc.write("<!DOCTYPE html><html><body style='margin:0;background:transparent;display:flex;justify-content:center;align-items:center;'><script>atOptions={'key':'0e4c2a3b5881e334c05cef8a6c825c1a','format':'iframe','height':250,'width':300,'params':{}};<\/script><script src='https://fundingfashioned.com/0e4c2a3b5881e334c05cef8a6c825c1a/invoke.js?cb="+Math.random()+"'><\/script></body></html>");
+          doc.close();
+        },delay);delay+=800;
       });
-    })();
+    }
+  };
 
-    // ================================================================
-    // MAIN LOGIC - Server-Only System with Dual Servers
-    // ================================================================
-    (function () {
+  window.openVerify=function(){
+    document.getElementById('choice-screen').style.display='none';
+    document.getElementById('verify-screen').style.display='block';
+  };
 
-      // ── Configuration ─────────────────────────────────────────────
-      const PRIMARY_SERVER = "https://snowy-surf-8e37.master-key.workers.dev";
-      const BACKUP_SERVER = "https://dawn-grass-13cd.yosefelmosk.workers.dev";
-      const SITE_SECRET = "HDLE_SITE_2025_AYOUB";
-      
-      const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1488990191787184192/CeaLiiGXot0QjU_wR0n0MFEG7AKx_kk65-ENRw49qYy5lo9IpuHkz_L91tM5wFygK58w";
+  window.backToChoice=function(){
+    document.getElementById('content-screen').style.display='none';
+    document.getElementById('content-screen-3d').style.display='none';
+    document.getElementById('verify-screen').style.display='none';
+    document.getElementById('choice-screen').style.display='block';
+  };
 
-      // ── Helper Functions ──────────────────────────────────────────
-      
-      // إرسال تنبيه لديسكورد (صامت)
-      async function notifyDiscord(msg, color = 16776960) {
-        try {
-          await fetch(DISCORD_WEBHOOK, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              embeds: [{ 
-                title: '🔔 HDLE Key System', 
-                description: msg, 
-                color: color, 
-                timestamp: new Date().toISOString() 
-              }] 
-            })
-          });
-        } catch (e) { /* Silent fail */ }
-      }
+  window.onload=function(){startClock()};
 
-      // ── UTC Clock ─────────────────────────────────────────────────
-      function startClock() {
-        setInterval(() => {
-          const now = new Date();
-          const h = 23 - now.getUTCHours();
-          const m = 59 - now.getUTCMinutes();
-          const s = 59 - now.getUTCSeconds();
-          const el = document.getElementById('utc-clock');
-          if (el) el.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }, 1000);
-      }
-
-      // ── AdBlock Check ────────────────────────────────────────────
-      function checkAdBlock() {
-        setTimeout(() => {
-          const trap = document.getElementById('ad-detector-trap');
-          const container = document.getElementById('advertisement-area');
-          if (!trap || trap.offsetHeight === 0 || !container.querySelector('iframe')) {
-            document.getElementById('adblock-screen').style.display = 'flex';
-          } else {
-            const statusEl = document.getElementById('status-text');
-            if (statusEl) { statusEl.innerText = '🛡️ Ad Check: ACTIVE'; statusEl.style.color = '#00ff96'; }
-          }
-        }, 8000);
-      }
-
-      // ── 24h Timer & Clicks ───────────────────────────────────────
-      let clickCount = 0, timerDone = false, timeLeft = 30, adblockFound = false;
-
-      function updateButton() {
-        const btn = document.getElementById('generate-btn');
-        if (!btn) return;
-        if (clickCount >= 4 && timerDone) {
-          btn.disabled = false;
-          btn.style.background = '#00ff96';
-          btn.style.color = '#000';
-          btn.style.boxShadow = '0 0 25px #00ff96';
-          btn.style.cursor = 'pointer';
-          btn.innerText = 'Generate Key Now';
-        } else {
-          btn.innerText = clickCount < 4 ? `Remaining ${4 - clickCount} clicks` : 'Waiting for ads...';
-        }
-      }
-
-      function startTimer() {
-        const interval = setInterval(() => {
-          if (!adblockFound) {
-            timeLeft--;
-            const el = document.getElementById('timer');
-            if (el) el.innerText = timeLeft;
-            if (timeLeft <= 0) {
-              clearInterval(interval);
-              timerDone = true;
-              const parent = el?.parentElement;
-              if (parent) parent.innerHTML = '✅ Watch Completed!';
-              updateButton();
-            }
-          }
-        }, 1000);
-      }
-
-      window.registerClick = () => {
-        clickCount++;
-        const el = document.getElementById('click-status');
-        if (el) el.innerText = clickCount;
-        updateButton();
-      };
-
-      // ================================================================
-      // ── SERVER-ONLY KEY GENERATION SYSTEM ──────────────────────────
-      // ================================================================
-
-      // ── طلب مفتاح من سيرفر معين ──────────────────────────────────
-      async function fetchKeyFromServer(serverUrl, type) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 ثواني timeout
-
-        const response = await fetch(`${serverUrl}/generate`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json', 
-            'X-Site-Token': SITE_SECRET 
-          },
-          body: JSON.stringify({ type }),
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-
-        // Failover على أي خطأ 401, 429, 500 أو !response.ok
-        if (!response.ok || [401, 429, 500].includes(response.status)) {
-          throw new Error(`Server ${serverUrl} failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        if (data.key) {
-          return { 
-            success: true, 
-            key: data.key, 
-            source: serverUrl === PRIMARY_SERVER ? 'primary' : 'backup',
-            expiryFormatted: data.expiry_formatted || 'N/A'
-          };
-        } else {
-          throw new Error('Server returned no key');
-        }
-      }
-
-      // ── توليد المفتاح مع نظام Failover بين السيرفرين ──────────────
-      async function generateKeyWithFailover(type) {
-        // محاولة 1: السيرفر الأساسي (Primary)
-        try {
-          const result = await fetchKeyFromServer(PRIMARY_SERVER, type);
-          return result;
-        } catch (primaryError) {
-          await notifyDiscord(`⚠️ Primary server failed. Trying backup...`, 16744272);
-          
-          // محاولة 2: السيرفر الاحتياطي (Backup)
-          try {
-            const result = await fetchKeyFromServer(BACKUP_SERVER, type);
-            return result;
-          } catch (backupError) {
-            await notifyDiscord(`❌ Both servers failed`, 16711680);
-            throw new Error('Both servers unavailable');
-          }
-        }
-      }
-
-      // ── Generate 24h Key (Server-Only) ────────────────────────────
-      window.runGenerator = async () => {
-        if (clickCount < 4 || !timerDone) return;
-        
-        const btn = document.getElementById('generate-btn');
-        btn.disabled = true;
-        btn.innerText = 'Generating...';
-
-        try {
-          const result = await generateKeyWithFailover('1d');
-          
-          const display = document.getElementById('key-display');
-          const label = result.source === 'primary' ? 'YOUR KEY:' : 'YOUR KEY (Backup Server):';
-          
-          display.innerHTML = `<div style="font-size:11px;color:#555;margin-bottom:8px">${label}</div>${result.key}`;
-          display.style.display = 'block';
-          document.getElementById('copy-btn').style.display = 'block';
-          btn.innerText = '✅ Key Generated!';
-          
-        } catch (error) {
-          // لا يوجد توليد محلي - إظهار رسالة خطأ واضحة
-          const display = document.getElementById('key-display');
-          display.innerHTML = `<div style="font-size:14px;color:#ff6b6b;text-align:center">⚠️ Servers are busy. Please try again in 5 minutes.</div>`;
-          display.style.display = 'block';
-          btn.innerText = '❌ Failed';
-          await notifyDiscord(`❌ Both servers failed - User shown error message`, 16711680);
-        }
-      };
-
-      window.copyKey = () => {
-        const text = document.getElementById('key-display').innerText.split('\n').slice(-1)[0];
-        navigator.clipboard.writeText(text);
-        alert('Key copied successfully!');
-      };
-
-      // ── 3-Day VIP Flow ────────────────────────────────────────────
-      let currentRound3D = 1, clickCount3D = 0, timerRunning3D = false;
-
-      window.processClick3D = () => {
-        if (timerRunning3D) return;
-        window.open("https://fundingfashioned.com/ksqct6vy?key=fa548e3e21d1d8d69dd3ad6e42668404", "_blank");
-        clickCount3D++;
-        const btn = document.getElementById('main-btn-3d');
-        if (clickCount3D < 10) {
-          btn.innerText = `Click here to complete (${clickCount3D}/10) 🚀`;
-        } else {
-          btn.disabled = true;
-          btn.style.opacity = '0.5';
-          btn.innerText = 'Please wait...';
-          startRoundTimer3D();
-        }
-      };
-
-      function startRoundTimer3D() {
-        timerRunning3D = true;
-        let t = 30;
-        const td = document.getElementById('round-timer-3d');
-        td.style.display = 'block';
-        td.innerText = '00:30';
-        
-        const iv = setInterval(() => {
-          t--;
-          td.innerText = `00:${String(t).padStart(2, '0')}`;
-          if (t <= 0) {
-            clearInterval(iv);
-            timerRunning3D = false;
-            td.style.display = 'none';
-            finishRound3D();
-          }
-        }, 1000);
-      }
-
-      function finishRound3D() {
-        if (currentRound3D < 5) {
-          currentRound3D++;
-          clickCount3D = 0;
-          document.getElementById('round-counter-text').innerText = `Round ${currentRound3D} of 5`;
-          const btn = document.getElementById('main-btn-3d');
-          btn.disabled = false;
-          btn.style.opacity = '1';
-          btn.innerText = 'Click here to complete (0/10) 🚀';
-          alert(`Round ${currentRound3D - 1} finished! Keep going.`);
-        } else {
-          generateVIPKey();
-        }
-      }
-
-      // ── Generate VIP Key (Server-Only) ──────────────────────────
-      async function generateVIPKey() {
-        const btn = document.getElementById('main-btn-3d');
-        btn.disabled = true;
-        btn.innerText = 'Generating VIP Key...';
-
-        try {
-          const result = await generateKeyWithFailover('3d');
-          showFinalKey3D(result.key);
-        } catch (error) {
-          // لا يوجد توليد محلي - إظهار رسالة خطأ واضحة
-          const display = document.getElementById('key-display-3d');
-          display.innerHTML = `<div style="font-size:14px;color:#ff6b6b;text-align:center">⚠️ Servers are busy. Please try again in 5 minutes.</div>`;
-          display.style.display = 'block';
-          btn.innerText = '❌ Failed';
-          await notifyDiscord(`❌ VIP generation failed - Both servers unavailable`, 16711680);
-        }
-      }
-
-      function showFinalKey3D(key) {
-        const display = document.getElementById('key-display-3d');
-        display.innerHTML = `<div style="font-size:11px;color:#8a2be2;margin-bottom:8px">💎 YOUR VIP KEY:</div>${key}`;
-        display.style.display = 'block';
-        document.getElementById('copy-btn-3d').style.display = 'block';
-        document.getElementById('main-btn-3d').style.display = 'none';
-        document.getElementById('round-counter-text').innerText = '✅ Access Granted!';
-      }
-
-      window.copyKey3D = () => {
-        const text = document.getElementById('key-display-3d').innerText.split('\n').slice(-1)[0];
-        navigator.clipboard.writeText(text);
-        alert('VIP Key copied to clipboard!');
-      };
-
-      // ── Verify Logic (Check Both Servers) ─────────────────────────
-      window.doVerify = async () => {
-        const key = document.getElementById('verify-input').value.trim();
-        const resBox = document.getElementById('verify-result-box');
-        if (!key) return alert("Please paste a key first!");
-
-        resBox.style.display = 'block';
-        resBox.className = '';
-        resBox.innerHTML = "⏳ Verifying...";
-
-        // محاولة التحقق من السيرفر الأساسي أولاً
-        try {
-          const response = await fetch(`${PRIMARY_SERVER}/verify`, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'X-Site-Token': SITE_SECRET
-            },
-            body: JSON.stringify({ key })
-          });
-
-          const data = await response.json();
-
-          if (data.valid) {
-            const hrs = data.remaining_seconds ? Math.floor(data.remaining_seconds / 3600) : 0;
-            const mins = data.remaining_seconds ? Math.floor((data.remaining_seconds % 3600) / 60) : 0;
-            resBox.className = 'v-valid';
-            resBox.innerHTML = `✅ <b>Valid Key!</b><br>⏱ Expires: ${data.expiry_formatted}<br>⌛ Remaining: ${hrs}h ${mins}m`;
-            return;
-          }
-        } catch (error) {
-          // Primary server failed, try backup
-        }
-
-        // محاولة التحقق من السيرفر الاحتياطي
-        try {
-          const response = await fetch(`${BACKUP_SERVER}/verify`, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'X-Site-Token': SITE_SECRET
-            },
-            body: JSON.stringify({ key })
-          });
-
-          const data = await response.json();
-
-          if (data.valid) {
-            const hrs = data.remaining_seconds ? Math.floor(data.remaining_seconds / 3600) : 0;
-            const mins = data.remaining_seconds ? Math.floor((data.remaining_seconds % 3600) / 60) : 0;
-            resBox.className = 'v-valid';
-            resBox.innerHTML = `✅ <b>Valid Key!</b><br>⏱ Expires: ${data.expiry_formatted}<br>⌛ Remaining: ${hrs}h ${mins}m<br><small>(Verified via Backup Server)</small>`;
-            return;
-          } else {
-            resBox.className = 'v-invalid';
-            resBox.innerHTML = "❌ <b>Invalid or Expired Key!</b>";
-          }
-        } catch (error) {
-          resBox.className = 'v-invalid';
-          resBox.innerHTML = "❌ <b>Unable to verify.</b><br>Servers are currently unavailable.";
-        }
-      };
-
-      // ── Navigation Logic ─────────────────────────────────────────
-      let timerStarted = false;
-
-      window.start24HoursFlow = () => {
-        document.getElementById('choice-screen').style.display = 'none';
-        document.getElementById('content-screen').style.display = 'block';
-        if (!timerStarted) { checkAdBlock(); startTimer(); startClock(); timerStarted = true; }
-      };
-
-      window.start3DaysFlow = () => {
-        document.getElementById('choice-screen').style.display = 'none';
-        document.getElementById('content-screen-3d').style.display = 'block';
-        
-        // ── Check AdBlock for 3D screen ──────────────────────────────
-        setTimeout(() => {
-          const trap3d = document.getElementById('ad-detector-trap-3d');
-          const adArea3d = document.getElementById('advertisement-area-3d');
-          if (!trap3d || trap3d.offsetHeight === 0 || !adArea3d.querySelector('iframe')) {
-            document.getElementById('adblock-screen-3d').style.display = 'flex';
-          }
-        }, 5000);
-        
-        if (!window.adsLoaded3D) {
-          window.adsLoaded3D = true;
-          const containers = document.querySelectorAll('.ad-container-3d');
-          let delay = 0;
-          containers.forEach((container) => {
-            setTimeout(() => {
-              const iframe = document.createElement('iframe');
-              iframe.width = "300";
-              iframe.height = "250";
-              iframe.style.border = "none";
-              iframe.scrolling = "no";
-              iframe.style.background = "transparent";
-              container.appendChild(iframe);
-              const doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
-              doc.open();
-              doc.write(`<!DOCTYPE html><html><body style='margin:0;background:transparent;display:flex;justify-content:center;align-items:center;'><script>atOptions={'key':'fa548e3e21d1d8d69dd3ad6e42668404','format':'iframe','height':250,'width':300,'params':{}};<\/script><script src='https://fundingfashioned.com/ksqct6vy?key=fa548e3e21d1d8d69dd3ad6e42668404'><\/script></body></html>`);
-              doc.close();
-            }, delay);
-            delay += 800;
-          });
-        }
-      };
-
-      window.openVerify = () => {
-        document.getElementById('choice-screen').style.display = 'none';
-        document.getElementById('verify-screen').style.display = 'block';
-      };
-
-      window.backToChoice = () => {
-        document.getElementById('content-screen').style.display = 'none';
-        document.getElementById('content-screen-3d').style.display = 'none';
-        document.getElementById('verify-screen').style.display = 'none';
-        document.getElementById('choice-screen').style.display = 'block';
-      };
-
-      window.onload = () => { startClock(); };
-
-    })();
-  </script>
-
-  <!-- Discord Error Reporting System (Isolated) -->
-  <script>
-  (function() {
-      const WEBHOOK_URL = "https://discord.com/api/webhooks/1488990191787184192/CeaLiiGXot0QjU_wR0n0MFEG7AKx_kk65-ENRw49qYy5lo9IpuHkz_L91tM5wFygK58w";
-      function sendErrorToDiscord(errorMessage, source, lineno, colno, errorObj) {
-          try {
-              const safeMessage = String(errorMessage || "Unknown Error").substring(0, 1000);
-              const safeSource = String(source || window.location.href).substring(0, 1000);
-              const safeStack = (errorObj && errorObj.stack) ? String(errorObj.stack).substring(0, 1000) : "N/A";
-
-              const payload = {
-                  embeds: [{
-                      title: "Browser Error - Key System",
-                      color: 16711680,
-                      fields: [
-                          { name: "Error Message", value: safeMessage },
-                          { name: "Source", value: safeSource },
-                          { name: "Location", value: `Line: ${lineno || '?'} | Col: ${colno || '?'}` },
-                          { name: "Stack Trace", value: `\`\`\`js\n${safeStack}\n\`\`\`` }
-                      ],
-                      timestamp: new Date().toISOString()
-                  }]
-              };
-
-              fetch(WEBHOOK_URL, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(payload)
-              }).catch(e => { /* Silent fail to prevent loop */ });
-          } catch (e) { /* Silent fail */ }
-      }
-
-      const originalOnError = window.onerror;
-      window.onerror = function(message, source, lineno, colno, error) {
-          sendErrorToDiscord(message, source, lineno, colno, error);
-          if (typeof originalOnError === 'function') return originalOnError(message, source, lineno, colno, error);
-          return false;
-      };
-
-      const originalOnUnhandledRejection = window.onunhandledrejection;
-      window.onunhandledrejection = function(event) {
-          const reason = event.reason;
-          const message = reason ? (reason.message || String(reason)) : "Unhandled Promise Rejection";
-          sendErrorToDiscord(message, window.location.href, "N/A", "N/A", reason);
-          if (typeof originalOnUnhandledRejection === 'function') return originalOnUnhandledRejection(event);
-      };
-  })();
-  </script>
+})();
+</script>
 </body>
-
 </html>
